@@ -1,0 +1,32 @@
+{
+	"name" : "heidelpay/jtl-payment-extension",
+	"description" : "heidelpay payment extension for jtl",
+	"type" : "jtl-plugin",
+	"version" : "16.11.16",
+	"homepage" : "https://dev.heidelpay.de",
+	"license" : "Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.",
+	"require" : {
+		"php" : "~5.5.0|~5.6.0|~7.0.0",
+		"heidelpay/php-api" : "17.3.20",
+		"heidelpay/php-customer-messages": "17.2.3"
+	},
+	"require-dev": {
+			"friendsofphp/php-cs-fixer": "^2.0",
+		"heidelpay/phpdocumentor": "2.9.*"
+	},
+	"authors" : [{
+			"name" : "Ronja Wann"
+		}
+	],
+	"support" : {
+		"email" : "development@heidelpay.de"
+	},
+	"keywords" : [
+		"jtl",
+		"payment",
+		"ecommerce",
+		"heidelpay",
+		"php",
+		"payment-gateway"
+	]
+}

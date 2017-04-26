@@ -1,0 +1,889 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+<jtlshop3plugin>
+    <Name>Heidelpay Standard</Name>
+    <Description>Heidelpay Standard Modul.</Description>
+    <Author>Ronja Wann/Jens Richter</Author>
+    <URL>http://www.heidelpay.de</URL>
+    <XMLVersion>101</XMLVersion>
+    <ShopVersion>300</ShopVersion>
+	<Shop4Version>400</Shop4Version>
+    <PluginID>heidelpay_standard</PluginID>
+	<Install>
+    <Version nr="100">
+      <CreateDate>2011-05-26</CreateDate>
+    </Version>
+    <Version nr="101">
+      <CreateDate>2011-12-20</CreateDate>
+    </Version>
+    <Version nr="102">
+      <CreateDate>2013-04-02</CreateDate>
+    </Version>
+	<Version nr="103">
+      <CreateDate>2013-12-02</CreateDate>
+    </Version>
+	<Version nr="104">
+      <CreateDate>2014-02-17</CreateDate>
+    </Version>
+	<Version nr="105">
+      <CreateDate>2014-07-02</CreateDate>
+    </Version>
+	<Version nr="106">
+      <CreateDate>2014-07-10</CreateDate>
+    </Version>
+			<Version nr="107">
+      <CreateDate>2014-10-30</CreateDate>
+    </Version>
+		<Version nr="108">
+      <CreateDate>2014-11-13</CreateDate>
+    </Version>
+		<Version nr="109">
+      <CreateDate>2015-09-23</CreateDate>
+    </Version>
+	<Version nr="110">
+      <CreateDate>2015-12-17</CreateDate>
+    </Version>
+	<Version nr="111">
+      <CreateDate>2016-02-16</CreateDate>
+    </Version>
+	<Version nr="112">
+      <CreateDate>2016-03-31</CreateDate>
+    </Version>
+    <Hooks>
+      <Hook id="140">heidelpay.hook140.php</Hook>
+	  <Hook id="153">heidelpay.hook153.php</Hook>
+    </Hooks>
+    <PaymentMethod>
+      <Method>
+        <Name>Heidelpay Kreditkarte Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>CREDIT_CARD</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_CreditDebitCard.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Kreditkarte</Name>
+          <ChargeName>Kreditkarte</ChargeName>
+          <InfoText>Sicher zahlen per Kreditkarte</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Creditcard</Name>
+          <ChargeName>Creditcard</ChargeName>
+          <InfoText>pay safely with Creditcard</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171744F3D6D155865" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">    
+          <Name>Buchungsmodus</Name>
+          <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.</Description>
+          <ValueName>bookingmode</ValueName>
+					<SelectboxOptions>
+            <Option value="DB" sort="1">Sofortbuchung</Option>
+            <Option value="PA" sort="2">Reservierung</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="CC" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Debitkarte Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>CREDIT_CARD</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_CreditDebitCard.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Debitkarte</Name>
+          <ChargeName>Debitkarte</ChargeName>
+          <InfoText>Sicher zahlen per Debitkarte</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Debitcard</Name>
+          <ChargeName>Debitcard</ChargeName>
+          <InfoText>pay safely with Debitcard</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171744F3D6D155865" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">    
+          <Name>Buchungsmodus</Name>
+          <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.</Description>
+          <ValueName>bookingmode</ValueName>
+					<SelectboxOptions>
+            <Option value="DB" sort="1">Sofortbuchung</Option>
+            <Option value="PA" sort="2">Reservierung</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="DC" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Lastschrift Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_DEBIT</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_DirectDebit.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Lastschrift</Name>
+          <ChargeName>Lastschrift</ChargeName>
+          <InfoText>Sicher zahlen per Lastschrift</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>DirectDebit</Name>
+          <ChargeName>DirectDebit</ChargeName>
+          <InfoText>pay safely with DirectDebit</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171749A60D979B6E4" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="DD" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Sofortüberweisung Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Sofortüberweisung</Name>
+          <ChargeName>Sofortüberweisung</ChargeName>
+          <InfoText>Sicher zahlen per Sofortüberweisung</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>SofortBanking</Name>
+          <ChargeName>SofortBanking</ChargeName>
+          <InfoText>pay safely with SofortBanking</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171749CDAA43365D2" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="SU" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Giropay Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>GIROPAY</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Giropay</Name>
+          <ChargeName>Giropay</ChargeName>
+          <InfoText>Sicher zahlen per Giropay</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Giropay</Name>
+          <ChargeName>Giropay</ChargeName>
+          <InfoText>pay safely with Giropay</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171740166AF277E03" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="GP" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay iDeal Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode>
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_iDealEPS_Bank.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>iDeal</Name>
+          <ChargeName>iDeal</ChargeName>
+          <InfoText>Sicher zahlen per iDeal</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>iDeal</Name>
+          <ChargeName>iDeal</ChargeName>
+          <InfoText>pay safely with iDeal</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171744B56E61281E5" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="IDL" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay EPS Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode>
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>EPS</Name>
+          <ChargeName>EPS</ChargeName>
+          <InfoText>Sicher zahlen per EPS</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>EPS</Name>
+          <ChargeName>EPS</ChargeName>
+          <InfoText>pay safely with EPS</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="EPS" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Przelewy24 Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode>
+        <PreOrder>0</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Przelewy24</Name>
+          <ChargeName>Przelewy24</ChargeName>
+          <InfoText>Sicher zahlen per Przelewy24</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Przelewy24</Name>
+          <ChargeName>Przelewy24</ChargeName>
+          <InfoText>pay safely with Przelewy24</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="P24" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay PostFinance Card Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode>
+        <PreOrder>0</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>PostFinanceCard</Name>
+          <ChargeName>PostFinanceCard</ChargeName>
+          <InfoText>Sicher zahlen per PostFinance Card</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>PostFinanceCard</Name>
+          <ChargeName>PostFinanceCard</ChargeName>
+          <InfoText>pay safely with PostFinanceCard</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="PFC" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay PostFinance EFinance Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_E_BANKING</TSCode>
+        <PreOrder>0</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>PostFinanceEFinance</Name>
+          <ChargeName>PostFinanceEFinance</ChargeName>
+          <InfoText>Sicher zahlen per PostFinance EFinance</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>PostFinanceEFinance</Name>
+          <ChargeName>PostFinanceEFinance</ChargeName>
+          <InfoText>pay safely with PostFinanceEFinance</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="PFE" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay PayPal Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>PAYPAL</TSCode> 
+        <PreOrder>0</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>PayPal</Name>
+          <ChargeName>PayPal</ChargeName>
+          <InfoText>Sicher zahlen per PayPal</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>PayPal</Name>
+          <ChargeName>PayPal</ChargeName>
+          <InfoText>pay safely with PayPal</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171749A60D979B6E4" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+		 <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">    
+          <Name>Buchungsmodus</Name>
+          <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.</Description>
+          <ValueName>bookingmode</ValueName>
+					<SelectboxOptions>
+            <Option value="DB" sort="1">Sofortbuchung</Option>
+            <Option value="PA" sort="2">Reservierung</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="VA" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+   
+      <Method>
+        <Name>Heidelpay Rechnung Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>1</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>INVOICE</TSCode>
+        <PreOrder>1</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Rechnungskauf</Name>
+          <ChargeName>Rechnung</ChargeName>
+          <InfoText>Sicher bezahlen per Rechnungskauf</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Invoice</Name>
+          <ChargeName>Invoice</ChargeName>
+          <InfoText>pay safely with Invoice</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171749A60D979B6E4" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="IV" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+  
+  	 <Method>
+        <Name>Heidelpay Vorkasse Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>1</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>PREPAYMENT</TSCode> 
+        <PreOrder>1</PreOrder> 
+        <Soap>0</Soap>
+        <Curl>1</Curl> 
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Vorkasse</Name>
+          <ChargeName>Vorkasse</ChargeName>
+          <InfoText>Einfach zahlen per Vorkasse</InfoText>
+        </MethodLanguage>
+       <MethodLanguage iso="ENG">
+         <Name>Prepayment</Name>
+         <ChargeName>Prepayment</ChargeName>
+         <InfoText>pay easily with Prepayment</InfoText>
+       </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC8142C5A171749A60D979B6E4" sort="3" conf="Y">    
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">    
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+					<SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+		<Setting type="text" initialValue="PP" sort="3" conf="Y">    
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Santander Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>1</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>INVOICE</TSCode>
+        <PreOrder>1</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_Santander.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Santander</Name>
+          <ChargeName>Santander</ChargeName>
+          <InfoText>Sicher zahlen per Santander Rechnungskauf</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>Santander</Name>
+          <ChargeName>Santander</ChargeName>
+          <InfoText>pay safely with Santander Invoice</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC81856CAD6D8E07858ACD6CFB" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="SA" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+      <Method>
+        <Name>Heidelpay Gesicherte Rechnung Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>1</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>INVOICE</TSCode>
+        <PreOrder>1</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_InvoiceSec.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Gesicherte Rechnung</Name>
+          <ChargeName>Gesicherte Rechnung</ChargeName>
+          <InfoText>Einfach zahlen per gesicherten Rechnungskauf</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>SecuredInvoice</Name>
+          <ChargeName>SecuredInvoice</ChargeName>
+          <InfoText>pay easily with SecuredInvoice</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC81856CAD6D8E05CDDE7E2AC8" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="IVPG" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+
+      <Method>
+        <Name>Heidelpay Gesicherte Lastschrift Plugin</Name>
+        <PictureURL>template/heidelpay.png</PictureURL>
+        <Sort>3</Sort>
+        <SendMail>0</SendMail>
+        <Provider>Heidelpay</Provider>
+        <TSCode>DIRECT_DEBIT</TSCode>
+        <PreOrder>0</PreOrder>
+        <Soap>0</Soap>
+        <Curl>1</Curl>
+        <Sockets>0</Sockets>
+        <ClassFile>heidelpay_standard.class.php</ClassFile>
+        <ClassName>heidelpay_standard</ClassName>
+        <TemplateFile>template/heidelpay_DirectDebit.tpl</TemplateFile>
+        <MethodLanguage iso="GER">
+          <Name>Gesicherte Lastschrift</Name>
+          <ChargeName>Gesicherte Lastschrift</ChargeName>
+          <InfoText>Sicher zahlen per gesicherte Lastschrift</InfoText>
+        </MethodLanguage>
+        <MethodLanguage iso="ENG">
+          <Name>SecuredDirectDebit</Name>
+          <ChargeName>SecuredDirectDebit</ChargeName>
+          <InfoText>pay safely with SecuredDirectDebit</InfoText>
+        </MethodLanguage>
+        <Setting type="text" initialValue="31HA07BC81856CAD6D8E0B3A3100FBA3" sort="3" conf="Y">
+          <Name>Channel</Name>
+          <Description>Transaction Channel ID:</Description>
+          <ValueName>channel</ValueName>
+        </Setting>
+        <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
+          <Name>Transaktionsmodus</Name>
+          <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
+          <ValueName>transmode</ValueName>
+          <SelectboxOptions>
+            <Option value="LIVE" sort="1">LIVE</Option>
+            <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
+          </SelectboxOptions>
+        </Setting>
+        <Setting type="text" initialValue="DDPG" sort="3" conf="Y">
+          <Name>Payment Code</Name>
+          <Description>Code ID der Paymentmethode</Description>
+          <ValueName>paycode</ValueName>
+        </Setting>
+      </Method>
+
+    </PaymentMethod>
+
+
+	<Adminmenu>
+			<Settingslink sort="1">
+        <Name>Einstellungen</Name>
+        <Setting type="text" initialValue="Y" sort="1" conf="N">    
+          <Name>Heidelpay Einstellungen</Name>
+          <Description></Description>
+          <ValueName>heidelpay_headline</ValueName>
+        </Setting>
+				<Setting type="selectbox" initialValue="N" sort="2" conf="Y">    
+          <Name>Heidelpay aktivieren</Name>
+          <Description>Soll Heidelpay aktiviert werden?</Description>
+          <ValueName>heidelpay_aktiv</ValueName>
+					<SelectboxOptions>
+            <Option value="Y" sort="1">Ja</Option>
+            <Option value="N" sort="2">Nein</Option>
+          </SelectboxOptions>
+        </Setting>
+				<Setting type="text" initialValue="31HA07BC8142C5A171745D00AD63D182" sort="3" conf="Y">    
+          <Name>Security Sender</Name>
+          <Description>Sender ID:</Description>
+          <ValueName>sender</ValueName>
+        </Setting>
+        <Setting type="text" initialValue="31ha07bc8142c5a171744e5aef11ffd3" sort="3" conf="Y">    
+          <Name>User ID</Name>
+          <Description>User Login ID:</Description>
+          <ValueName>user</ValueName>
+        </Setting>
+        <Setting type="text" initialValue="93167DE7" sort="3" conf="Y">    
+          <Name>Password</Name>
+          <Description>User Password:</Description>
+          <ValueName>pass</ValueName>
+        </Setting>
+		<Setting type="text" initialValue="secretPhrase" sort="3" conf="Y">    
+          <Name>Secret</Name>
+          <Description>Secret:</Description>
+          <ValueName>secret</ValueName>
+        </Setting>
+      </Settingslink>
+		</Adminmenu>
+
+      <Locales>
+        <Variable>
+          <Name>hp_paybutton</Name>
+          <Description>Beschriftung des heidelpay Zahlungsbuttons</Description>
+          <VariableLocalized iso="GER">Jetzt zahlen</VariableLocalized>
+          <VariableLocalized iso="ENG">Pay now</VariableLocalized>
+        </Variable>
+
+
+        <Variable>
+          <Name>hp_holderlabel</Name>
+          <Description>Label Kontoinhaber</Description>
+          <VariableLocalized iso="GER">Kontoinhaber</VariableLocalized>
+          <VariableLocalized iso="ENG">Holder</VariableLocalized>
+        </Variable>
+
+        <Variable>
+          <Name>hp_birthdatelabel</Name>
+          <Description>Label Geburtsdatum</Description>
+          <VariableLocalized iso="GER">Geburtsdatum</VariableLocalized>
+          <VariableLocalized iso="ENG">Birthdate</VariableLocalized>
+        </Variable>
+
+        <Variable>
+          <Name>hp_paytext</Name>
+          <Description>Text zur Durchführung des Bezahlprozesses</Description>
+          <VariableLocalized iso="GER">Bitte vervollständigen Sie die unten aufgeführten Daten und schließen Sie den Bestellprozess ab.</VariableLocalized>
+          <VariableLocalized iso="ENG">Please complete the following data and complete the order process.</VariableLocalized>
+        </Variable>
+
+
+        <Variable>
+          <Name>hp_privacypolicylabel</Name>
+          <Description>Label der Datenschutzerklärung</Description>
+          <VariableLocalized iso="GER">Datenschutzerklärung</VariableLocalized>
+          <VariableLocalized iso="ENG">Privacy Policy</VariableLocalized>
+        </Variable>
+
+      </Locales>
+		
+
+	</Install>	
+</jtlshop3plugin>
