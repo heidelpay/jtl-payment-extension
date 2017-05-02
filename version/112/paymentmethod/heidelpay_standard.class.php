@@ -13,7 +13,7 @@
  */
 include_once(PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php');
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-
+require_once(PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php");
 
 /*
  * Heidelpay
@@ -21,10 +21,14 @@ require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 
 class heidelpay_standard extends ServerPaymentMethod
 {
-    public $paymenObject = null;
+    public $paymentObject = null;
     public $pluginName = "heidelpay_standard";
 
-
+    /**
+     * Initial function
+     *
+     * @param int $nAgainCheckout
+     */
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
@@ -89,49 +93,52 @@ class heidelpay_standard extends ServerPaymentMethod
         switch ($paymentMethodPrefix) {
 
             case 'HPCC':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\CreditCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\CreditCardPaymentMethod();
                 break;
             case 'HPDC':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\DebitCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DebitCardPaymentMethod();
                 break;
             case 'HPDD':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitPaymentMethod();
                 break;
             case 'HPSU':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\SofortPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\SofortPaymentMethod();
                 break;
             case 'HPGP':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\GiropayPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\GiropayPaymentMethod();
                 break;
             case 'HPIDL':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\IDealPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\IDealPaymentMethod();
                 break;
             case 'HPEPS':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\EPSPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\EPSPaymentMethod();
                 break;
             case 'HPVA':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\PayPalPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PayPalPaymentMethod();
                 break;
             case 'HPP24':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\Przelewy24PaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\Przelewy24PaymentMethod();
                 break;
             case 'HPPFC':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceCardPaymentMethod();
                 break;
             case 'HPPFE':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceEFinancePaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceEFinancePaymentMethod();
                 break;
             case 'HPPP':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\PrepaymentPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PrepaymentPaymentMethod();
+                break;
+            case 'HPIV':
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\InvoicePaymentMethod();
                 break;
             case 'HPSA':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\SantanderInvoicePaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\SantanderInvoicePaymentMethod();
                 break;
             case 'HPDDPG':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
                 break;
             case 'HPIVPG':
-                $this->paymenObject = new Heidelpay\PhpApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
                 break;
         }
     }
@@ -140,9 +147,9 @@ class heidelpay_standard extends ServerPaymentMethod
      * Sets payment template depending on chosen payment method
      *
      * @param $paymentMethodPrefix
-     * @param $oPlugin
+     *
      */
-    public function setPaymentTemplate($paymentMethodPrefix, $oPlugin)
+    public function setPaymentTemplate($paymentMethodPrefix)
     {
         global $smarty;
 
@@ -157,7 +164,7 @@ class heidelpay_standard extends ServerPaymentMethod
             case 'HPDD':
                 $smarty->assign('holder_label', $this->getHolderLabel());
                 $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
-                $smarty->assign('action_url', $this->paymenObject->getResponse()->getPaymentFormUrl());
+                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
                 break;
             case 'HPDDPG':
             case 'HPIVPG':
@@ -168,30 +175,30 @@ class heidelpay_standard extends ServerPaymentMethod
                 $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
                 $smarty->assign('is_PG', true);
                 $smarty->assign('birthdate', str_replace('.', '-', $_SESSION['Kunde']->dGeburtstag));
-                $smarty->assign('action_url', $this->paymenObject->getResponse()->getPaymentFormUrl());
+                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
                 break;
             case 'HPIDL':
             case 'HPEPS':
-                $smarty->assign('action_url', $this->paymenObject->getResponse()->getPaymentFormUrl());
-                $smarty->assign('account_country', $this->paymenObject->getResponse()->getConfig()->getBankCountry());
-                $smarty->assign('account_bankname', $this->paymenObject->getResponse()->getConfig()->getBrands());
+                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
+                $smarty->assign('account_country', $this->paymentObject->getResponse()->getConfig()->getBankCountry());
+                $smarty->assign('account_bankname', $this->paymentObject->getResponse()->getConfig()->getBrands());
                 break;
             case 'HPSA':
                 $smarty->assign('birthdate_label', $this->getBirthdateLabel());
                 $smarty->assign('privatepolicy_label', $this->getPrivatePolicyLabel());
-                $smarty->assign('action_url', $this->paymenObject->getResponse()->getPaymentFormUrl());
+                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
                 $smarty->assign('salutation', $this->getSalutationArray());
                 $smarty->assign('salutation_pre', $this->getSalutation());
                 $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
                 $smarty->assign('birthdate', str_replace('.', '-', $_SESSION['Kunde']->dGeburtstag));
-                $optinText = $this->paymenObject->getResponse()->getConfig()->getOptinText();
+                $optinText = $this->paymentObject->getResponse()->getConfig()->getOptinText();
                 $smarty->assign('optin', utf8_decode($optinText['optin']));
                 $smarty->assign('privacy_policy', utf8_decode($optinText['privacy_policy']));
                 break;
 
 
             default:
-                $this->redirect($this->paymenObject->getResponse()->getPaymentFormUrl());
+                $this->redirect($this->paymentObject->getResponse()->getPaymentFormUrl());
 
         }
     }
@@ -257,7 +264,7 @@ class heidelpay_standard extends ServerPaymentMethod
      * @param $oPlugin
      * @return bool true = sandbox mode active, false = live mode active (productive system)
      */
-    public function getTransactionMode($oPlugin, $currentPaymentMethod)
+    public function isSandboxMode($oPlugin, $currentPaymentMethod)
     {
         if ($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_transmode'] == 'LIVE') {
             return false;
@@ -268,7 +275,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
 
     /**
-     * gets salutation from session for payment
+     * Gets salutation from session for payment
      *
      * @return string 'MR' or 'MRS' depending on the salutation in session
      */
@@ -294,7 +301,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
 
     /**
-     * creates salutation array for template depending on session language
+     * Creates salutation array for template depending on session language
      *
      * @return array with salutation options
      */
@@ -309,7 +316,11 @@ class heidelpay_standard extends ServerPaymentMethod
         return $salutationArray;
     }
 
-
+    /**
+     * Gets label on pay button depending on selected language
+     *
+     * @return string with text for pay button
+     */
     public function getPayButtonLabel()
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
@@ -321,6 +332,11 @@ class heidelpay_standard extends ServerPaymentMethod
         return $payButtonLabel;
     }
 
+    /**
+     * Gets label for holder depending on selected language
+     *
+     * @return string with text for holder label
+     */
     public function getHolderLabel()
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
@@ -332,6 +348,11 @@ class heidelpay_standard extends ServerPaymentMethod
         return $holderLabel;
     }
 
+    /**
+     * Gets label for birthdate depending on selected language
+     *
+     * @return string with text for birthdate label
+     */
     public function getBirthdateLabel()
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
@@ -343,6 +364,11 @@ class heidelpay_standard extends ServerPaymentMethod
         return $birthdateLabel;
     }
 
+    /**
+     * Gets payment text depending on selected language
+     *
+     * @return string with payment text
+     */
     public function getPayText()
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
@@ -354,6 +380,12 @@ class heidelpay_standard extends ServerPaymentMethod
         return $payText;
     }
 
+    /**
+     * Gets private policy depending on language
+     *
+     * @param $oPlugin
+     * @return mixed text with private policy
+     */
     public function getPrivatePolicyLabel($oPlugin)
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
@@ -365,12 +397,24 @@ class heidelpay_standard extends ServerPaymentMethod
         return $privatePolicyLabel;
     }
 
+    /**
+     * Get booking mode
+     *
+     * @param $oPlugin
+     * @param $currentPaymentMethod
+     * @return mixed returns booking mode
+     */
     public function getBookingMode($oPlugin, $currentPaymentMethod)
     {
         $bookingMode = $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_bookingmode'];
         return $bookingMode;
     }
 
+    /**
+     * Gets payment frame origin
+     *
+     * @return string url with the origin of the payment frame
+     */
     public function getPaymentFrameOrigin()
     {
         $parse_url = parse_url(Shop::getURL());
@@ -379,7 +423,9 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
-     * @return string
+     * Gets language code depending on language in session
+     *
+     * @return string language code
      */
     public function getLanguageCode()
     {
@@ -388,7 +434,13 @@ class heidelpay_standard extends ServerPaymentMethod
         return $language;
     }
 
-    // sets Short-ID as comment in Database
+    /**
+     * Sets Short-ID in database as comment for the order
+     *
+     * @param $shortId
+     * @param $orderId
+     * @return bool
+     */
     public function setShortId($shortId, $orderId)
     {
         (preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId)) ? $shortId : false;
@@ -403,6 +455,12 @@ class heidelpay_standard extends ServerPaymentMethod
         $GLOBALS ["DB"]->executeQueryPrepared($sql, array($shortId, $orderId), 3);
     }
 
+    /**
+     * Sets payment information as comment in database
+     *
+     * @param $post response form payment
+     * @param $orderId
+     */
     public function setPayInfo($post, $orderId)
     {
         $bookingtext= 'Bitte überweisen Sie uns den Betrag von '.$post['PRESENTATION_AMOUNT'] .' '.$post['PRESENTATION_CURRENCY'].' nach erhalt der Ware auf folgendes Konto:
@@ -422,29 +480,35 @@ class heidelpay_standard extends ServerPaymentMethod
         $GLOBALS ["DB"]->executeQueryPrepared($sql, array(utf8_decode($bookingtext), $orderId), 3);
     }
 
-// generates Hash for creterion secret with secretPhrase and orderID
+    /**
+     * generates hash for criterion secret with secretPhrase and orderID
+     *
+     * @param $secret secret phrase from backend
+     * @param $orderId
+     * @return string hashed secret string
+     */
     public function getHash($secret, $orderId)
     {
         return hash('sha256', $secret . $orderId);
     }
 
-
-    public function getPlugin($currentPaymentMethod)
+    /**
+     * returns plugin depending on current payment method
+     *
+     * @param $moduleID
+     * @return bool|Plugin
+     */
+    public function getPlugin($moduleID)
     {
-        $kPlugin = gibkPluginAuscModulId($currentPaymentMethod);
+        $kPlugin = gibkPluginAuscModulId($moduleID);
         if ($kPlugin > 0) {
             $oPlugin = new Plugin($kPlugin);
         } else {
             return false;
         }
-        $actZVPrefix = 'kPlugin_' . $oPlugin->kPlugin . '_';
-        $actZV = str_replace($actZVPrefix, '', $currentPaymentMethod);
 
         return $oPlugin;
     }
-
-
-
 
     /**
      * Redirects customer
@@ -455,8 +519,49 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
+     * billing and shipping address has to be equal
+     *
      * @param $order
      * @return bool
+     */
+    public function isEqualAddress($order)
+    {
+        $keyList = array(
+            'cVorname',
+            'cNachname',
+            'cAnrede',
+            'cFirma',
+            'cStrasse',
+            'cHausnummer',
+            'cOrt',
+            'cPLZ',
+            'cLand'
+        );
+        foreach ($keyList as $key) {
+            // key exists only in billing address
+            if (array_key_exists($key, (array)$order->oRechnungsadresse) and !array_key_exists($key, (array)$order->Lieferadresse)) {
+                return false;
+            }
+            // key exists only in delivery address
+            if (array_key_exists($key, (array)$order->Lieferadresse) and !array_key_exists($key, (array)$order->oRechnungsadresse)) {
+                return false;
+            }
+            // merge keys
+            if (array_key_exists($key, (array)$order->Lieferadresse) and array_key_exists($key, (array)$order->oRechnungsadresse)) {
+                // return false on unmatched
+                if ($order->Lieferadresse->$key != $order->oRechnungsadresse->$key) {
+                    return false;
+                }
+            }
+        }
+        // if everything is equal return true
+        return true;
+    }
+
+    /**
+     * Prepares process for payment
+     *
+     * @param $order
      */
     public function preparePaymentProcess($order)
     {
@@ -490,80 +595,112 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->setPaymentObject($paymentMethodPrefix);
 
 
-        $this->paymenObject->getRequest()->authentification($oPlugin->oPluginEinstellungAssoc_arr ['sender'], $oPlugin->oPluginEinstellungAssoc_arr ['user'], $oPlugin->oPluginEinstellungAssoc_arr ['pass'], $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'], $this->getTransactionMode($oPlugin, $currentPaymentMethod));
+        $this->paymentObject->getRequest()->authentification(
+            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
+            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod));
 
-        $this->paymenObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
-        $this->paymenObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
+        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
+        $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
 
-        $this->paymenObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
+        $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
 
-        $this->paymenObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+        $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
 
+
+        if(($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND $this->isEqualAddress($order) == false){
+
+            $this->redirect('warenkorb.php?hperroradd=1');
+
+           }
+
+        if(($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND $_SESSION['Kunde']->cFirma != null){
+
+            $this->redirect('warenkorb.php?hperrorcom=1');
+
+        }
 
         switch ($paymentMethodPrefix) {
             case 'HPCC':
             case 'HPDC':
                 if ($this->getBookingMode($oPlugin, $currentPaymentMethod) == 'DB') {
-                    $this->paymenObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
+                    $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
                 } else {
-                    $this->paymenObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
+                    $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
                 }
                 break;
             case 'HPDD':
-                $this->paymenObject->debit();
+                $this->paymentObject->debit();
                 break;
             case 'HPVA':
                 if ($this->getBookingMode($oPlugin, $currentPaymentMethod) == 'DB') {
-                    $this->paymenObject->debit();
+                    $this->paymentObject->debit();
                     break;
                 }
             default:
-                $this->paymenObject->authorize();
+                $this->paymentObject->authorize();
                 break;
 
 
         }
 
-        if ($this->paymenObject->getResponse()->isError()) {
-            $errorCode = $this->paymenObject->getResponse()->getError();
+
+
+        if ($this->paymentObject->getResponse()->isError()) {
+            $errorCode = $this->paymentObject->getResponse()->getError();
             $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
             return;
         }
 
         $this->setLocal();
-        $this->setPaymentTemplate($paymentMethodPrefix, $oPlugin);
+        $this->setPaymentTemplate($paymentMethodPrefix);
     }
 
+    /**
+     * Handles notification and redirects customer
+     *
+     * @param $order
+     * @param $paymentHash
+     * @param $post
+     */
     public function handleNotification($order, $paymentHash, $post)
     {
-        global $bestellung;
 
         $this->init();
 
 
-        $HeidelpayResponse = new  Heidelpay\PhpApi\Response($_POST);
-
-        $oPlugin = $this->getPlugin($_POST['CRITERION_PAYMETHOD']);
-
-        $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
-
-        $identificationTransactionId = $HeidelpayResponse->getIdentification()->getTransactionId();
+        $HeidelpayResponse = new  Heidelpay\PhpApi\Response($post);
 
 
-        try {
-            $HeidelpayResponse->verifySecurityHash($secretPass, $identificationTransactionId);
-        } catch (\Exception $e) {
-            /* If the verification does not match this can mean some kind of manipulation or
-             * miss configuration. So you can log $e->getMessage() for debugging.*/
+        if (array_key_exists('CRITERION_PAYMETHOD', $post)){
 
-            $callers = debug_backtrace();
-            Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " . $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
-            exit();
+            $oPlugin = $this->getPlugin($post['CRITERION_PAYMETHOD']);
 
-            return;
+            $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
+
+            $identificationTransactionId = $HeidelpayResponse->getIdentification()->getTransactionId();
+
+
+            try {
+                $HeidelpayResponse->verifySecurityHash($secretPass, $identificationTransactionId);
+            } catch (\Exception $e) {
+                /* If the verification does not match this can mean some kind of manipulation or
+                 * miss configuration. So you can log $e->getMessage() for debugging.*/
+
+
+                $callers = debug_backtrace();
+                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " . $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
+                exit();
+
+            }
+
+        }
+        else{
+            $this->redirect('bestellvorgang.php');
         }
 
-        $orderID = (int)preg_replace('/_\d*/', '', $_POST['IDENTIFICATION_TRANSACTIONID']);
 
         if ($HeidelpayResponse->isSuccess()) {
 
@@ -573,12 +710,7 @@ class heidelpay_standard extends ServerPaymentMethod
             unset($_SESSION ['heidelpayLastError']); // damit ggf. vorherige Fehler geloescht werden
             if ($this->verifyNotification($order, $paymentHash, $post)) {
 
-
-                /* zusatz Email mit Mandatsreferenz-ID für Lastschrift */
-                $firma = $GLOBALS ["DB"]->executeQuery("select * from tfirma", 1);
-                $einstellungen = getEinstellungen(array(CONF_EMAILS));
                 $payCode = explode('.', $post ['PAYMENT_CODE']);
-
 
                 if ((strtoupper($payCode [0]) == 'DD') && (!isset($post ['TRANSACTION_SOURCE']))) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
@@ -606,6 +738,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($post ['TRANSACTION_SOURCE']))) {
                     $this->setPayInfo($post, $order->cBestellNr);
                 }
+                $incomingPayment = null;
                 $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
                 $incomingPayment->cISO = $order->Waehrung->cISO;
                 $this->addIncomingPayment($order, $incomingPayment);
@@ -636,8 +769,6 @@ class heidelpay_standard extends ServerPaymentMethod
             }
 
             /* redirect customer to success page */
-
-
             echo $this->getReturnURL($order);
 
             /*save order */
@@ -663,51 +794,45 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
+     * Verifies notification
      *
      * @return boolean
      * @param Bestellung $order
      * @param array $post
      */
-    public function verifyNotification($order, $paymentHash, $post)
+    public function verifyNotification($order, $post)
     {
-        extract($post);
 
-        if ($CLEARING_AMOUNT != number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '')) {
+        if ($post['CLEARING_AMOUNT'] != number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '')) {
             return false;
         }
 
-        if ($CLEARING_CURRENCY != $order->Waehrung->cISO) {
+        if ($post['CLEARING_CURRENCY'] != $order->Waehrung->cISO) {
             return false;
         }
         return true;
     }
 
-    public function finalizeOrder($order, $hash, $post)
+    public function finalizeOrder($order, $hash, $args)
     {
         global $cEditZahlungHinweis;
-        extract($post);
 
-        if ($PROCESSING_RESULT == "ACK") {
+        if ($args['PROCESSING_RESULT'] == "ACK") {
             return true;
         } else {
-            $cEditZahlungHinweis = $_POST ['PROCESSING_RETURN'];
+            $cEditZahlungHinweis = $args['PROCESSING_RETURN'];
             return false;
         }
     }
 
-    public function equalAddress($order)/*{{{*/
-    {
-        if ($order->Lieferadresse == 0) {
-            return true;
-        } // Liefer und Rechnungsadresse gleich
-        $diffs = 0;
-        foreach ($order->oRechnungsadresse as $k => $v) {
-            if ($order->Lieferadresse->$k != $v) {
-                $diffs++;
-            }
-        }
-        return $diffs == 0;
-    } /* }}} */
+
+    /**
+     * prepares payment text
+     *
+     * @param $res
+     * @param string $lang
+     * @return string
+     */
     public function prepaymentText($res, $lang = 'EN')
     {
         if ($lang == 'DE') {
