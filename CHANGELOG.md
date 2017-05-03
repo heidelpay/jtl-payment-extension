@@ -24,5 +24,5 @@ All former payment methods were moved to white label and new payment methods wer
 
 ### Removed
 - sql folder
-- payment method Billsafe
+- deprecated payment method Billsafe
 - unused code 
