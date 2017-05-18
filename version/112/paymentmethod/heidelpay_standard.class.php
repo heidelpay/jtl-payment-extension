@@ -665,18 +665,18 @@ class heidelpay_standard extends ServerPaymentMethod
      * @param $paymentHash
      * @param $post
      */
-    public function handleNotification($order, $paymentHash, $post)
+    public function handleNotification($order, $paymentHash, $args)
     {
 
         $this->init();
 
 
-        $HeidelpayResponse = new  Heidelpay\PhpApi\Response($post);
+        $HeidelpayResponse = new  Heidelpay\PhpApi\Response($args);
 
 
-        if (array_key_exists('CRITERION_PAYMETHOD', $post)){
+        if (array_key_exists('CRITERION_PAYMETHOD', $args)){
 
-            $oPlugin = $this->getPlugin($post['CRITERION_PAYMETHOD']);
+            $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
 
             $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
 
@@ -698,8 +698,9 @@ class heidelpay_standard extends ServerPaymentMethod
 
         }
         else{
+
             $this->redirect('bestellvorgang.php');
-        }
+       }
 
 
         if ($HeidelpayResponse->isSuccess()) {
@@ -708,35 +709,54 @@ class heidelpay_standard extends ServerPaymentMethod
 
 
             unset($_SESSION ['heidelpayLastError']); // damit ggf. vorherige Fehler geloescht werden
-            if ($this->verifyNotification($order, $paymentHash, $post)) {
+            if ($this->verifyNotification($order, $paymentHash, $args)) {
 
-                $payCode = explode('.', $post ['PAYMENT_CODE']);
+                $payCode = explode('.', $args ['PAYMENT_CODE']);
 
-                if ((strtoupper($payCode [0]) == 'DD') && (!isset($post ['TRANSACTION_SOURCE']))) {
+                if ((strtoupper($payCode [0]) == 'DD') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
                     if ($language == 'DE') {
                         include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ddMail_de.tpl');
                     } else {
                         include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ddMail_en.tpl');
                     }
-                    $repl = array('{ACC_IBAN}' => $post ['ACCOUNT_IBAN'], '{ACC_BIC}' => $post ['ACCOUNT_BIC'], '{ACC_IDENT}' => $post ['ACCOUNT_IDENTIFICATION'], '{AMOUNT}' => $post ['PRESENTATION_AMOUNT'], '{CURRENCY}' => $post ['PRESENTATION_CURRENCY'], '{HOLDER}' => $post ['ACCOUNT_HOLDER']);
-                    if ((isset($post ['IDENTIFICATION_CREDITOR_ID']) && ($post ['IDENTIFICATION_CREDITOR_ID'] != ''))) {
-                        $repl ['{IDENT_CREDITOR}'] = $post ['IDENTIFICATION_CREDITOR_ID'];
+
+                    $repl = array(
+                        '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
+                        '{ACC_BIC}' => $args ['ACCOUNT_BIC'],
+                        '{ACC_IDENT}' => $args ['ACCOUNT_IDENTIFICATION'],
+                        '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
+                        '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
+                        '{HOLDER}' => $args ['ACCOUNT_HOLDER']);
+
+                    if ((isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != ''))) {
+                        $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
                     } else {
                         $repl ['{IDENT_CREDITOR}'] = '-';
                     }
+
                     mail($order->oRechnungsadresse->cMail, constant('DD_MAIL_SUBJECT'), strtr(constant('DD_MAIL_TEXT'), $repl), constant('DD_MAIL_HEADERS'));
-                } elseif ((strtoupper($payCode [0]) == 'PP') && (!isset($post ['TRANSACTION_SOURCE']))) {
+
+                } elseif ((strtoupper($payCode [0]) == 'PP') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
                     if ($language == 'DE') {
                         include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ppMail_de.tpl');
                     } else {
                         include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ppMail_en.tpl');
                     }
-                    $repl = array('{ACC_IBAN}' => $post ['CONNECTOR_ACCOUNT_IBAN'], '{ACC_BIC}' => $post ['CONNECTOR_ACCOUNT_BIC'], '{ACC_OWNER}' => $post ['CONNECTOR_ACCOUNT_HOLDER'], '{AMOUNT}' => $post ['PRESENTATION_AMOUNT'], '{CURRENCY}' => $post ['PRESENTATION_CURRENCY'], '{USAGE}' => $post ['IDENTIFICATION_SHORTID']);
+
+                    $repl = array(
+                        '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
+                        '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
+                        '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
+                        '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
+                        '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
+                        '{USAGE}' => $args ['IDENTIFICATION_SHORTID']);
+
                     mail($order->oRechnungsadresse->cMail, constant('PP_MAIL_SUBJECT'), strtr(constant('PP_MAIL_TEXT'), $repl), constant('PP_MAIL_HEADERS'));
-                } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($post ['TRANSACTION_SOURCE']))) {
-                    $this->setPayInfo($post, $order->cBestellNr);
+
+                } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
+                    $this->setPayInfo($args, $order->cBestellNr);
                 }
                 $incomingPayment = null;
                 $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
@@ -765,7 +785,7 @@ class heidelpay_standard extends ServerPaymentMethod
                         Jtllog::write($logData, 1, false);
                     }
                 }
-                $this->updateNotificationID($order->kBestellung, $post ['IDENTIFICATION_UNIQUEID']);
+                $this->updateNotificationID($order->kBestellung, $args ['IDENTIFICATION_UNIQUEID']);
             }
 
             /* redirect customer to success page */
@@ -773,23 +793,15 @@ class heidelpay_standard extends ServerPaymentMethod
 
             /*save order */
         } elseif ($HeidelpayResponse->isError()) {
+
             $error = $HeidelpayResponse->getError();
 
-
-            if ($post ['FRONTEND_REQUEST_CANCELLED'] != 'true') {
-                $callers = debug_backtrace();
-                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Order " . $post ['IDENTIFICATION_TRANSACTIONID'] . " (Short-ID: " . $post ['IDENTIFICATION_SHORTID'] . ") failed because " . $post ['PROCESSING_RETURN'] . " (" . $post ['PROCESSING_RETURN_CODE'] . ")", 2, false, 'Notify');
-            }
-
-
-            if ($post ['FRONTEND_REQUEST_CANCELLED'] != 'true') { // write Short-ID and Unique-ID in comment when txn not cancled by user
-                $this->setShortId('Short-ID: ' . $post ['IDENTIFICATION_SHORTID'] . ', Unique-ID: ' . $post ['IDENTIFICATION_UNIQUEID'], $post ['IDENTIFICATION_TRANSACTIONID']);
-            }
-
-
             echo $this->getReturnURL($order) . '&hperror=' . $error['code'];
+
         } elseif ($HeidelpayResponse->isPending()) {
+
             echo $this->getReturnURL($order);
+
         }
     }
 
@@ -820,7 +832,7 @@ class heidelpay_standard extends ServerPaymentMethod
         if ($args['PROCESSING_RESULT'] == "ACK") {
             return true;
         } else {
-            $cEditZahlungHinweis = $args['PROCESSING_RETURN'];
+            $cEditZahlungHinweis = rawurlencode($args['PROCESSING_RETURN']) . '&hperror=' . $args['PROCESSING_RETURN_CODE'];
             return false;
         }
     }

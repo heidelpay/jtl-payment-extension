@@ -1,7 +1,16 @@
 # Release Notes - heidelpay extension for JTL Shop
 
 ## v112
-17.05.03:
+###17.05.18:
+
+Subversion with Bugfix for Sofort Banking 
+### Fixed
+- blank page at sofort banking if pay type is set to 'pay before end of order' doesn't appear anymore
+
+### Removed
+- unused files 
+
+###17.05.03:
 
 JTL plugin version 112 introduces payment via white label gateway. 
 All former payment methods were moved to white label and new payment methods were added.
