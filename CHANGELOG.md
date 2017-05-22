@@ -1,13 +1,25 @@
 # Release Notes - heidelpay extension for JTL Shop
 
 ## v112
+###17.05.22:
+
+Subversion with fix for 
+
+####Fixed
+- paid status in JTL commodities management system 
+
+Note: Creditcard/Debitcard Reservations will be shown as paid to the customer 
+but not in the CMS since the amount isn't captured with the reservation yet
+
+
+
 ###17.05.18:
 
 Subversion with Bugfix for Sofort Banking 
-### Fixed
+#### Fixed
 - blank page at sofort banking if pay type is set to 'pay before end of order' doesn't appear anymore
 
-### Removed
+#### Removed
 - unused files 
 
 ###17.05.03:
@@ -15,7 +27,7 @@ Subversion with Bugfix for Sofort Banking
 JTL plugin version 112 introduces payment via white label gateway. 
 All former payment methods were moved to white label and new payment methods were added.
 
-### Added
+#### Added
 - version folder 112
 - new payment method Przelewy24
 - new payment method Postfinance eFinance
@@ -24,14 +36,14 @@ All former payment methods were moved to white label and new payment methods wer
 - new payment method invoice secured
 - new payment method direct debit secured
 
-### Changed
+#### Changed
 - updated version to 112
 - existing payment methods now running via white label gateway 
 
-### Fixed
+#### Fixed
 - notice 'not supported for JTL4' doesn't appear anymore 
 
-### Removed
+#### Removed
 - sql folder
 - deprecated payment method Billsafe
 - unused code 

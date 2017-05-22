@@ -663,7 +663,7 @@ class heidelpay_standard extends ServerPaymentMethod
      *
      * @param $order
      * @param $paymentHash
-     * @param $post
+     * @param $args
      */
     public function handleNotification($order, $paymentHash, $args)
     {
@@ -681,6 +681,8 @@ class heidelpay_standard extends ServerPaymentMethod
             $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
 
             $identificationTransactionId = $HeidelpayResponse->getIdentification()->getTransactionId();
+
+
 
 
             try {
@@ -703,15 +705,17 @@ class heidelpay_standard extends ServerPaymentMethod
        }
 
 
+
         if ($HeidelpayResponse->isSuccess()) {
 
             /* save order and transaction result to your database */
 
 
-            unset($_SESSION ['heidelpayLastError']); // damit ggf. vorherige Fehler geloescht werden
-            if ($this->verifyNotification($order, $paymentHash, $args)) {
+            if ($this->verifyNotification($order, $args)) {
+
 
                 $payCode = explode('.', $args ['PAYMENT_CODE']);
+
 
                 if ((strtoupper($payCode [0]) == 'DD') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
@@ -727,7 +731,8 @@ class heidelpay_standard extends ServerPaymentMethod
                         '{ACC_IDENT}' => $args ['ACCOUNT_IDENTIFICATION'],
                         '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
                         '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-                        '{HOLDER}' => $args ['ACCOUNT_HOLDER']);
+                        '{HOLDER}' => $args ['ACCOUNT_HOLDER']
+                        );
 
                     if ((isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != ''))) {
                         $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
@@ -751,19 +756,17 @@ class heidelpay_standard extends ServerPaymentMethod
                         '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
                         '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
                         '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-                        '{USAGE}' => $args ['IDENTIFICATION_SHORTID']);
+                        '{USAGE}' => $args ['IDENTIFICATION_SHORTID']
+                        );
 
                     mail($order->oRechnungsadresse->cMail, constant('PP_MAIL_SUBJECT'), strtr(constant('PP_MAIL_TEXT'), $repl), constant('PP_MAIL_HEADERS'));
 
                 } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $this->setPayInfo($args, $order->cBestellNr);
                 }
-                $incomingPayment = null;
-                $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
-                $incomingPayment->cISO = $order->Waehrung->cISO;
-                $this->addIncomingPayment($order, $incomingPayment);
 
-                if (strtoupper($payCode [0]) != 'PP' and strtoupper($payCode [0]) != 'IV') { // Nur wenn nicht Vorkasse, Billsafe od. Rechnung
+                if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') { // Nur wenn nicht Vorkasse od. Rechnung
+
                     try {
                         $this->setOrderStatusToPaid($order);
                     } catch (Exception $e) {
@@ -785,7 +788,19 @@ class heidelpay_standard extends ServerPaymentMethod
                         Jtllog::write($logData, 1, false);
                     }
                 }
-                $this->updateNotificationID($order->kBestellung, $args ['IDENTIFICATION_UNIQUEID']);
+
+
+
+               if(strtoupper($payCode [1]) != 'PA' AND strtoupper($payCode [1]) != 'RG')
+               {
+                   $incomingPayment = null;
+                   $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
+                   $incomingPayment->cISO = $order->Waehrung->cISO;
+                   $this->addIncomingPayment($order, $incomingPayment);
+               }
+
+                $this->updateNotificationID($order->kBestellung, $args['IDENTIFICATION_UNIQUEID']);
+
             }
 
             /* redirect customer to success page */
