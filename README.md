@@ -1,3 +1,6 @@
+[![PHP 5.6](https://img.shields.io/badge/php-5.6-blue.svg)](http://www.php.net)
+[![PHP 7.0](https://img.shields.io/badge/php-7.0-blue.svg)](http://www.php.net)
+
 ![Logo](https://dev.heidelpay.de/devHeidelpay_400_180.jpg)
 
 # jtl-payment-extension
@@ -32,11 +35,6 @@ Documentation can be find at https://dev.heidelpay.de/jtl
 
 JTL payment extension requires PHP 5.6 or higher; we recommend using the
 latest stable PHP version whenever possible.
-
-## SECURITY ADVICE
-If you want to store the output of this library into a database or something, please make sure that your
-application takes care of sql injection, cross-site-scripting (xss) and so on. There is no build in protection
-by now.
 
 ## LICENSE
 
