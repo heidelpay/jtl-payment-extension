@@ -19,9 +19,9 @@
             {if isset($birthdate)}
 				<label class="control-label">{$birthdate_label}</label><br/>
                 {assign var=payment_data value=$birthdate}
-                {html_select_date|utf8_encode day_id='Date_Day' month_id='Date_Month' year_id='Date_Year' time=$payment_data start_year='-18' end_year='-100' reverse_years='true' day_value_format='%02d' field_order='DMY'}
+                {html_select_date|utf8_encode day_id='Date_Day' month_id='Date_Month' year_id='Date_Year' time=$payment_data start_year='-18' end_year='-100' reverse_years='true' day_value_format='%02d' month_format='%m' field_order='DMY'}
             {else}
-                {html_select_date|utf8_encode day_id='Date_Day' month_id='Date_Month' year_id='Date_Year' start_year='-18' end_year='-100' reverse_years='true' day_value_format='%02d' field_order='DMY'}
+                {html_select_date|utf8_encode day_id='Date_Day' month_id='Date_Month' year_id='Date_Year' start_year='-18' end_year='-100' reverse_years='true' day_value_format='%02d' month_format='%m' field_order='DMY'}
             {/if}
 
 <br/>

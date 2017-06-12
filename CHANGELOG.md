@@ -1,9 +1,18 @@
 # Release Notes - heidelpay extension for JTL Shop
 
 ## v112
-###17.05.22:
 
-Subversion with fix for 
+
+###17.06.12:
+
+####Fixed
+- problems with umlauts in case of secured invoice
+
+####Changed
+- months will now be displayed in numbers in date picker for secured invoice and direct debit 
+
+
+###17.05.22:
 
 ####Fixed
 - paid status in JTL commodities management system 

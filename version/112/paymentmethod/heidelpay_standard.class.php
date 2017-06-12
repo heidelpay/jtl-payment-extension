@@ -463,7 +463,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function setPayInfo($post, $orderId)
     {
-        $bookingtext= 'Bitte überweisen Sie uns den Betrag von '.$post['PRESENTATION_AMOUNT'] .' '.$post['PRESENTATION_CURRENCY'].' nach erhalt der Ware auf folgendes Konto:
+        $bookingtext= 'Bitte überweisen Sie uns den Betrag von '.$post['PRESENTATION_AMOUNT'] .' '.$post['PRESENTATION_CURRENCY'].' nach Erhalt der Ware auf folgendes Konto:
         
   Kontoinhaber: '.$post['CONNECTOR_ACCOUNT_HOLDER'].'
   IBAN: '.$post['CONNECTOR_ACCOUNT_IBAN'].'
@@ -474,10 +474,10 @@ class heidelpay_standard extends ServerPaymentMethod
 
 
 
-        $sql = 'UPDATE `tbestellung`
-        SET `cKommentar` = ?
-          WHERE `cBestellNr` = ?';
-        $GLOBALS ["DB"]->executeQueryPrepared($sql, array(utf8_decode($bookingtext), $orderId), 3);
+        $sql = 'UPDATE `tbestellung` SET 
+			`cKommentar` ="'.htmlspecialchars(utf8_decode($bookingtext)).'" 
+			WHERE `cBestellNr` ="'.htmlspecialchars($orderId).'";';
+        $GLOBALS ["DB"]->executeQuery($sql,1);
     }
 
     /**
