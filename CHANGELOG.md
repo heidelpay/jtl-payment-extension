@@ -2,6 +2,10 @@
 
 ## v112
 
+###17.07.13:
+
+####Fixed
+- hotfix prepayment and inovice response flow
 
 ###17.06.12:
 

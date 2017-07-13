@@ -42,10 +42,10 @@ abstract class AbstractParameterGroup
     public function set($key, $value)
     {
         $key = strtolower($key);
-        if (property_exists($this, $key)) {
-            $this->$key = $value;
-            return $this;
-        }
+        #if (property_exists($this, $key)) {
+        #    $this->$key = $value;
+        #    return $this;
+        #}
 
         throw new UndefinedPropertyException('Property does not exist: '.$key.' in '. $this->getClassName(), 500);
     }
