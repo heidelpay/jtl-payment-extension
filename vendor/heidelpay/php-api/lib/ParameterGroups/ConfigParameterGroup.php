@@ -1,4 +1,5 @@
 <?php
+
 namespace Heidelpay\PhpApi\ParameterGroups;
 
 /**
@@ -17,42 +18,41 @@ namespace Heidelpay\PhpApi\ParameterGroups;
  */
 class ConfigParameterGroup extends AbstractParameterGroup
 {
-    
     /**
      * Supported bank countries for this payment method
      *
-     * @var string bankcountry
+     * @var string
      */
     public $bankcountry = null;
-    
+
     /**
-     *  Supported brands countries for this payment method
+     * Supported brands countries for this payment method
      *
-     * @var string brands
+     * @var string
      */
     public $brands = null;
 
     /**
-     * optin text for santander invoice
+     * optin text for payment methods like santander and easyCredit
      *
-     * @var string optin text for santander invoice
+     * @var string
      */
     public $optin_text = null;
-        
+
     /**
      * Config bankcountry getter
      *
-     * @return string email
+     * @return string
      */
     public function getBankCountry()
     {
         return json_decode($this->bankcountry, true);
     }
-    
+
     /**
      * Config brands getter
      *
-     * @return string brands
+     * @return string
      */
     public function getBrands()
     {
@@ -60,12 +60,18 @@ class ConfigParameterGroup extends AbstractParameterGroup
     }
 
     /**
-     * Config Option  text getter
+     * Config Optin-text getter
      *
-     * @return array optin text
+     * @return array|string
      */
     public function getOptinText()
     {
-        return json_decode($this->optin_text, true);
+        $result = json_decode($this->optin_text, true);
+
+        if (empty($result)) {
+            return $this->optin_text;
+        }
+
+        return $result;
     }
 }

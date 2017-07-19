@@ -381,6 +381,24 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
+     * gets IP from client
+     *
+     * @return ip address
+     */
+    public function getIp()
+    {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        };
+
+        return $ip;
+    }
+
+    /**
      * Gets private policy depending on language
      *
      * @param $oPlugin
@@ -601,6 +619,10 @@ class heidelpay_standard extends ServerPaymentMethod
             $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
             $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
             $this->isSandboxMode($oPlugin, $currentPaymentMethod));
+
+
+
+        $this->paymentObject->getRequest()->getContact()->set('ip',$this->getIp());
 
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));

@@ -2,6 +2,13 @@
 
 ## v112
 
+###17.07.19:
+
+#####Changed
+
+- added function getIP()
+- updated php-api files
+
 ###17.07.13:
 
 ####Fixed

@@ -1,4 +1,5 @@
 <?php
+
 namespace Heidelpay\PhpApi\ParameterGroups;
 
 /**
@@ -85,12 +86,16 @@ class ConnectorParameterGroup extends AbstractParameterGroup
     public $account_number = null;
 
     /**
+     * @var string account usage
+     */
+    public $account_usage;
+
+    /**
      * Account bank getter
      *
      * @return string account bank
      *
      * @deprecated please use IBan and Bic instead
-
      */
     public function getAccountBank()
     {
@@ -147,5 +152,15 @@ class ConnectorParameterGroup extends AbstractParameterGroup
     public function getAccountNumber()
     {
         return $this->account_number;
+    }
+
+    /**
+     * Returns the Account Usage.
+     *
+     * @return string account usage
+     */
+    public function getAccountUsage()
+    {
+        return $this->account_usage;
     }
 }

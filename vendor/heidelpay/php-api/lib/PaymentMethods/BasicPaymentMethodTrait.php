@@ -1,4 +1,5 @@
 <?php
+
 namespace Heidelpay\PhpApi\PaymentMethods;
 
 use Heidelpay\PhpApi\Exceptions\UndefinedTransactionModeException;
@@ -23,7 +24,6 @@ use Heidelpay\PhpApi\Request as HeidelpayRequest;
  */
 trait BasicPaymentMethodTrait
 {
-
     /**
      * Payment Url of the live payment server
      *
@@ -31,7 +31,7 @@ trait BasicPaymentMethodTrait
      *
      * @var string url for heidelpay api connection real or live system
      */
-    protected $_liveUrl       = 'https://heidelpay.hpcgw.net/ngw/post';
+    protected $_liveUrl = 'https://heidelpay.hpcgw.net/ngw/post';
 
     /**
      * Payment Url of the sandbox payment server
@@ -40,7 +40,7 @@ trait BasicPaymentMethodTrait
      *
      * @var string url for heidelpay api connection sandbox system
      */
-    protected $_sandboxUrl     = 'https://test-heidelpay.hpcgw.net/ngw/post';
+    protected $_sandboxUrl = 'https://test-heidelpay.hpcgw.net/ngw/post';
 
     /**
      * HTTP Adapter for payment connection
@@ -118,7 +118,7 @@ trait BasicPaymentMethodTrait
             return $this->_request = new HeidelpayRequest();
         }
 
-        return  $this->_request;
+        return $this->_request;
     }
 
     /**
@@ -149,7 +149,7 @@ trait BasicPaymentMethodTrait
      */
     public function getAdapter()
     {
-        return  $this->_adapter;
+        return $this->_adapter;
     }
 
     /**
@@ -192,5 +192,28 @@ trait BasicPaymentMethodTrait
             list($this->_responseArray, $this->_response) =
                 $this->getRequest()->send($uri, $this->_requestArray, $this->getAdapter());
         }
+    }
+
+    /**
+     * Returns an array for a json representation.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $return = [];
+        foreach (get_object_vars($this) as $field => $value) {
+            $return[$field] = $value;
+        }
+
+        return $return;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toJson($options = 0)
+    {
+        return json_encode($this->jsonSerialize(), $options);
     }
 }
