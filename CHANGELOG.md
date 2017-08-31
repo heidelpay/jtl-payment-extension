@@ -2,9 +2,15 @@
 
 ## v112
 
+###17.08.31:
+
+####Fixed
+- optimized javascript for safari
+
+
 ###17.07.19:
 
-#####Changed
+####Changed
 
 - added function getIP()
 - updated php-api files
