@@ -156,7 +156,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $smarty->assign('pay_button_label', $this->getPayButtonLabel());
         $smarty->assign('paytext', utf8_decode($this->getPayText()));
 
-        setlocale(LC_TIME, $this->getLanguageCode());
+        #setlocale(LC_TIME, $this->getLanguageCode());
 
         switch ($paymentMethodPrefix) {
             case 'HPCC':
@@ -293,9 +293,9 @@ class heidelpay_standard extends ServerPaymentMethod
     public function setLocal()
     {
         if ($_SESSION ['cISOSprache'] == 'ger') {
-            setlocale(LC_ALL, 'de_DE');
+            #setlocale(LC_ALL, 'de_DE');
         } else {
-            setlocale(LC_ALL, 'en_US');
+            #setlocale(LC_ALL, 'en_US');
         }
     }
 
@@ -626,7 +626,6 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
-
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
 
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
@@ -676,8 +675,22 @@ class heidelpay_standard extends ServerPaymentMethod
             return;
         }
 
-        $this->setLocal();
         $this->setPaymentTemplate($paymentMethodPrefix);
+    }
+
+    /**
+     * Error return url clone from PaymentMethod.class because of bestellabschluss case
+     * @param Bestellung $order
+     * @return string
+     */
+    public function getErrorReturnURL($order)
+    {
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
+
+            return $order->BestellstatusURL;
+        }
+
+        return Shop::getURL() . '/bestellvorgang.php';
     }
 
     /**
@@ -694,7 +707,6 @@ class heidelpay_standard extends ServerPaymentMethod
 
 
         $HeidelpayResponse = new  Heidelpay\PhpApi\Response($args);
-
 
         if (array_key_exists('CRITERION_PAYMETHOD', $args)){
 
@@ -815,7 +827,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
                if(strtoupper($payCode [1]) != 'PA' AND strtoupper($payCode [1]) != 'RG')
                {
-                   $incomingPayment = null;
+                   $incomingPayment = new stdClass();
                    $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
                    $incomingPayment->cISO = $order->Waehrung->cISO;
                    $this->addIncomingPayment($order, $incomingPayment);
@@ -833,7 +845,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
             $error = $HeidelpayResponse->getError();
 
-            echo $this->getReturnURL($order) . '&hperror=' . $error['code'];
+            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'];
 
         } elseif ($HeidelpayResponse->isPending()) {
 
