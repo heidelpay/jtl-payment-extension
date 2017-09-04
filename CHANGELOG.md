@@ -2,6 +2,16 @@
 
 ## v112
 
+###17.09.04
+
+####Fixed
+- remove setlocal
+- add stdclass to handNotification
+- remove unused heidelpay_standard class call from hook 140
+
+####Changed
+- add getErrorReturnURL method to heidelpay_standard class
+
 ###17.08.31:
 
 ####Fixed
