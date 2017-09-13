@@ -20,10 +20,6 @@ if (preg_match('/[0-9]{3}\.[0-9]{3}\.[0-9]{3}/', $_GET ['hperror'])) {
 
     $heidelpayError = $_GET['hperror'];
 
-    $heidelpay_sbase = new heidelpay_standard();
-
-
-
     $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';
 
 

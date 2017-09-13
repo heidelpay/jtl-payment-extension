@@ -22,7 +22,7 @@
         {/foreach}
 	</select><br/>
 
-	<button type="submit">Submit data</button></td>
+	<button type="submit">Submit data</button>
 </form>
 
 </div>

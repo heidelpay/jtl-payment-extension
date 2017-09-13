@@ -12,7 +12,7 @@
 	<div class="alert alert-info">{$paytext}</div>
 	<form method="post" class="formular" id="paymentFrameForm">
 		<iframe id="paymentIframe" src="{$action_url}" style="height:250px;" frameborder="0"></iframe><br />
-		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button></td>
+		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button>
 	</form>
 	<script type="text/javascript" src="./includes/plugins/heidelpay_standard/version/112/paymentmethod/template/js/creditCardFrame.js"></script>
 

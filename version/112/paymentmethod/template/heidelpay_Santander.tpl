@@ -39,7 +39,7 @@
 
 
 		<br/>
-		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button></td>
+		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button>
 	</form>
 
 </div>
