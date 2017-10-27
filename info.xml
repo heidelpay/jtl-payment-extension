@@ -51,6 +51,7 @@
     <Hooks>
       <Hook id="140">heidelpay.hook140.php</Hook>
 	  <Hook id="153">heidelpay.hook153.php</Hook>
+      <Hook id="181">heidelpay.hook181.php</Hook>
     </Hooks>
     <PaymentMethod>
       <Method>
