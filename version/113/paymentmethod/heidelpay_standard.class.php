@@ -612,8 +612,6 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $this->setPaymentObject($paymentMethodPrefix);
 
-
-		mail('ronja.wann@heidelpay.de', 'currentPaymetnMethod', print_r($currentPaymentMethod,1));
 		
         $this->paymentObject->getRequest()->authentification(
             $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
