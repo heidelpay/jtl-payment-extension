@@ -2,8 +2,8 @@
 
 namespace Heidelpay;
 
-require_once '/var/www/html/ronja/jtl-shop405.2/includes/plugins/heidelpay_standard/vendor/autoload.php';
-  require_once __DIR__.'/arrayFilter.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once __DIR__.'/arrayFilter.php';
   
   use \SimpleXMLElement;
   use Zend\Http\Request;
