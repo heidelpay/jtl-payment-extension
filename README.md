@@ -12,7 +12,7 @@ Payment extension for JTL Shop
 To use this extension please create a folder named 'heidelpay_standard' in includes/plugins/ and 
 paste the downloaded files there.
 
-Documentation can be find at https://dev.heidelpay.de/jtl
+Documentation can be found at https://dev.heidelpay.de/jtl
 
 ## Currently supported payment methods:
 
