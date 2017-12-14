@@ -33,18 +33,71 @@
         "homepage": "https://github.com/container-interop/container-interop"
     },
     {
-        "name": "heidelpay/php-api",
-        "version": "17.7.14",
-        "version_normalized": "17.7.14.0",
+        "name": "heidelpay/php-message-code-mapper",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/heidelpay/php-api.git",
-            "reference": "2dfa0cef7beaae86ac63cad6a5430a039c717951"
+            "url": "https://github.com/heidelpay/php-message-code-mapper.git",
+            "reference": "34fa51af6542299240fa93eed0a72a42c0cd0437"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/heidelpay/php-api/zipball/2dfa0cef7beaae86ac63cad6a5430a039c717951",
-            "reference": "2dfa0cef7beaae86ac63cad6a5430a039c717951",
+            "url": "https://api.github.com/repos/heidelpay/php-message-code-mapper/zipball/34fa51af6542299240fa93eed0a72a42c0cd0437",
+            "reference": "34fa51af6542299240fa93eed0a72a42c0cd0437",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.6.0|^7.0.0"
+        },
+        "require-dev": {
+            "codacy/coverage": "^1.4",
+            "friendsofphp/php-cs-fixer": "^2.0",
+            "heidelpay/phpdocumentor": "^2.9.1",
+            "phpunit/phpunit": "~5.7"
+        },
+        "time": "2017-12-04T11:37:49+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Heidelpay\\MessageCodeMapper\\": "lib"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file."
+        ],
+        "authors": [
+            {
+                "name": "Stephano Vogel",
+                "email": "development@heidelpay.de"
+            }
+        ],
+        "description": "A library to convert heidelpay message codes into customer friendly messages.",
+        "homepage": "https://dev.heidelpay.de",
+        "keywords": [
+            "error-messages",
+            "errors",
+            "heidelpay",
+            "messages",
+            "payment",
+            "php"
+        ]
+    },
+    {
+        "name": "heidelpay/php-payment-api",
+        "version": "v1.2.0",
+        "version_normalized": "1.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/heidelpay/php-payment-api.git",
+            "reference": "6fa02ca075a22e3221082ae65c0d99e6a4485402"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/heidelpay/php-payment-api/zipball/6fa02ca075a22e3221082ae65c0d99e6a4485402",
+            "reference": "6fa02ca075a22e3221082ae65c0d99e6a4485402",
             "shasum": ""
         },
         "require": {
@@ -53,21 +106,30 @@
             "lib-openssl": "*",
             "php": ">=5.6.0"
         },
+        "conflict": {
+            "heidelpay/php-api": "*"
+        },
+        "replace": {
+            "heidelpay/php-api": "*"
+        },
         "require-dev": {
+            "codacy/coverage": "^1.4",
+            "codeception/aspect-mock": "^2.1",
+            "codeception/codeception": "^2.3",
             "friendsofphp/php-cs-fixer": "^2.0",
             "heidelpay/phpdocumentor": "2.9.1",
-            "phpunit/phpunit": "~5.7",
-            "satooshi/php-coveralls": "^1.0"
+            "phpunit/php-code-coverage": "<5.3"
         },
         "suggest": {
-            "heidelpay/php-customer-messages": "17.2.3"
+            "heidelpay/php-basket-api": "Use this package to transmit basket information.",
+            "heidelpay/php-message-code-mapper": "You can use this package to provide user-friendly messages instead of error codes."
         },
-        "time": "2017-07-14T08:25:15+00:00",
+        "time": "2017-12-14T12:36:17+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "Heidelpay\\PhpApi\\": "lib"
+                "Heidelpay\\PhpPaymentApi\\": "lib"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -86,9 +148,12 @@
             },
             {
                 "name": "Daniel Kraut"
+            },
+            {
+                "name": "Simon Gabriel"
             }
         ],
-        "description": "Client library for heidelpay payments.",
+        "description": "New client library for heidelpay payments replacing heidelpay/php-api.",
         "homepage": "https://dev.heidelpay.de",
         "keywords": [
             "api",
@@ -96,58 +161,6 @@
             "php",
             "sdk"
         ]
-    },
-    {
-        "name": "heidelpay/php-customer-messages",
-        "version": "17.2.3",
-        "version_normalized": "17.2.3.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/heidelpay/php-customer-messages.git",
-            "reference": "059890deec05fd11a4ce1c934a49d5905aa9cee1"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/heidelpay/php-customer-messages/zipball/059890deec05fd11a4ce1c934a49d5905aa9cee1",
-            "reference": "059890deec05fd11a4ce1c934a49d5905aa9cee1",
-            "shasum": ""
-        },
-        "require": {
-            "php": "^5.6.0|^7.0.0"
-        },
-        "require-dev": {
-            "heidelpay/phpdocumentor": "^2.9.1",
-            "phpunit/phpunit": "~5"
-        },
-        "time": "2017-02-03T09:28:49+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Heidelpay\\CustomerMessages\\": "lib"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file."
-        ],
-        "authors": [
-            {
-                "name": "Stephano Vogel",
-                "email": "development@heidelpay.de"
-            }
-        ],
-        "description": "A libary for heidelpay messages.",
-        "homepage": "https://dev.heidelpay.de",
-        "keywords": [
-            "error-messages",
-            "errors",
-            "heidelpay",
-            "messages",
-            "payment",
-            "php"
-        ],
-        "abandoned": "heidelpay/php-message-code-mapper"
     },
     {
         "name": "psr/container",

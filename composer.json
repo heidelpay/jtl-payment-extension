@@ -7,8 +7,8 @@
 	"require" : {
 		"php" : "~5.5.0|~5.6.0|~7.0.0",
 		"zendframework/zend-http" : "2.*",
-		"heidelpay/php-api" : "17.7.14",
-		"heidelpay/php-customer-messages": "17.2.3"
+		"heidelpay/php-payment-api" : "v1.2.0",
+		"heidelpay/php-message-code-mapper": "v1.0.0"
 	},
 	"require-dev": {
 			"friendsofphp/php-cs-fixer": "^2.0",

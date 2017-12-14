@@ -27,8 +27,8 @@ class ComposerStaticInitbadef46de6d4939f7b7f0c55452ba087
         ),
         'H' => 
         array (
-            'Heidelpay\\PhpApi\\' => 17,
-            'Heidelpay\\CustomerMessages\\' => 27,
+            'Heidelpay\\PhpPaymentApi\\' => 24,
+            'Heidelpay\\MessageCodeMapper\\' => 28,
         ),
     );
 
@@ -69,13 +69,13 @@ class ComposerStaticInitbadef46de6d4939f7b7f0c55452ba087
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
         ),
-        'Heidelpay\\PhpApi\\' => 
+        'Heidelpay\\PhpPaymentApi\\' => 
         array (
-            0 => __DIR__ . '/..' . '/heidelpay/php-api/lib',
+            0 => __DIR__ . '/..' . '/heidelpay/php-payment-api/lib',
         ),
-        'Heidelpay\\CustomerMessages\\' => 
+        'Heidelpay\\MessageCodeMapper\\' => 
         array (
-            0 => __DIR__ . '/..' . '/heidelpay/php-customer-messages/lib',
+            0 => __DIR__ . '/..' . '/heidelpay/php-message-code-mapper/lib',
         ),
     );
 

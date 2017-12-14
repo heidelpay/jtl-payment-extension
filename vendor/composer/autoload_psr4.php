@@ -15,6 +15,6 @@ return array(
     'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
-    'Heidelpay\\PhpApi\\' => array($vendorDir . '/heidelpay/php-api/lib'),
-    'Heidelpay\\CustomerMessages\\' => array($vendorDir . '/heidelpay/php-customer-messages/lib'),
+    'Heidelpay\\PhpPaymentApi\\' => array($vendorDir . '/heidelpay/php-payment-api/lib'),
+    'Heidelpay\\MessageCodeMapper\\' => array($vendorDir . '/heidelpay/php-message-code-mapper/lib'),
 );

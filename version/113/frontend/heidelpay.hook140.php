@@ -16,14 +16,14 @@
 
 
 if (preg_match('/[0-9]{3}\.[0-9]{3}\.[0-9]{3}/', $_GET ['hperror'])) {
-    include_once(PFAD_ROOT . PFAD_INCLUDES . 'plugins/heidelpay_standard/version/112/paymentmethod/heidelpay_standard.class.php');
+    include_once(PFAD_ROOT . PFAD_INCLUDES . 'plugins/heidelpay_standard/version/113/paymentmethod/heidelpay_standard.class.php');
 
     $heidelpayError = $_GET['hperror'];
 
     $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';
 
 
-    $customerErrorMessage = new \Heidelpay\CustomerMessages\CustomerMessage($local);
+    $customerErrorMessage = new \Heidelpay\MessageCodeMapper\CustomerMessage($local);
 
     $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
     $divEnd = '</div>';

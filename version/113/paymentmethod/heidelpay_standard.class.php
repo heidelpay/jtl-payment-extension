@@ -93,52 +93,52 @@ class heidelpay_standard extends ServerPaymentMethod
         switch ($paymentMethodPrefix) {
 
             case 'HPCC':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\CreditCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\CreditCardPaymentMethod();
                 break;
             case 'HPDC':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DebitCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\DebitCardPaymentMethod();
                 break;
             case 'HPDD':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\DirectDebitPaymentMethod();
                 break;
             case 'HPSU':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\SofortPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\SofortPaymentMethod();
                 break;
             case 'HPGP':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\GiropayPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\GiropayPaymentMethod();
                 break;
             case 'HPIDL':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\IDealPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\IDealPaymentMethod();
                 break;
             case 'HPEPS':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\EPSPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\EPSPaymentMethod();
                 break;
             case 'HPVA':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PayPalPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\PayPalPaymentMethod();
                 break;
             case 'HPP24':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\Przelewy24PaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\Przelewy24PaymentMethod();
                 break;
             case 'HPPFC':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceCardPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\PostFinanceCardPaymentMethod();
                 break;
             case 'HPPFE':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PostFinanceEFinancePaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\PostFinanceEFinancePaymentMethod();
                 break;
             case 'HPPP':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\PrepaymentPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\PrepaymentPaymentMethod();
                 break;
             case 'HPIV':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\InvoicePaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoicePaymentMethod();
                 break;
             case 'HPSA':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\SantanderInvoicePaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\SantanderInvoicePaymentMethod();
                 break;
             case 'HPDDPG':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
                 break;
             case 'HPIVPG':
-                $this->paymentObject = new Heidelpay\PhpApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
+                $this->paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
                 break;
         }
     }
@@ -706,7 +706,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->init();
 
 
-        $HeidelpayResponse = new  Heidelpay\PhpApi\Response($args);
+        $HeidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
 
         if (array_key_exists('CRITERION_PAYMETHOD', $args)){
 

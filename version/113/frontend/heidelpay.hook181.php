@@ -122,7 +122,7 @@ if(!empty($result[0])){
 
         $resUniquieId = (string)$resXMLObject->Result->Transaction->Identification->UniqueID;
 
-        $paymentObject = new Heidelpay\PhpApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
+        $paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
 
         $paymentObject->getRequest()->authentification(
             $oPlugin->oPluginEinstellungAssoc_arr ['sender'],

@@ -1,0 +1,43 @@
+<?php
+
+namespace Heidelpay\PhpPaymentApi\TransactionTypes;
+
+/**
+ * Transaction type refund
+ *
+ * This payment type will be used to give a charge amount or even parts of
+ * it back to the given account.
+ *
+ * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ *
+ * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ *
+ * @author  Jens Richter
+ *
+ * @package  Heidelpay
+ * @subpackage PhpPaymentApi
+ * @category PhpPaymentApi
+ */
+trait RefundTransactionType
+{
+    /**
+     * Payment type refund
+     *
+     * This payment type will be used to give a charge amount or even parts of
+     * it back to the given account.
+     *
+     * @param mixed $PaymentReferenceId payment reference id ( uniqe id of the debit or capture)
+     *
+     * @return \Heidelpay\PhpPaymentApi\PaymentMethods\AbstractPaymentMethod
+     */
+    public function refund($PaymentReferenceId)
+    {
+        $this->getRequest()->getPayment()->set('code', $this->_paymentCode . ".RF");
+        $this->getRequest()->getFrontend()->set('enabled', 'FALSE');
+        $this->getRequest()->getIdentification()->set('referenceId', $PaymentReferenceId);
+        $this->prepareRequest();
+
+        return $this;
+    }
+}
