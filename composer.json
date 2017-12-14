@@ -5,7 +5,7 @@
 	"homepage" : "https://dev.heidelpay.de",
 	"license" : "Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.",
 	"require" : {
-		"php" : "~5.5.0|~5.6.0|~7.0.0",
+		"php" : "~5.6.0|~7.0.0|~7.1.0",
 		"zendframework/zend-http" : "2.*",
 		"heidelpay/php-payment-api" : "v1.2.0",
 		"heidelpay/php-message-code-mapper": "v1.0.0"
