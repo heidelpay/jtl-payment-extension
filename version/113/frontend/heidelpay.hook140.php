@@ -23,7 +23,7 @@ if (preg_match('/[0-9]{3}\.[0-9]{3}\.[0-9]{3}/', $_GET ['hperror'])) {
     $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';
 
 
-    $customerErrorMessage = new \Heidelpay\MessageCodeMapper\CustomerMessage($local);
+    $customerErrorMessage = new \Heidelpay\MessageCodeMapper\MessageCodeMapper($local);
 
     $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
     $divEnd = '</div>';
