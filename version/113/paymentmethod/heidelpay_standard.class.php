@@ -387,12 +387,20 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getIp()
     {
+        $ip = '127.0.0.1';
+
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
+            if (filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP) !== FALSE) {
+                $ip = $_SERVER['HTTP_CLIENT_IP'];
+            };
         } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            if (filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP) !== FALSE) {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            };
+        }elseif(!empty($_SERVER['REMOTE_ADDR'])) {
+            if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP) !== FALSE) {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            };
         };
 
         return $ip;
