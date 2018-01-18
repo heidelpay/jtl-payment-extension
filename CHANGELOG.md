@@ -15,6 +15,7 @@
 - replaced heidelpay/php-api with heidelpay/php-payment-api 
 - replaced heidelpay/php-customer-messages with eidelpay/php-message-code-mapper
 - changed namespaces according to new packages 
+- modified getIp() for proxy cases
 
 ## v112
 
