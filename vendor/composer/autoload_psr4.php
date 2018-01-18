@@ -6,6 +6,15 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Heidelpay\\PhpApi\\' => array($vendorDir . '/heidelpay/php-api/lib'),
-    'Heidelpay\\CustomerMessages\\' => array($vendorDir . '/heidelpay/php-customer-messages/lib'),
+    'Zend\\Validator\\' => array($vendorDir . '/zendframework/zend-validator/src'),
+    'Zend\\Uri\\' => array($vendorDir . '/zendframework/zend-uri/src'),
+    'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib/src'),
+    'Zend\\Loader\\' => array($vendorDir . '/zendframework/zend-loader/src'),
+    'Zend\\Hydrator\\' => array($vendorDir . '/zendframework/zend-hydrator/src'),
+    'Zend\\Http\\' => array($vendorDir . '/zendframework/zend-http/src'),
+    'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper/src'),
+    'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'Heidelpay\\PhpPaymentApi\\' => array($vendorDir . '/heidelpay/php-payment-api/lib'),
+    'Heidelpay\\MessageCodeMapper\\' => array($vendorDir . '/heidelpay/php-message-code-mapper/lib'),
 );

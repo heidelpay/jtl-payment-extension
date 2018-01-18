@@ -48,9 +48,13 @@
 	<Version nr="112">
       <CreateDate>2016-03-31</CreateDate>
     </Version>
+	<Version nr="113">
+      <CreateDate>2017-11-08</CreateDate>
+    </Version>
     <Hooks>
       <Hook id="140">heidelpay.hook140.php</Hook>
 	  <Hook id="153">heidelpay.hook153.php</Hook>
+      <Hook id="181">heidelpay.hook181.php</Hook>
     </Hooks>
     <PaymentMethod>
       <Method>
@@ -665,7 +669,7 @@
         </Setting>
       </Method>
 
-      <Method>
+   <!--   <Method>
         <Name>Heidelpay Santander Plugin</Name>
         <PictureURL>template/heidelpay.png</PictureURL>
         <Sort>3</Sort>
@@ -709,7 +713,7 @@
           <ValueName>paycode</ValueName>
         </Setting>
       </Method>
-
+ -->
       <Method>
         <Name>Heidelpay Gesicherte Rechnung Plugin</Name>
         <PictureURL>template/heidelpay.png</PictureURL>
@@ -823,23 +827,30 @@
         </Setting>
 				<Setting type="text" initialValue="31HA07BC8142C5A171745D00AD63D182" sort="3" conf="Y">    
           <Name>Security Sender</Name>
-          <Description>Sender ID:</Description>
+          <Description>Sender ID, welche Sie von heidelpay erhalten haben</Description>
           <ValueName>sender</ValueName>
         </Setting>
         <Setting type="text" initialValue="31ha07bc8142c5a171744e5aef11ffd3" sort="3" conf="Y">    
           <Name>User ID</Name>
-          <Description>User Login ID:</Description>
+          <Description>User Login ID, welche Sie von heidelpay erhalten haben</Description>
           <ValueName>user</ValueName>
         </Setting>
         <Setting type="text" initialValue="93167DE7" sort="3" conf="Y">    
           <Name>Password</Name>
-          <Description>User Password:</Description>
+          <Description>User Password, welche Sie von heidelpay erhalten haben</Description>
           <ValueName>pass</ValueName>
         </Setting>
+		
 		<Setting type="text" initialValue="secretPhrase" sort="3" conf="Y">    
           <Name>Secret</Name>
-          <Description>Secret:</Description>
+          <Description>Secret Phrase zur Verschlüsselung der Serverantwort</Description>
           <ValueName>secret</ValueName>
+        </Setting>
+		
+		<Setting type="text" initialValue="reportErrorMail" sort="3" conf="Y">    
+          <Name>Report Error Mail</Name>
+          <Description>E-Mailadresse für Error-Reporting</Description>
+          <ValueName>reportErrorMail</ValueName>
         </Setting>
       </Settingslink>
 		</Adminmenu>
