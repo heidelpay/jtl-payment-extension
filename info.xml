@@ -51,7 +51,11 @@
 	<Version nr="113">
       <CreateDate>2017-11-08</CreateDate>
     </Version>
+      <Version nr="114">
+        <CreateDate>2018-02-02</CreateDate>
+      </Version>
     <Hooks>
+      <Hook id="8">heidelpay.hook008.php</Hook>
       <Hook id="140">heidelpay.hook140.php</Hook>
 	  <Hook id="153">heidelpay.hook153.php</Hook>
       <Hook id="181">heidelpay.hook181.php</Hook>
