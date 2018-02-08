@@ -769,7 +769,6 @@ class heidelpay_standard extends ServerPaymentMethod
   Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
   ' . $post['IDENTIFICATION_SHORTID'];
 
-
         $sql = 'UPDATE `tbestellung` SET 
 			`cKommentar` ="' . htmlspecialchars(utf8_decode($bookingtext)) . '" 
 			WHERE `cBestellNr` ="' . htmlspecialchars($orderId) . '";';
@@ -804,7 +803,6 @@ class heidelpay_standard extends ServerPaymentMethod
             return false;
         }
     }
-
 
     /**
      * prepares payment text
