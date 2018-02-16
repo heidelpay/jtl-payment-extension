@@ -814,7 +814,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
     public function disableInvoiceSecured($response)
     {
-        if (isset($response['CRITERION_INSURANCE-RESERVATION']) &&
+        if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
             $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
             return '&disableInvoice=true';
         }
