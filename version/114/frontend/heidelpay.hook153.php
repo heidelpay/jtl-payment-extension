@@ -11,4 +11,5 @@
  * @category JTL
  */
 
-require_once PFAD_ROOT . PFAD_PLUGIN .'heidelpay_standard/version/114/paymentmethod/returnHPMailStr.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+    $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';

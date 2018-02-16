@@ -7,12 +7,12 @@
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
- * @author Ronja Wann
+ * @author Ronja Wann, Florian Evertz
  * @category JTL
  */
-include_once(PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php');
+include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-require_once(PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php");
+require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
 /*
  * Heidelpay
@@ -41,7 +41,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function setShortId($shortId, $orderId)
     {
-        (preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId)) ? $shortId : false;
+        preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId) ? $shortId : false;
 
         if (!is_numeric($orderId)) {
             return false;
@@ -99,18 +99,21 @@ class heidelpay_standard extends ServerPaymentMethod
             $oPlugin->oPluginEinstellungAssoc_arr ['user'],
             $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
             $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
-            $this->isSandboxMode($oPlugin, $currentPaymentMethod));
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
         $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND $this->isEqualAddress($order) == false) {
+        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND
+            $this->isEqualAddress($order) == false) {
             $this->redirect('warenkorb.php?hperroradd=1');
         }
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND $_SESSION['Kunde']->cFirma != null) {
+        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND
+            $_SESSION['Kunde']->cFirma != null) {
             $this->redirect('warenkorb.php?hperrorcom=1');
         }
 
@@ -306,11 +309,29 @@ class heidelpay_standard extends ServerPaymentMethod
             $user = $_SESSION ['Lieferadresse'];
             $mail = $_SESSION ['Kunde'];
             $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array((empty($user->cVorname)) ? null : $user->cVorname, (empty($user->cNachname)) ? null : $user->cNachname, (empty($user->cFirma)) ? null : $user->cFirma, (empty($user->kKunde)) ? null : $user->kKunde, (empty($userStreet)) ? null : $userStreet, (empty($user->cBundesland)) ? null : $user->cBundesland, (empty($user->cPLZ)) ? null : $user->cPLZ, (empty($user->cOrt)) ? null : $user->cOrt, (empty($user->cLand)) ? null : $user->cLand, (empty($mail->cMail)) ? null : $mail->cMail);
+            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+                empty($user->cNachname) ? null : $user->cNachname,
+                empty($user->cFirma) ? null : $user->cFirma,
+                empty($user->kKunde) ? null : $user->kKunde,
+                empty($userStreet) ? null : $userStreet,
+                empty($user->cBundesland) ? null : $user->cBundesland,
+                empty($user->cPLZ) ? null : $user->cPLZ,
+                empty($user->cOrt) ? null : $user->cOrt,
+                empty($user->cLand) ? null : $user->cLand,
+                empty($mail->cMail) ? null : $mail->cMail);
         } else {
             $user = $_SESSION ['Kunde'];
             $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array((empty($user->cVorname)) ? null : $user->cVorname, (empty($user->cNachname)) ? null : $user->cNachname, (empty($user->cFirma)) ? null : $user->cFirma, (empty($user->kKunde)) ? null : $user->kKunde, (empty($userStreet)) ? null : $userStreet, (empty($user->cBundesland)) ? null : $user->cBundesland, (empty($user->cPLZ)) ? null : $user->cPLZ, (empty($user->cOrt)) ? null : $user->cOrt, (empty($user->cLand)) ? null : $user->cLand, (empty($user->cMail)) ? null : $user->cMail);
+            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+                empty($user->cNachname) ? null : $user->cNachname,
+                empty($user->cFirma) ? null : $user->cFirma,
+                empty($user->kKunde) ? null : $user->kKunde,
+                empty($userStreet) ? null : $userStreet,
+                empty($user->cBundesland) ? null : $user->cBundesland,
+                empty($user->cPLZ) ? null : $user->cPLZ,
+                empty($user->cOrt) ? null : $user->cOrt,
+                empty($user->cLand) ? null : $user->cLand,
+                empty($user->cMail) ? null : $user->cMail);
         }
         return $this->encodeData($userData);
     }
