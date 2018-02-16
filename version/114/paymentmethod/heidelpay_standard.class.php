@@ -74,8 +74,6 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         global $bestellung;
 
-        mail('florian.evertz@heidelpay.de', 'Debugmail - preparement', 'es wird prepared');
-
         $currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
         if (empty($currentPaymentMethod)) {
             $currentPaymentMethod = $bestellung->Zahlungsart->cModulId;
@@ -139,7 +137,6 @@ class heidelpay_standard extends ServerPaymentMethod
         }
 
         if ($this->paymentObject->getResponse()->isError()) {
-            mail('florian.evertz@heidelpay.de', 'Debug - Error', print_r($this->paymentObject->getResponse(), 1));
             $errorCode = $this->paymentObject->getResponse()->getError();
             $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
             return;
@@ -626,8 +623,6 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         $this->init();
 
-        mail('florian.evertz@heidelpay.de', 'debug - handle Notification', print_r($args, 1));
-
         $HeidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
 
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
@@ -802,10 +797,6 @@ class heidelpay_standard extends ServerPaymentMethod
         if ($args['PROCESSING_RESULT'] == "ACK") {
             return true;
         } else {
-            mail('florian.evertz@heidelpay.de', 'debug - finalizeOrder', print_r($args, 1));
-
-            //TODO: Response auf INSURER-DINGENS prüfen und funtkion ausführen?
-
             $cEditZahlungHinweis = rawurlencode($args['PROCESSING_RETURN']) .
                 '&hperror=' . $args['PROCESSING_RETURN_CODE'];
 
