@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Ronja Wann
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class Przelewy24PaymentMethodTest extends BasePaymentMethodTest
 {
@@ -81,7 +79,7 @@ class Przelewy24PaymentMethodTest extends BasePaymentMethodTest
         $Przelewy24 = new Przelewy24();
         $Przelewy24->getRequest()->authentification(...$authentication);
         $Przelewy24->getRequest()->customerAddress(...$customerDetails);
-        $Przelewy24->_dryRun = true;
+        $Przelewy24->dryRun = true;
 
         $this->paymentObject = $Przelewy24;
     }
@@ -91,6 +89,8 @@ class Przelewy24PaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the Przelewy24 authorize transaction
      * @group connectionTest
+     *
+     * @throws \Exception
      */
     public function testAuthorize()
     {
@@ -101,12 +101,15 @@ class Przelewy24PaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
 
         return (string)$response->getPaymentReferenceId();
     }

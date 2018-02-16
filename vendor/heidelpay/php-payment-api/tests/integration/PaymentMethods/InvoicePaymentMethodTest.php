@@ -18,9 +18,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class InvoicePaymentMethodTest extends BasePaymentMethodTest
 {
@@ -84,13 +82,16 @@ class InvoicePaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the invoice authorize transaction
      * @group connectionTest
+     *
      * @test
+     *
+     * @throws \Exception
      */
     public function authorize()
     {
         $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
         $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
-        $this->paymentObject->getRequest()->getFrontend()->set('enabled', 'FALSE');
+        $this->paymentObject->getRequest()->getFrontend()->setEnabled('FALSE');
 
         $this->paymentObject->authorize();
 
@@ -119,7 +120,10 @@ class InvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id for the prepayment reversal transaction
      * @depends authorize
      * @group connectionTest
-     * @test   *
+     *
+     * @test
+     *
+     * @throws \Exception
      */
     public function reversal($referenceId)
     {
@@ -142,6 +146,8 @@ class InvoicePaymentMethodTest extends BasePaymentMethodTest
             'reversal failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -153,7 +159,10 @@ class InvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id of the invoice refund transaction
      * @depends authorize
      * @test
+     *
      * @group connectionTest
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     public function refund($referenceId = null)
     {
@@ -161,11 +170,14 @@ class InvoicePaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->basketData($timestamp, 3.54, $this->currency, $this->secret);
 
         /* the refund can not be processed because there will be no receipt automatically on the sandbox */
-        $this->paymentObject->_dryRun = true;
+        $this->paymentObject->dryRun = true;
 
         $this->paymentObject->refund((string)$referenceId);
 
         $this->assertEquals('IV.RF', $this->paymentObject->getRequest()->getPayment()->getCode());
+
+        $this->logDataToDebug();
+
         return true;
     }
 }

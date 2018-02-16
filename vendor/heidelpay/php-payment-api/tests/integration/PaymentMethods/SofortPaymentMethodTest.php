@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class SofortPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -80,7 +78,7 @@ class SofortPaymentMethodTest extends BasePaymentMethodTest
         $Sofort = new Sofort();
         $Sofort->getRequest()->authentification(...$authentication);
         $Sofort->getRequest()->customerAddress(...$customerDetails);
-        $Sofort->_dryRun = true;
+        $Sofort->dryRun = true;
 
         $this->paymentObject = $Sofort;
     }
@@ -90,7 +88,10 @@ class SofortPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the sofort authorize transaction
      * @group connectionTest
+     *
      * @test
+     *
+     * @throws \Exception
      */
     public function authorize()
     {
@@ -101,12 +102,15 @@ class SofortPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
 
         return (string)$response->getPaymentReferenceId();
     }
@@ -119,7 +123,10 @@ class SofortPaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id of the Sofort refund transaction
      * @depends authorize
      * @test
+     *
      * @group connectionTest
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     public function refund($referenceId = null)
     {
@@ -127,11 +134,12 @@ class SofortPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->basketData($timestamp, 3.54, $this->currency, $this->secret);
 
         /* the refund can not be processed because there will be no receipt automatically on the sandbox */
-        $this->paymentObject->_dryRun = true;
+        $this->paymentObject->dryRun = true;
 
         $this->paymentObject->refund((string)$referenceId);
 
         $this->assertEquals('OT.RF', $this->paymentObject->getRequest()->getPayment()->getCode());
-        return true;
+
+        $this->logDataToDebug();
     }
 }
