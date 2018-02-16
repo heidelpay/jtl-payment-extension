@@ -6,12 +6,18 @@
  * Time: 12:09
  */
 
-mail('florian.evertz@heidelpay.de', 'Hook Check', 'Hook is activated and executed');
+if (isset($_GET['disableInvoice']) && $_GET['disableInvoice']) {
+    $_SESSION['InvoiceDisabled'] = true;
+}
 
-/*
-if (isset($_SESSION['secureFailed'])) {
-    //disable Invoice Secure
-    echo 'Session ist gesetzt';
-} else {
-    echo 'Keine Sessionsetzung!!!!!!!!!!!!!!!';
-}*/
+if ($_SESSION['InvoiceDisabled']) {
+    $zahlungsArray = Shop::Smarty()->getTemplateVars('Zahlungsarten', null, false);
+
+    //Search for heidelpay Secured Invoice in smarty Object and remove it
+    foreach ($zahlungsArray as $key => $class) {
+        if ($class->cModulId == 'kPlugin_10_heidelpaygesicherterechnungplugin') {
+            unset($zahlungsArray[$key]);
+            Shop::Smarty()->assign('Zahlungsarten', $zahlungsArray);
+        }
+    }
+}

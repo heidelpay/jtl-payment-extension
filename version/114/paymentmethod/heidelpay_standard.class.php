@@ -140,7 +140,6 @@ class heidelpay_standard extends ServerPaymentMethod
         }
 
         if ($this->paymentObject->getResponse()->isError()) {
-            mail('florian.evertz@heidelpay.de', 'Debug - Error', print_r($this->paymentObject->getResponse(), 1));
             $errorCode = $this->paymentObject->getResponse()->getError();
             $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
             return;
@@ -645,8 +644,6 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         $this->init();
 
-        mail('florian.evertz@heidelpay.de', 'debug - handle1', print_r($args, 1));
-
         $HeidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
 
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
@@ -748,7 +745,10 @@ class heidelpay_standard extends ServerPaymentMethod
             /*save order */
         } elseif ($HeidelpayResponse->isError()) {
             $error = $HeidelpayResponse->getError();
-            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'];
+            //TODO: an dieser Stelle auf INSURANCE-Dingens prüfen und Funktion ausführen
+
+            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'].
+            $this->disableInvoiceSecured($args);
         } elseif ($HeidelpayResponse->isPending()) {
             echo $this->getReturnURL($order);
         }
@@ -818,11 +818,24 @@ class heidelpay_standard extends ServerPaymentMethod
         if ($args['PROCESSING_RESULT'] == "ACK") {
             return true;
         } else {
-            mail('florian.evertz@heidelpay.de', 'debug - handle', print_r($args, 1));
+            $cEditZahlungHinweis = rawurlencode($args['PROCESSING_RETURN']) .
+                '&hperror=' . $args['PROCESSING_RETURN_CODE'];
 
-            $cEditZahlungHinweis = rawurlencode($args['PROCESSING_RETURN']) . '&hperror=' . $args['PROCESSING_RETURN_CODE'] . '2354';
+            if (isset($args['CRITERION_INSURANCE-RESERVATION']) &&
+                $args['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+                $cEditZahlungHinweis .= $this->disableInvoiceSecured($args);
+            }
             return false;
         }
+    }
+
+    public function disableInvoiceSecured($response)
+    {
+        if (isset($response['CRITERION_INSURANCE-RESERVATION'])&&
+            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+            return '&disableInvoice=true';
+        }
+        return '';
     }
 
     /**
