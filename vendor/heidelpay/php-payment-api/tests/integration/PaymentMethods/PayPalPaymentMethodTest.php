@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class PayPalPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -80,9 +78,74 @@ class PayPalPaymentMethodTest extends BasePaymentMethodTest
         $PayPal = new PayPal();
         $PayPal->getRequest()->authentification(...$authentication);
         $PayPal->getRequest()->customerAddress(...$customerDetails);
-        $PayPal->_dryRun = true;
+        $PayPal->dryRun = true;
 
         $this->paymentObject = $PayPal;
+    }
+
+    /**
+     * Test case for a PayPal registration
+     *
+     * @return string payment reference id for the PayPal registration transaction
+     * @group connectionTest
+     *
+     * @throws \Exception
+     * @test
+     */
+    public function registration()
+    {
+        $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
+        $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
+        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.de');
+
+        $this->paymentObject->registration();
+
+        /* prepare request and send it to payment api */
+        $request = $this->paymentObject->getRequest()->toArray();
+
+        /** @var Response $response */
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+
+        $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
+        $this->assertFalse($response->isError(), 'Transaction failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
+
+        return (string)$response->getPaymentReferenceId();
+    }
+
+    /**
+     * Test case for a PayPal reregistration
+     *
+     * @group connectionTest
+     *
+     * @param null $referenceId
+     *
+     * @throws \Exception
+     * @depends registration
+     *
+     * @test
+     */
+    public function reregistration($referenceId = null)
+    {
+        $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
+        $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
+        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.de');
+
+        $this->paymentObject->reregistration($referenceId);
+
+        /* prepare request and send it to payment api */
+        $request = $this->paymentObject->getRequest()->toArray();
+
+        /** @var Response $response */
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+
+        $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
+        $this->assertFalse($response->isError(), 'Transaction failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
     }
 
     /**
@@ -90,8 +153,13 @@ class PayPalPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the PayPal authorize transaction
      * @group connectionTest
+     *
+     * @depends registration
+     *
+     * @throws \Exception
+     * @test
      */
-    public function testAuthorize()
+    public function authorize()
     {
         $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
         $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
@@ -100,14 +168,16 @@ class PayPalPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
+
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
 
-        return (string)$response->getPaymentReferenceId();
+        $this->logDataToDebug($result);
     }
 
     /**
@@ -115,8 +185,13 @@ class PayPalPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the PayPal authorize transaction
      * @group connectionTest
+     *
+     * @depends registration
+     *
+     * @throws \Exception
+     * @test
      */
-    public function testDebit()
+    public function debit()
     {
         $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
         $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
@@ -125,13 +200,15 @@ class PayPalPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->debit();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
+
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'debit failed : ' . print_r($response->getError(), 1));
 
-        return (string)$response->getPaymentReferenceId();
+        $this->logDataToDebug($result);
     }
 }

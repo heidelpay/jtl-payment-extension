@@ -16,9 +16,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Simon Gabriel
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category IntegrationTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
 {
@@ -89,6 +87,7 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the invoice authorize transaction
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -100,7 +99,7 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
 
         $this->paymentObject->getRequest()->b2cSecured('MRS', '1982-07-12');
         $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.de');
-        $this->paymentObject->getRequest()->getFrontend()->set('enabled', 'FALSE');
+        $this->paymentObject->getRequest()->getFrontend()->setEnabled('FALSE');
 
         $this->paymentObject->authorize();
 
@@ -118,6 +117,8 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
             'authorize failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return $this->authorizeReference = (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -129,6 +130,7 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id for the prepayment reversal transaction
      * @depends authorize
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -156,6 +158,8 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
             'reversal failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -166,6 +170,7 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id for the prepayment reversal transaction
      * @depends finalize
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -194,6 +199,8 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
             'reversal failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -202,10 +209,12 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
      *
      * @param string $referenceId reference id of the invoice to refund
      *
-     * @return string payment reference id of the invoice refund transaction
      * @depends authorize
      * @test
+     *
      * @group connectionTest
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     public function refund($referenceId = null)
     {
@@ -213,11 +222,12 @@ class PayolutionInvoicePaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->basketData($timestamp, 23.54, $this->currency, $this->secret);
 
         /* the refund can not be processed because there will be no receipt automatically on the sandbox */
-        $this->paymentObject->_dryRun = true;
+        $this->paymentObject->dryRun = true;
 
         $this->paymentObject->refund((string)$referenceId);
 
         $this->assertEquals('IV.RF', $this->paymentObject->getRequest()->getPayment()->getCode());
-        return true;
+
+        $this->logDataToDebug();
     }
 }

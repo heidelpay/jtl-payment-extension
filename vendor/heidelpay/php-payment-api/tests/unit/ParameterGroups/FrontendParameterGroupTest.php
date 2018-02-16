@@ -15,7 +15,7 @@ use Heidelpay\PhpPaymentApi\ParameterGroups\FrontendParameterGroup as Frontend;
  *
  * @author  Jens Richter
  *
- * @category unittest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class FrontendParameterGroupTest extends Test
 {
@@ -59,7 +59,7 @@ class FrontendParameterGroupTest extends Test
         $frontend = new Frontend();
 
         $value = 'https://dev.heidelpay.de';
-        $frontend->set('redirect_url', $value);
+        $frontend->setRedirectUrl($value);
 
         $this->assertEquals($value, $frontend->getRedirectUrl());
     }
