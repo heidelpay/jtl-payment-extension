@@ -1,5 +1,22 @@
 # Release Notes - heidelpay extension for JTL Shop
 
+## v113
+
+###17.12.01
+
+- added version 113
+- added xmlQuery Class
+- added arrayFilter Class
+- added hook181 for auto finalize
+- added field for error reporting address in merchant backend
+
+####Changed
+- disabled Santander invoice in info.xml
+- replaced heidelpay/php-api with heidelpay/php-payment-api 
+- replaced heidelpay/php-customer-messages with eidelpay/php-message-code-mapper
+- changed namespaces according to new packages 
+- modified getIp() for proxy cases
+
 ## v112
 
 ###17.09.04

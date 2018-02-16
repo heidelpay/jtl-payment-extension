@@ -7,21 +7,75 @@ namespace Composer\Autoload;
 class ComposerStaticInitbadef46de6d4939f7b7f0c55452ba087
 {
     public static $prefixLengthsPsr4 = array (
+        'Z' => 
+        array (
+            'Zend\\Validator\\' => 15,
+            'Zend\\Uri\\' => 9,
+            'Zend\\Stdlib\\' => 12,
+            'Zend\\Loader\\' => 12,
+            'Zend\\Hydrator\\' => 14,
+            'Zend\\Http\\' => 10,
+            'Zend\\Escaper\\' => 13,
+        ),
+        'P' => 
+        array (
+            'Psr\\Container\\' => 14,
+        ),
+        'I' => 
+        array (
+            'Interop\\Container\\' => 18,
+        ),
         'H' => 
         array (
-            'Heidelpay\\PhpApi\\' => 17,
-            'Heidelpay\\CustomerMessages\\' => 27,
+            'Heidelpay\\PhpPaymentApi\\' => 24,
+            'Heidelpay\\MessageCodeMapper\\' => 28,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Heidelpay\\PhpApi\\' => 
+        'Zend\\Validator\\' => 
         array (
-            0 => __DIR__ . '/..' . '/heidelpay/php-api/lib',
+            0 => __DIR__ . '/..' . '/zendframework/zend-validator/src',
         ),
-        'Heidelpay\\CustomerMessages\\' => 
+        'Zend\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/heidelpay/php-customer-messages/lib',
+            0 => __DIR__ . '/..' . '/zendframework/zend-uri/src',
+        ),
+        'Zend\\Stdlib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
+        ),
+        'Zend\\Loader\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-loader/src',
+        ),
+        'Zend\\Hydrator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-hydrator/src',
+        ),
+        'Zend\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-http/src',
+        ),
+        'Zend\\Escaper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
+        ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Interop\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
+        ),
+        'Heidelpay\\PhpPaymentApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/heidelpay/php-payment-api/lib',
+        ),
+        'Heidelpay\\MessageCodeMapper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/heidelpay/php-message-code-mapper/lib',
         ),
     );
 
