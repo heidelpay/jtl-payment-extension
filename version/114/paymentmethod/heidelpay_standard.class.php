@@ -747,8 +747,8 @@ class heidelpay_standard extends ServerPaymentMethod
             $error = $HeidelpayResponse->getError();
             //TODO: an dieser Stelle auf INSURANCE-Dingens prüfen und Funktion ausführen
 
-            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'].
-            $this->disableInvoiceSecured($args);
+            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'] .
+                $this->disableInvoiceSecured($args);
         } elseif ($HeidelpayResponse->isPending()) {
             echo $this->getReturnURL($order);
         }
@@ -763,7 +763,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function verifyNotification($order, $post)
     {
-        if ($post['CLEARING_AMOUNT'] != number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '')) {
+        if ($post['CLEARING_AMOUNT'] != number_format($order->fGesamtsummeKundenwaehrung,2, '.', '')) {
             return false;
         }
 
@@ -781,7 +781,8 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function setPayInfo($post, $orderId)
     {
-        $bookingtext = 'Bitte überweisen Sie uns den Betrag von ' . $post['PRESENTATION_AMOUNT'] . ' ' . $post['PRESENTATION_CURRENCY'] . ' nach Erhalt der Ware auf folgendes Konto:
+        $bookingtext = 'Bitte überweisen Sie uns den Betrag von ' . $post['PRESENTATION_AMOUNT'] . ' ' .
+            $post['PRESENTATION_CURRENCY'] . ' nach Erhalt der Ware auf folgendes Konto:
         
   Kontoinhaber: ' . $post['CONNECTOR_ACCOUNT_HOLDER'] . '
   IBAN: ' . $post['CONNECTOR_ACCOUNT_IBAN'] . '
@@ -803,12 +804,21 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getErrorReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
-
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
+            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             return $order->BestellstatusURL;
         }
 
         return Shop::getURL() . '/bestellvorgang.php';
+    }
+
+    public function disableInvoiceSecured($response)
+    {
+        if (isset($response['CRITERION_INSURANCE-RESERVATION']) &&
+            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+            return '&disableInvoice=true';
+        }
+        return '';
     }
 
     public function finalizeOrder($order, $hash, $args)
@@ -829,15 +839,6 @@ class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
-    public function disableInvoiceSecured($response)
-    {
-        if (isset($response['CRITERION_INSURANCE-RESERVATION'])&&
-            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
-            return '&disableInvoice=true';
-        }
-        return '';
-    }
-
     /**
      * prepares payment text
      *
@@ -848,7 +849,8 @@ class heidelpay_standard extends ServerPaymentMethod
     public function prepaymentText($res, $lang = 'EN')
     {
         if ($lang == 'DE') {
-            define('PREPAYMENT_TEXT',
+            define(
+                'PREPAYMENT_TEXT',
                 '<b>Bitte &uuml;berweisen Sie uns den Betrag von {CURRENCY} {AMOUNT} auf folgendes Konto:</b><br /><br />
 			Land :         {ACC_COUNTRY}<br>
 			Kontoinhaber : {ACC_OWNER}<br>
@@ -858,9 +860,11 @@ class heidelpay_standard extends ServerPaymentMethod
 			BIC:           {ACC_BIC}<br>
 			<br /><br /><b>Geben sie bitte im Verwendungszweck UNBEDINGT die Identifikationsnummer<br />
 			{SHORTID}<br />
-			und NICHTS ANDERES an.</b>');
+			und NICHTS ANDERES an.</b>'
+            );
         } else {
-            define('PREPAYMENT_TEXT',
+            define(
+                'PREPAYMENT_TEXT',
                 '<b>Please transfer the amount of {CURRENCY} {AMOUNT} to the following account:</b><br /><br />
 					Country :         {ACC_COUNTRY}<br>
 					Account holder :  {ACC_OWNER}<br>
@@ -870,7 +874,8 @@ class heidelpay_standard extends ServerPaymentMethod
 					BIC:              {ACC_BIC}<br>
 					<br><br /><b>Please use the identification number <br />
 					{SHORTID}<br />
-					as the descriptor and nothing else. Otherwise we cannot match your transaction!</b>');
+					as the descriptor and nothing else. Otherwise we cannot match your transaction!</b>'
+            );
         }
 
         $repl = array(
