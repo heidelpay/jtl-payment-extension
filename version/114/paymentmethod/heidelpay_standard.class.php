@@ -726,8 +726,8 @@ class heidelpay_standard extends ServerPaymentMethod
             $error = $HeidelpayResponse->getError();
             //TODO: an dieser Stelle auf INSURANCE-Dingens prüfen und Funktion ausführen
 
-            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'].
-            $this->disableInvoiceSecured($args);
+            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'] .
+                $this->disableInvoiceSecured($args);
         } elseif ($HeidelpayResponse->isPending()) {
             echo $this->getReturnURL($order);
         }
@@ -790,6 +790,15 @@ class heidelpay_standard extends ServerPaymentMethod
         return Shop::getURL() . '/bestellvorgang.php';
     }
 
+    public function disableInvoiceSecured($response)
+    {
+        if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
+            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+            return '&disableInvoice=true';
+        }
+        return '';
+    }
+
     public function finalizeOrder($order, $hash, $args)
     {
         global $cEditZahlungHinweis;
@@ -806,15 +815,6 @@ class heidelpay_standard extends ServerPaymentMethod
             }
             return false;
         }
-    }
-
-    public function disableInvoiceSecured($response)
-    {
-        if (isset($response['CRITERION_INSURANCE-RESERVATION'])&&
-            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
-            return '&disableInvoice=true';
-        }
-        return '';
     }
 
     /**

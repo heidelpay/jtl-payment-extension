@@ -6,7 +6,7 @@
  * Time: 12:09
  */
 
-if (isset($_GET['disableInvoice']) && $_GET['disableInvoice']) {
+if (array_key_exists('disableInvoice', $_GET) && $_GET['disableInvoice']) {
     $_SESSION['InvoiceDisabled'] = true;
 }
 
