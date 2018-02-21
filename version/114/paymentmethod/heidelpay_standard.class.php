@@ -750,6 +750,7 @@ class heidelpay_standard extends ServerPaymentMethod
                     $incomingPayment = new stdClass();
                     $incomingPayment->fBetrag = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
                     $incomingPayment->cISO = $order->Waehrung->cISO;
+                    $incomingPayment->cHinweis = $args['IDENTIFICATION_UNIQUEID'];
                     $this->addIncomingPayment($order, $incomingPayment);
                 }
                 $this->updateNotificationID($order->kBestellung, $args['IDENTIFICATION_UNIQUEID']);
