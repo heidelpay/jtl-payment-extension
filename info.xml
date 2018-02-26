@@ -215,7 +215,7 @@
       </Method>
 
       <Method>
-        <Name>Heidelpay Sofortüberweisung Plugin</Name>
+        <Name>Heidelpay Sofort Plugin</Name>
         <PictureURL>template/heidelpay.png</PictureURL>
         <Sort>3</Sort>
         <SendMail>0</SendMail>
@@ -229,9 +229,9 @@
         <ClassName>heidelpay_standard</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
-          <Name>Sofortüberweisung</Name>
-          <ChargeName>Sofortüberweisung</ChargeName>
-          <InfoText>Sicher zahlen per Sofortüberweisung</InfoText>
+          <Name>Sofort</Name>
+          <ChargeName>Sofort</ChargeName>
+          <InfoText>Sicher zahlen per Sofort</InfoText>
         </MethodLanguage>
         <MethodLanguage iso="ENG">
           <Name>SofortBanking</Name>
