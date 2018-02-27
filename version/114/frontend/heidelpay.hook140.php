@@ -5,7 +5,7 @@
  * DESC
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright � 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
  * @author Ronja Wann
  * @category JTL
@@ -23,7 +23,7 @@ if (isset($_GET ['hperror'])) {
 
         $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';
 
-        $customerErrorMessage = new \Heidelpay\MessageCodeMapper\MessageCodeMapper($local);
+        $customerErrorMessage = new \heidelpay\MessageCodeMapper\MessageCodeMapper($local);
 
         $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
         $divEnd = '</div>';
