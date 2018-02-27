@@ -87,17 +87,17 @@
     },
     {
         "name": "heidelpay/php-payment-api",
-        "version": "v1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/heidelpay/php-payment-api.git",
-            "reference": "6fa02ca075a22e3221082ae65c0d99e6a4485402"
+            "reference": "de2f457f26523a06c67c8a6e225da8b65f4b4bac"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/heidelpay/php-payment-api/zipball/6fa02ca075a22e3221082ae65c0d99e6a4485402",
-            "reference": "6fa02ca075a22e3221082ae65c0d99e6a4485402",
+            "url": "https://api.github.com/repos/heidelpay/php-payment-api/zipball/de2f457f26523a06c67c8a6e225da8b65f4b4bac",
+            "reference": "de2f457f26523a06c67c8a6e225da8b65f4b4bac",
             "shasum": ""
         },
         "require": {
@@ -124,7 +124,7 @@
             "heidelpay/php-basket-api": "Use this package to transmit basket information.",
             "heidelpay/php-message-code-mapper": "You can use this package to provide user-friendly messages instead of error codes."
         },
-        "time": "2017-12-14T12:36:17+00:00",
+        "time": "2018-02-05T13:50:04+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -134,7 +134,7 @@
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file."
+            "proprietary"
         ],
         "authors": [
             {
@@ -532,17 +532,17 @@
     },
     {
         "name": "zendframework/zend-validator",
-        "version": "2.10.1",
-        "version_normalized": "2.10.1.0",
+        "version": "2.10.2",
+        "version_normalized": "2.10.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zend-validator.git",
-            "reference": "010084ddbd33299bf51ea6f0e07f8f4e8bd832a8"
+            "reference": "38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/010084ddbd33299bf51ea6f0e07f8f4e8bd832a8",
-            "reference": "010084ddbd33299bf51ea6f0e07f8f4e8bd832a8",
+            "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9",
+            "reference": "38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9",
             "shasum": ""
         },
         "require": {
@@ -574,12 +574,12 @@
             "zendframework/zend-session": "Zend\\Session component, ^2.8; required by the Csrf validator",
             "zendframework/zend-uri": "Zend\\Uri component, required by the Uri and Sitemap\\Loc validators"
         },
-        "time": "2017-08-22T14:19:23+00:00",
+        "time": "2018-02-01T17:05:33+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.10-dev",
-                "dev-develop": "2.11-dev"
+                "dev-master": "2.10.x-dev",
+                "dev-develop": "2.11.x-dev"
             },
             "zf": {
                 "component": "Zend\\Validator",

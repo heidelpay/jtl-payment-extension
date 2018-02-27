@@ -17,9 +17,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Simon Gabriel
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class GenericPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -139,7 +137,7 @@ class GenericPaymentMethodTest extends BasePaymentMethodTest
         $returnObject = $this->paymentObject->refund('');
         $this->assertSame($paymentMethodClassPath, get_class($returnObject));
 
-        $requestArray = $this->paymentObject->getRequest()->convertToArray();
+        $requestArray = $this->paymentObject->getRequest()->toArray();
         $this->assertArrayHasKey('PAYMENT.CODE', $requestArray);
         $this->assertSame($paymentCode . '.RF', $requestArray['PAYMENT.CODE']);
         $this->assertSame($paymentMethodClass, $requestArray['CRITERION.PAYMENT_METHOD']);

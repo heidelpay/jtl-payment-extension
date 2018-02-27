@@ -7,12 +7,12 @@
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
- * @author Ronja Wann
+ * @author Ronja Wann, Florian Evertz
  * @category JTL
  */
-include_once(PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php');
+include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-require_once(PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php");
+require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
 /*
  * Heidelpay
@@ -41,7 +41,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function setShortId($shortId, $orderId)
     {
-        (preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId)) ? $shortId : false;
+        preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId) ? $shortId : false;
 
         if (!is_numeric($orderId)) {
             return false;
@@ -50,7 +50,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $sql = 'UPDATE `tbestellung`
         SET `cKommentar` = ?
           WHERE `cBestellNr` = ?';
-        $GLOBALS ["DB"]->executeQueryPrepared($sql, array($shortId, $orderId), 3);
+        $GLOBALS ['DB']->executeQueryPrepared($sql, array($shortId, $orderId), 3);
     }
 
     /**
@@ -99,18 +99,21 @@ class heidelpay_standard extends ServerPaymentMethod
             $oPlugin->oPluginEinstellungAssoc_arr ['user'],
             $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
             $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
-            $this->isSandboxMode($oPlugin, $currentPaymentMethod));
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
         $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND $this->isEqualAddress($order) == false) {
+        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND
+            $this->isEqualAddress($order) == false) {
             $this->redirect('warenkorb.php?hperroradd=1');
         }
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND $_SESSION['Kunde']->cFirma != null) {
+        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND
+            $_SESSION['Kunde']->cFirma != null) {
             $this->redirect('warenkorb.php?hperrorcom=1');
         }
 
@@ -176,7 +179,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->caption = 'Heidelpay';
 
         $sql = "SELECT * FROM `tzahlungsart` WHERE `cModulId` = '{$this->moduleID}'";
-        $this->info = $GLOBALS ["DB"]->executeQuery($sql, 1);
+        $this->info = $GLOBALS ['DB']->executeQuery($sql, 1);
     }
 
     /**
@@ -305,11 +308,29 @@ class heidelpay_standard extends ServerPaymentMethod
             $user = $_SESSION ['Lieferadresse'];
             $mail = $_SESSION ['Kunde'];
             $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array((empty($user->cVorname)) ? null : $user->cVorname, (empty($user->cNachname)) ? null : $user->cNachname, (empty($user->cFirma)) ? null : $user->cFirma, (empty($user->kKunde)) ? null : $user->kKunde, (empty($userStreet)) ? null : $userStreet, (empty($user->cBundesland)) ? null : $user->cBundesland, (empty($user->cPLZ)) ? null : $user->cPLZ, (empty($user->cOrt)) ? null : $user->cOrt, (empty($user->cLand)) ? null : $user->cLand, (empty($mail->cMail)) ? null : $mail->cMail);
+            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+                empty($user->cNachname) ? null : $user->cNachname,
+                empty($user->cFirma) ? null : $user->cFirma,
+                empty($user->kKunde) ? null : $user->kKunde,
+                empty($userStreet) ? null : $userStreet,
+                empty($user->cBundesland) ? null : $user->cBundesland,
+                empty($user->cPLZ) ? null : $user->cPLZ,
+                empty($user->cOrt) ? null : $user->cOrt,
+                empty($user->cLand) ? null : $user->cLand,
+                empty($mail->cMail) ? null : $mail->cMail);
         } else {
             $user = $_SESSION ['Kunde'];
             $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array((empty($user->cVorname)) ? null : $user->cVorname, (empty($user->cNachname)) ? null : $user->cNachname, (empty($user->cFirma)) ? null : $user->cFirma, (empty($user->kKunde)) ? null : $user->kKunde, (empty($userStreet)) ? null : $userStreet, (empty($user->cBundesland)) ? null : $user->cBundesland, (empty($user->cPLZ)) ? null : $user->cPLZ, (empty($user->cOrt)) ? null : $user->cOrt, (empty($user->cLand)) ? null : $user->cLand, (empty($user->cMail)) ? null : $user->cMail);
+            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+                empty($user->cNachname) ? null : $user->cNachname,
+                empty($user->cFirma) ? null : $user->cFirma,
+                empty($user->kKunde) ? null : $user->kKunde,
+                empty($userStreet) ? null : $userStreet,
+                empty($user->cBundesland) ? null : $user->cBundesland,
+                empty($user->cPLZ) ? null : $user->cPLZ,
+                empty($user->cOrt) ? null : $user->cOrt,
+                empty($user->cLand) ? null : $user->cLand,
+                empty($user->cMail) ? null : $user->cMail);
         }
         return $this->encodeData($userData);
     }
@@ -397,15 +418,18 @@ class heidelpay_standard extends ServerPaymentMethod
         );
         foreach ($keyList as $key) {
             // key exists only in billing address
-            if (array_key_exists($key, (array)$order->oRechnungsadresse) and !array_key_exists($key, (array)$order->Lieferadresse)) {
+            if (array_key_exists($key, (array)$order->oRechnungsadresse) and
+                !array_key_exists($key, (array)$order->Lieferadresse)) {
                 return false;
             }
             // key exists only in delivery address
-            if (array_key_exists($key, (array)$order->Lieferadresse) and !array_key_exists($key, (array)$order->oRechnungsadresse)) {
+            if (array_key_exists($key, (array)$order->Lieferadresse) and
+                !array_key_exists($key, (array)$order->oRechnungsadresse)) {
                 return false;
             }
             // merge keys
-            if (array_key_exists($key, (array)$order->Lieferadresse) and array_key_exists($key, (array)$order->oRechnungsadresse)) {
+            if (array_key_exists($key, (array)$order->Lieferadresse) and
+                array_key_exists($key, (array)$order->oRechnungsadresse)) {
                 // return false on unmatched
                 if ($order->Lieferadresse->$key != $order->oRechnungsadresse->$key) {
                     return false;
@@ -513,10 +537,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPayButtonLabel()
     {
+        $payButtonLabel = 'Pay now';
         if ($_SESSION ['cISOSprache'] == 'ger') {
             $payButtonLabel = 'Jetzt zahlen';
-        } else {
-            $payButtonLabel = 'Pay now';
         }
         return $payButtonLabel;
     }
@@ -528,10 +551,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPayText()
     {
+        $payText = 'Please complete the following data and complete the order process.';
         if ($_SESSION ['cISOSprache'] == 'ger') {
             $payText = 'Bitte vervollständigen Sie die unten aufgeführten Daten und schließen Sie den Bestellprozess ab.';
-        } else {
-            $payText = 'Please complete the following data and complete the order process.';
         }
         return $payText;
     }
@@ -543,10 +565,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getHolderLabel()
     {
+        $holderLabel = 'Holder';
         if ($_SESSION ['cISOSprache'] == 'ger') {
             $holderLabel = 'Kontoinhaber';
-        } else {
-            $holderLabel = 'Holder';
         }
         return $holderLabel;
     }
@@ -558,10 +579,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getBirthdateLabel()
     {
+        $birthdateLabel = 'Birthdate';
         if ($_SESSION ['cISOSprache'] == 'ger') {
             $birthdateLabel = 'Geburtsdatum';
-        } else {
-            $birthdateLabel = 'Birthdate';
         }
         return $birthdateLabel;
     }
@@ -573,10 +593,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getSalutationArray()
     {
+        $salutationArray = array('MR' => 'Mr', 'MRS' => 'Mrs');
         if ($_SESSION ['cISOSprache'] == 'ger') {
             $salutationArray = array('MR' => 'Herr', 'MRS' => 'Frau');
-        } else {
-            $salutationArray = array('MR' => 'Mr', 'MRS' => 'Mrs');
         }
         return $salutationArray;
     }
@@ -588,10 +607,9 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getSalutation()
     {
+        $salutation = 'MRS';
         if ($_SESSION['Kunde']->cAnrede == 'm') {
             $salutation = 'MR';
-        } else {
-            $salutation = 'MRS';
         }
         return $salutation;
     }
@@ -635,7 +653,8 @@ class heidelpay_standard extends ServerPaymentMethod
                 /* If the verification does not match this can mean some kind of manipulation or
                  * miss configuration. So you can log $e->getMessage() for debugging.*/
                 $callers = debug_backtrace();
-                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " . $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
+                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
+                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
                 exit();
             }
         } else {
@@ -645,12 +664,14 @@ class heidelpay_standard extends ServerPaymentMethod
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
                 $payCode = explode('.', $args ['PAYMENT_CODE']);
-                if ((strtoupper($payCode [0]) == 'DD') && (!isset($args ['TRANSACTION_SOURCE']))) {
+                if (strtoupper($payCode [0]) == 'DD' && !isset($args ['TRANSACTION_SOURCE'])) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
                     if ($language == 'DE') {
-                        include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ddMail_de.tpl');
+                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ddMail_de.tpl';
                     } else {
-                        include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ddMail_en.tpl');
+                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ddMail_en.tpl';
                     }
                     $repl = array(
                         '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
@@ -660,18 +681,25 @@ class heidelpay_standard extends ServerPaymentMethod
                         '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
                         '{HOLDER}' => $args ['ACCOUNT_HOLDER']
                     );
-                    if ((isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != ''))) {
+                    if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
                         $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
                     } else {
                         $repl ['{IDENT_CREDITOR}'] = '-';
                     }
-                    mail($order->oRechnungsadresse->cMail, constant('DD_MAIL_SUBJECT'), strtr(constant('DD_MAIL_TEXT'), $repl), constant('DD_MAIL_HEADERS'));
-                } elseif ((strtoupper($payCode [0]) == 'PP') && (!isset($args ['TRANSACTION_SOURCE']))) {
+                    mail(
+                        $order->oRechnungsadresse->cMail,
+                        constant('DD_MAIL_SUBJECT'),
+                        strtr(constant('DD_MAIL_TEXT'), $repl),
+                        constant('DD_MAIL_HEADERS')
+                    );
+                } elseif (strtoupper($payCode [0]) == 'PP' && !isset($args ['TRANSACTION_SOURCE'])) {
                     $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
                     if ($language == 'DE') {
-                        include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ppMail_de.tpl');
+                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ppMail_de.tpl';
                     } else {
-                        include_once(PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/112/paymentmethod/template/heidelpay_ppMail_en.tpl');
+                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ppMail_en.tpl';
                     }
                     $repl = array(
                         '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
@@ -681,15 +709,22 @@ class heidelpay_standard extends ServerPaymentMethod
                         '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
                         '{USAGE}' => $args ['IDENTIFICATION_SHORTID']
                     );
-                    mail($order->oRechnungsadresse->cMail, constant('PP_MAIL_SUBJECT'), strtr(constant('PP_MAIL_TEXT'), $repl), constant('PP_MAIL_HEADERS'));
+                    mail(
+                        $order->oRechnungsadresse->cMail,
+                        constant('PP_MAIL_SUBJECT'),
+                        strtr(constant('PP_MAIL_TEXT'), $repl),
+                        constant('PP_MAIL_HEADERS')
+                    );
                 } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $this->setPayInfo($args, $order->cBestellNr);
                 }
-                if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') { // Nur wenn nicht Vorkasse od. Rechnung
+                // Nur wenn nicht Vorkasse od. Rechnung
+                if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') {
                     try {
                         $this->setOrderStatusToPaid($order);
                     } catch (Exception $e) {
-                        $e = 'Update order status failed on order: ' . $order . ' in file: ' . $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
+                        $e = 'Update order status failed on order: ' . $order . ' in file: ' .
+                            $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
                         $logData = array(
                             'module' => 'Heidelpay Standard',
                             'order' => $order,
@@ -700,7 +735,8 @@ class heidelpay_standard extends ServerPaymentMethod
                     try {
                         $this->sendConfirmationMail($order);
                     } catch (Exception $e) {
-                        $e = 'Update order status failed on order: ' . $order . ' in file: ' . $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
+                        $e = 'Update order status failed on order: ' . $order . ' in file: ' .
+                            $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
                         $logData = array(
                             'module' => 'Heidelpay Standard',
                             'order' => $order,
@@ -724,10 +760,8 @@ class heidelpay_standard extends ServerPaymentMethod
             /*save order */
         } elseif ($HeidelpayResponse->isError()) {
             $error = $HeidelpayResponse->getError();
-            //TODO: an dieser Stelle auf INSURANCE-Dingens prüfen und Funktion ausführen
-
-            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'].
-            $this->disableInvoiceSecured($args);
+            echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'] .
+                $this->disableInvoiceSecured($args);
         } elseif ($HeidelpayResponse->isPending()) {
             echo $this->getReturnURL($order);
         }
@@ -760,7 +794,8 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function setPayInfo($post, $orderId)
     {
-        $bookingtext = 'Bitte überweisen Sie uns den Betrag von ' . $post['PRESENTATION_AMOUNT'] . ' ' . $post['PRESENTATION_CURRENCY'] . ' nach Erhalt der Ware auf folgendes Konto:
+        $bookingtext = 'Bitte überweisen Sie uns den Betrag von ' . $post['PRESENTATION_AMOUNT'] . ' ' .
+            $post['PRESENTATION_CURRENCY'] . ' nach Erhalt der Ware auf folgendes Konto:
         
   Kontoinhaber: ' . $post['CONNECTOR_ACCOUNT_HOLDER'] . '
   IBAN: ' . $post['CONNECTOR_ACCOUNT_IBAN'] . '
@@ -772,7 +807,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $sql = 'UPDATE `tbestellung` SET 
 			`cKommentar` ="' . htmlspecialchars(utf8_decode($bookingtext)) . '" 
 			WHERE `cBestellNr` ="' . htmlspecialchars($orderId) . '";';
-        $GLOBALS ["DB"]->executeQuery($sql, 1);
+        $GLOBALS ['DB']->executeQuery($sql, 1);
     }
 
     /**
@@ -782,12 +817,21 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getErrorReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
-
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
+            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             return $order->BestellstatusURL;
         }
 
         return Shop::getURL() . '/bestellvorgang.php';
+    }
+
+    public function disableInvoiceSecured($response)
+    {
+        if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
+            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+            return '&disableInvoice=true';
+        }
+        return '';
     }
 
     public function finalizeOrder($order, $hash, $args)
@@ -808,15 +852,6 @@ class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
-    public function disableInvoiceSecured($response)
-    {
-        if (isset($response['CRITERION_INSURANCE-RESERVATION'])&&
-            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
-            return '&disableInvoice=true';
-        }
-        return '';
-    }
-
     /**
      * prepares payment text
      *
@@ -827,7 +862,8 @@ class heidelpay_standard extends ServerPaymentMethod
     public function prepaymentText($res, $lang = 'EN')
     {
         if ($lang == 'DE') {
-            define('PREPAYMENT_TEXT',
+            define(
+                'PREPAYMENT_TEXT',
                 '<b>Bitte &uuml;berweisen Sie uns den Betrag von {CURRENCY} {AMOUNT} auf folgendes Konto:</b><br /><br />
 			Land :         {ACC_COUNTRY}<br>
 			Kontoinhaber : {ACC_OWNER}<br>
@@ -837,9 +873,11 @@ class heidelpay_standard extends ServerPaymentMethod
 			BIC:           {ACC_BIC}<br>
 			<br /><br /><b>Geben sie bitte im Verwendungszweck UNBEDINGT die Identifikationsnummer<br />
 			{SHORTID}<br />
-			und NICHTS ANDERES an.</b>');
+			und NICHTS ANDERES an.</b>'
+            );
         } else {
-            define('PREPAYMENT_TEXT',
+            define(
+                'PREPAYMENT_TEXT',
                 '<b>Please transfer the amount of {CURRENCY} {AMOUNT} to the following account:</b><br /><br />
 					Country :         {ACC_COUNTRY}<br>
 					Account holder :  {ACC_OWNER}<br>
@@ -849,7 +887,8 @@ class heidelpay_standard extends ServerPaymentMethod
 					BIC:              {ACC_BIC}<br>
 					<br><br /><b>Please use the identification number <br />
 					{SHORTID}<br />
-					as the descriptor and nothing else. Otherwise we cannot match your transaction!</b>');
+					as the descriptor and nothing else. Otherwise we cannot match your transaction!</b>'
+            );
         }
 
         $repl = array(

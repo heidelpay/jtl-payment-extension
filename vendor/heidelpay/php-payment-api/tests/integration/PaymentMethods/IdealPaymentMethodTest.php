@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class IdealPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -78,7 +76,7 @@ class IdealPaymentMethodTest extends BasePaymentMethodTest
         $iDeal = new iDeal();
         $iDeal->getRequest()->authentification(...$authentication);
         $iDeal->getRequest()->customerAddress(...$customerDetails);
-        $iDeal->_dryRun = true;
+        $iDeal->dryRun = true;
 
         $this->paymentObject = $iDeal;
     }
@@ -88,6 +86,8 @@ class IdealPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the iDeal authorize transaction
      * @group connectionTest
+     *
+     * @throws \Exception
      */
     public function testAuthorize()
     {
@@ -98,9 +98,10 @@ class IdealPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         /* test if config parameters exists */
         $configBankCountry = array('NL' => 'Niederlande');
@@ -117,6 +118,8 @@ class IdealPaymentMethodTest extends BasePaymentMethodTest
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
 
         return (string)$response->getPaymentReferenceId();
     }

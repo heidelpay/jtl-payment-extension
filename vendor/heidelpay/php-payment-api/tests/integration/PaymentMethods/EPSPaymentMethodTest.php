@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Ronja Wann
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class EPSPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -80,7 +78,7 @@ class EPSPaymentMethodTest extends BasePaymentMethodTest
         $EPS = new EPS();
         $EPS->getRequest()->authentification(...$authentication);
         $EPS->getRequest()->customerAddress(...$customerDetails);
-        $EPS->_dryRun = true;
+        $EPS->dryRun = true;
 
         $this->paymentObject = $EPS;
     }
@@ -90,6 +88,8 @@ class EPSPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the EPS authorize transaction
      * @group connectionTest
+     *
+     * @throws \Exception
      */
     public function testAuthorize()
     {
@@ -100,12 +100,15 @@ class EPSPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
 
         return (string)$response->getPaymentReferenceId();
     }

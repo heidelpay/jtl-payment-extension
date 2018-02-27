@@ -3,7 +3,7 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit\PaymentMethods;
 
 use AspectMock\Test as test;
-use Heidelpay\PhpPaymentApi\ParameterGroups\CriterionParameterGroup;
+use Heidelpay\PhpPaymentApi\Constants\ApiConfig;
 use Heidelpay\PhpPaymentApi\PaymentMethods\CreditCardPaymentMethod;
 use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
 
@@ -19,9 +19,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  *
  * @author  Simon Gabriel
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class CreditCardPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -121,7 +119,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
         $paymentObject = new CreditCardPaymentMethod();
         $paymentObject->getRequest()->authentification(...$this->authentication->getAuthenticationArray());
         $paymentObject->getRequest()->customerAddress(...$this->customerData->getCustomerDataArray());
-        $paymentObject->_dryRun = false;
+        $paymentObject->dryRun = false;
 
         $this->paymentObject = $paymentObject;
 
@@ -152,7 +150,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
      */
     public function registrationParametersShouldBeSetUpAsExpected()
     {
-        $timestamp = 'CreditCardPaymentMethodTest::authorizeParameterJsonShouldBeSetUpAsExpected 2017-10-26 15:41:12';
+        $timestamp = 'CreditCardPaymentMethodTest::registrationParametersShouldBeSetUpAsExpected 2017-10-26 15:41:12';
         $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
 
         $preventAsyncRedirect = 'FALSE';
@@ -163,10 +161,10 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -192,10 +190,10 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
                 'ADDRESS.ZIP' => $zip,
                 'CONTACT.EMAIL' => $email,
                 'CRITERION.PAYMENT_METHOD' => $object::getClassName(),
-                'CRITERION.SECRET' => '73c237c4b5cb4aded8d87cbc85f2f1a5a83f9123d353d9ddb26e54fdfb00b7ac59b188f4' .
-                    '44f85de486ee906862d0570ef7c5f4447343f370db0098c3f5867d92',
+                'CRITERION.SECRET' => 'b2741166ff6bbb45bca9dd74b4dbdfbc9bc92b13d943bdf8c0d557fb42fa6b475cff230' .
+                    'c930068cddb18f384fda940a2f8831782e2c2559544319dee0f33a237',
                 'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-                'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+                'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
                 'FRONTEND.CSS_PATH' => self::CSS_PATH,
                 'FRONTEND.ENABLED' => 'FALSE',
                 'FRONTEND.MODE' => 'WHITELABEL',
@@ -216,7 +214,90 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
                 'USER.PWD' => $userPassword,
             ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
+    }
+
+    /**
+     * Verify registration parameters generated as expected
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function reregistrationParametersShouldBeSetUpAsExpected()
+    {
+        $timestamp = 'CreditCardPaymentMethodTest::reregistrationParametersShouldBeSetUpAsExpected 2017-10-26 15:41:12';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $referenceId = 123456789;
+        $this->paymentObject->reregistration(
+            $referenceId,
+            self::PAYMENT_FRAME_ORIGIN,
+            $preventAsyncRedirect,
+            self::CSS_PATH
+        );
+
+        /* disable frontend (iframe) and submit the card information directly (only for testing) */
+        $frontendEnabled = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
+        $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
+        $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
+
+        list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
+            $this->customerData->getCustomerDataArray();
+
+        list($securitySender, $userLogin, $userPassword, $transactionChannel, ) =
+            $this->authentication->getAuthenticationArray();
+
+        // this is done to avoid syntax warnings
+        $object = $this->paymentObject;
+
+        $expected =
+            [
+                'ACCOUNT.BRAND' => $this->cardBrand,
+                'ACCOUNT.EXPIRY_MONTH' => $this->cardExpiryMonth,
+                'ACCOUNT.EXPIRY_YEAR' => $this->cardExpiryYear,
+                'ACCOUNT.HOLDER' => $this->holder,
+                'ACCOUNT.NUMBER' => $this->cartNumber,
+                'ACCOUNT.VERIFICATION' => $this->cardVerification,
+                'ADDRESS.CITY' => $city,
+                'ADDRESS.COUNTRY' => $country,
+                'ADDRESS.STATE' => $state,
+                'ADDRESS.STREET' => $street,
+                'ADDRESS.ZIP' => $zip,
+                'CONTACT.EMAIL' => $email,
+                'CRITERION.PAYMENT_METHOD' => $object::getClassName(),
+                'CRITERION.SECRET' => '53ebf32eb481bc80cb4e2d36cd37599cc29328ff2f1e0bc03d2fc3e293377a43aa0c' .
+                    'f3d895699fac634ee3e49024bc2eb2dedeb91929bd8150877ce328e6544e',
+                'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
+                'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
+                'FRONTEND.CSS_PATH' => self::CSS_PATH,
+                'FRONTEND.ENABLED' => 'FALSE',
+                'FRONTEND.MODE' => 'WHITELABEL',
+                'FRONTEND.PAYMENT_FRAME_ORIGIN' => self::PAYMENT_FRAME_ORIGIN,
+                'FRONTEND.PREVENT_ASYNC_REDIRECT' => $preventAsyncRedirect,
+                'IDENTIFICATION.SHOPPERID' => $shopperId,
+                'IDENTIFICATION.TRANSACTIONID' => $timestamp,
+                'IDENTIFICATION.REFERENCEID' => $referenceId,
+                'NAME.GIVEN' => $firstName,
+                'NAME.FAMILY' => $lastName,
+                'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.RR',
+                'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
+                'PRESENTATION.CURRENCY' => $this->currency,
+                'REQUEST.VERSION' => '1.0',
+                'SECURITY.SENDER' => $securitySender,
+                'TRANSACTION.CHANNEL' => $transactionChannel,
+                'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+                'USER.LOGIN' => $userLogin,
+                'USER.PWD' => $userPassword,
+            ];
+
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
     }
 
     /**
@@ -239,10 +320,10 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -270,7 +351,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
             'CRITERION.SECRET' => '965e4267bc0d3e9313f07aaff8ac602681d9e1643677dc4c39853022c227ff23ef30ca' .
                 '1f92b955c2f2335becba777fe2c3ad4b036c62deb81d1b2800fb31e655',
             'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-            'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+            'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
             'FRONTEND.CSS_PATH' => self::CSS_PATH,
             'FRONTEND.ENABLED' => $frontendEnabled,
             'FRONTEND.MODE' => 'WHITELABEL',
@@ -291,7 +372,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
             'USER.PWD' => $userPassword,
         ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
     }
 
     /**
@@ -314,10 +395,10 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -345,7 +426,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
             'CRITERION.SECRET' => '3fcdb7e573521e40823f5875195f635f4cbdda39c6de0e8a10b816313ace6b4f1d77' .
                 'cfa6b38ea9a575e7b038530caa49966df3794014d8ded8bf5a5f79185e56',
             'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-            'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+            'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
             'FRONTEND.CSS_PATH' => self::CSS_PATH,
             'FRONTEND.ENABLED' => $frontendEnabled,
             'FRONTEND.MODE' => 'WHITELABEL',
@@ -366,7 +447,7 @@ class CreditCardPaymentMethodTest extends BasePaymentMethodTest
             'USER.PWD' => $userPassword,
         ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
     }
 
     //</editor-fold>
