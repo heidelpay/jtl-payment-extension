@@ -74,6 +74,8 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         global $bestellung;
 
+        mail('david.owusu@heidelpay.de', 'JTL-Bestellung', print_r($bestellung,1));
+
         $currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
         if (empty($currentPaymentMethod)) {
             $currentPaymentMethod = $bestellung->Zahlungsart->cModulId;
@@ -94,27 +96,17 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $this->setPaymentObject($paymentMethodPrefix);
 
-        $this->paymentObject->getRequest()->authentification(
-            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
-            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
-        );
-        $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
-        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
-        $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
-        $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
-        $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+        $this->prepareRequest($oPlugin, $order, $currentPaymentMethod, $notifyURL);
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND
-            $this->isEqualAddress($order) == false) {
-            $this->redirect('warenkorb.php?hperroradd=1');
-        }
+        // Checks for secured paymethods
+        if ($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA'){
+            if($this->isEqualAddress($order) == false) {
+                $this->redirect('warenkorb.php?hperroradd=1');
+            }
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND
-            $_SESSION['Kunde']->cFirma != null) {
-            $this->redirect('warenkorb.php?hperrorcom=1');
+            if( $_SESSION['Kunde']->cFirma != null) {
+                $this->redirect('warenkorb.php?hperrorcom=1');
+            }
         }
 
         switch ($paymentMethodPrefix) {
@@ -141,11 +133,31 @@ class heidelpay_standard extends ServerPaymentMethod
 
         if ($this->paymentObject->getResponse()->isError()) {
             $errorCode = $this->paymentObject->getResponse()->getError();
+            mail(
+                'david.owusu@heidelpay.de',
+                'Fehler: JTL Request',
+                print_r($this->paymentObject->getResponse(),1));
             $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
             return;
         }
 
         $this->setPaymentTemplate($paymentMethodPrefix);
+    }
+
+    public function prepareRequest($oPlugin, $order, $currentPaymentMethod, $notifyURL) {
+        $this->paymentObject->getRequest()->authentification(
+            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
+            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
+
+        $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
+        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
+        $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
+        $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
+        $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
     }
 
     /**
