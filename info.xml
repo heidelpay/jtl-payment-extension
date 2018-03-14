@@ -729,8 +729,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_ivpg.class.php</ClassFile>
+        <ClassName>heidelpay_ivpg</ClassName>
         <TemplateFile>template/heidelpay_InvoiceSec.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Gesicherte Rechnung</Name>
