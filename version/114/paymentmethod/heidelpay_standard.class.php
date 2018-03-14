@@ -13,6 +13,7 @@
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
+require_once __DIR__.'/classes/Helper/HeidelpayBasketHelper.php';
 
 /*
  * Heidelpay
@@ -20,6 +21,9 @@ require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
 class heidelpay_standard extends ServerPaymentMethod
 {
+    /**
+     * @var \Heidelpay\PhpPaymentApi\AbstractMethod
+     */
     public $paymentObject = null;
     public $pluginName = "heidelpay_standard";
 
@@ -68,13 +72,13 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Prepares process for payment
      *
-     * @param $order
+     * @param Bestellung $order
      */
     public function preparePaymentProcess($order)
     {
         global $bestellung;
 
-        mail('david.owusu@heidelpay.de', 'JTL-Bestellung', print_r($bestellung,1));
+        mail('david.owusu@heidelpay.de', 'JTL-Bestellung', print_r($order,1));//
 
         $currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
         if (empty($currentPaymentMethod)) {
@@ -96,7 +100,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $this->setPaymentObject($paymentMethodPrefix);
 
-        $this->prepareRequest($oPlugin, $order, $currentPaymentMethod, $notifyURL);
+        $this->prepareRequest($order, $currentPaymentMethod, $notifyURL);
 
         // Checks for secured paymethods
         if ($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA'){
@@ -144,7 +148,9 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->setPaymentTemplate($paymentMethodPrefix);
     }
 
-    public function prepareRequest($oPlugin, $order, $currentPaymentMethod, $notifyURL) {
+    public function prepareRequest($order, $currentPaymentMethod, $notifyURL) {
+        $oPlugin = $this->getPlugin($currentPaymentMethod);
+
         $this->paymentObject->getRequest()->authentification(
             $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
             $oPlugin->oPluginEinstellungAssoc_arr ['user'],
@@ -158,6 +164,19 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+    }
+
+    public function addBasketId($currentPaymentMethod, $order) {
+        $oPlugin = $this->getPlugin($currentPaymentMethod);
+        $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
+
+
+        if($response->isSuccess()) {
+            $this->paymentObject->getRequest()->getBasket()->setId($response->getBasketId());
+        } else {
+            Jtllog::writeLog('Warenkorb konnte nicht an die Bestellung angehangen werden. Bestellnummer:'
+                .$order->cBestellNr, JTLLOG_LEVEL_NOTICE);
+        }
     }
 
     /**
