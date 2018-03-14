@@ -16,7 +16,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 require_once __DIR__.'/classes/Helper/HeidelpayBasketHelper.php';
 
 /*
- * Heidelpay
+ * heidelpay standard class
  */
 
 class heidelpay_standard extends ServerPaymentMethod
@@ -77,8 +77,7 @@ class heidelpay_standard extends ServerPaymentMethod
     public function preparePaymentProcess($order)
     {
         global $bestellung;
-
-        mail('david.owusu@heidelpay.de', 'JTL-Bestellung', print_r($order,1));//
+        Jtllog::writeLog(print_r($order,1), JTLLOG_LEVEL_DEBUG);
 
         $currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
         if (empty($currentPaymentMethod)) {
@@ -137,10 +136,6 @@ class heidelpay_standard extends ServerPaymentMethod
 
         if ($this->paymentObject->getResponse()->isError()) {
             $errorCode = $this->paymentObject->getResponse()->getError();
-            mail(
-                'david.owusu@heidelpay.de',
-                'Fehler: JTL Request',
-                print_r($this->paymentObject->getResponse(),1));
             $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
             return;
         }

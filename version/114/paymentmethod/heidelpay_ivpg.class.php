@@ -11,8 +11,6 @@ require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->
 
 class heidelpay_ivpg extends heidelpay_standard
 {
-    private $paymentCode = 'HPIVPG';
-
     public function prepareRequest($order, $currentPaymentMethod, $notifyURL)
     {
         parent::prepareRequest($order, $currentPaymentMethod, $notifyURL);

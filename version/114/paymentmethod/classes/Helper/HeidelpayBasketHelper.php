@@ -1,19 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: David.Owusu
- * Date: 08.03.2018
- * Time: 17:10
- */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
+use Heidelpay\PhpBasketApi\Object\Authentication;
 use Heidelpay\PhpBasketApi\Object\Basket;
 use Heidelpay\PhpBasketApi\Object\BasketItem;
 use Heidelpay\PhpBasketApi\Request;
-use Heidelpay\PhpBasketApi\Object\Authentication;
 
 
+/**
+ * Class HeidelpayBasketHelper
+ */
 class HeidelpayBasketHelper
 {
 
@@ -37,7 +34,7 @@ class HeidelpayBasketHelper
         $basket->setBasketReferenceId($order->cBestellNr);
 
         //add products to the basket. Shipment and coupons behave the same w
-        foreach($order->Positionen as $position) {
+        foreach ($order->Positionen as $position) {
             $item = new BasketItem();
             self::mapToItem($position, $item);
             $item->setBasketItemReferenceId($basket->getItemCount() + 1);
@@ -49,22 +46,26 @@ class HeidelpayBasketHelper
         return $request->addNewBasket($basket);
     }
 
+    /**
+     * @param $position
+     * @param BasketItem $item
+     */
     private static function mapToItem($position, BasketItem $item)
     {
         //calculate Values
         $unit = self::fetchUnit($position->Artikel->kMassEinheit);
         $vat = (int)$position->fMwSt;
         $type = self::findItemType($position->nPosTyp);
-        $amountPerUnit = (int)round(bcmul($position->fPreisEinzelNetto,(100+$vat), 3));
-        $amountGross = (int)bcmul($amountPerUnit , $position->nAnzahl,3);
-        $amountNet = (int)bcmul(round(bcmul($position->fPreis, 100, 3)) , $position->nAnzahl);
+        $amountPerUnit = (int)round(bcmul($position->fPreisEinzelNetto, (100 + $vat), 3));
+        $amountGross = (int)bcmul($amountPerUnit, $position->nAnzahl, 3);
+        $amountNet = (int)bcmul(round(bcmul($position->fPreis, 100, 3)), $position->nAnzahl);
         $amountVat = $amountGross - $amountNet;
 
         // Set basket values
         $item->setTitle($position->cName);
         $item->setUnit($unit);
         $item->setQuantity($position->nAnzahl);
-        $item->setArticleId(!empty($position->Artikel->kArtikel)?$position->Artikel->kArtikel:'');
+        $item->setArticleId(!empty($position->Artikel->kArtikel) ? $position->Artikel->kArtikel : '');
         $item->setVat($vat);
         $item->setType($type);
         $item->setAmountPerUnit($amountPerUnit);
@@ -74,10 +75,14 @@ class HeidelpayBasketHelper
         $item->setAmountVat($amountVat);
     }
 
+    /**
+     * @param $unitId
+     * @return null
+     */
     private static function fetchUnit($unitId)
     {
         $query = 'SELECT cName FROM `tmasseinheitsprache` 
-            WHERE `kMassEinheit` = '.$unitId;
+            WHERE `kMassEinheit` = ' . $unitId;
         $myUnit = $GLOBALS['DB']->executeQuery($query, 1);
         if (!empty($myUnit->cName)) {
             return $myUnit->cName;
@@ -85,6 +90,10 @@ class HeidelpayBasketHelper
         return null;
     }
 
+    /**
+     * @param $posType
+     * @return string
+     */
     private static function findItemType($posType)
     {
         switch ((string)$posType) {
