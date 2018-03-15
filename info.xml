@@ -775,8 +775,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_ddpg.class.php</ClassFile>
+        <ClassName>heidelpay_ddpg</ClassName>
         <TemplateFile>template/heidelpay_DirectDebit.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Gesicherte Lastschrift</Name>
