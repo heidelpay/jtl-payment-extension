@@ -77,7 +77,6 @@ class heidelpay_standard extends ServerPaymentMethod
     public function preparePaymentProcess($order)
     {
         global $bestellung;
-        Jtllog::writeLog(print_r($order,1), JTLLOG_LEVEL_DEBUG);
 
         $currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
         if (empty($currentPaymentMethod)) {
@@ -165,11 +164,10 @@ class heidelpay_standard extends ServerPaymentMethod
         $oPlugin = $this->getPlugin($currentPaymentMethod);
         $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
 
-
         if($response->isSuccess()) {
             $this->paymentObject->getRequest()->getBasket()->setId($response->getBasketId());
         } else {
-            Jtllog::writeLog('Warenkorb konnte nicht an die Bestellung angehangen werden. Bestellnummer:'
+            Jtllog::writeLog('No basket could be added to your order. Order number: '
                 .$order->cBestellNr, JTLLOG_LEVEL_NOTICE);
         }
     }
@@ -679,8 +677,8 @@ class heidelpay_standard extends ServerPaymentMethod
                 /* If the verification does not match this can mean some kind of manipulation or
                  * miss configuration. So you can log $e->getMessage() for debugging.*/
                 $callers = debug_backtrace();
-                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
-                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
+                Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
+                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
                 exit();
             }
         } else {
@@ -756,7 +754,7 @@ class heidelpay_standard extends ServerPaymentMethod
                             'order' => $order,
                             'error_msg' => $e
                         );
-                        Jtllog::write($logData, 1, false);
+                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
                     }
                     try {
                         $this->sendConfirmationMail($order);
@@ -768,7 +766,7 @@ class heidelpay_standard extends ServerPaymentMethod
                             'order' => $order,
                             'error_msg' => $e
                         );
-                        Jtllog::write($logData, 1, false);
+                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
                     }
                 }
 
