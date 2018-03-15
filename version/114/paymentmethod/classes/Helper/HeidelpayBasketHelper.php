@@ -1,4 +1,15 @@
 <?php
+/*
+ * SUMMARY
+ *
+ * DESC
+ *
+ * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
+ * @link https://dev.heidelpay.de/JTL
+ * @author David Owusu
+ * @category JTL
+ */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
@@ -6,6 +17,8 @@ use Heidelpay\PhpBasketApi\Object\Authentication;
 use Heidelpay\PhpBasketApi\Object\Basket;
 use Heidelpay\PhpBasketApi\Object\BasketItem;
 use Heidelpay\PhpBasketApi\Request;
+use Heidelpay\PhpBasketApi\Exception\InvalidBasketitemPositionException;
+use Heidelpay\PhpBasketApi\Response;
 
 
 /**
@@ -13,11 +26,11 @@ use Heidelpay\PhpBasketApi\Request;
  */
 class HeidelpayBasketHelper
 {
-
     /**
+     * Prepare the basket object from order and perform the request to transmit the basket to the heidelpay payment.
      * @param Bestellung $order
-     * @param $oPluginSettings
-     * @return \Heidelpay\PhpBasketApi\Response
+     * @param array $oPluginSettings
+     * @return Response If successful the response will contain a basket ID that can be added to the transaction request
      */
     public static function sendBasketFromOrder($order, $oPluginSettings)
     {
@@ -33,21 +46,23 @@ class HeidelpayBasketHelper
         $basket->setCurrencyCode($order->Waehrung->cISO);
         $basket->setBasketReferenceId($order->cBestellNr);
 
-        //add products to the basket. Shipment and coupons behave the same w
+        // Add all order elements to the basket
         foreach ($order->Positionen as $position) {
             $item = new BasketItem();
             self::mapToItem($position, $item);
             $item->setBasketItemReferenceId($basket->getItemCount() + 1);
-            $basket->addBasketItem($item, null, true);
+            try {
+                $basket->addBasketItem($item, null, true);
+            } catch ( InvalidBasketitemPositionException $exception) {
+                Jtllog::writeLog($exception->getMessage(), JTLLOG_LEVEL_ERROR, false);
+            }
         }
-
-        //mail('david.owusu@heidelpay.de', 'Basket-Data', print_r($basket, 1));
-        Jtllog::writeLog(print_r($basket, 1), JTLLOG_LEVEL_DEBUG);
-        return $request->addNewBasket($basket);
+        return $request->addNewBasket();
     }
 
     /**
-     * @param $position
+     * Map the product information to the corresponding attributes of the basket item.
+     * @param WarenkorbPos $position
      * @param BasketItem $item
      */
     private static function mapToItem($position, BasketItem $item)
@@ -59,34 +74,40 @@ class HeidelpayBasketHelper
         $type = self::findItemType($position->nPosTyp);
         $amountPerUnit = (int)round(bcmul($position->fPreisEinzelNetto, (100 + $vat), 1));
         $amountGross = (int)bcmul($amountPerUnit, $position->nAnzahl, 3);
-        $amountNet = (int)bcmul(round(bcmul($position->fPreis, 100, 1)), $position->nAnzahl);
+        $amountNet = (int)bcmul(round(bcmul($position->fPreisEinzelNetto, 100, 1)), $position->nAnzahl);
         $amountVat = $amountGross - $amountNet;
 
         // Set basket values
         $item->setTitle($position->cName);
         $item->setUnit($unit);
+        $item->setType($type);
         $item->setQuantity($position->nAnzahl);
         $item->setArticleId($articleId);
         $item->setVat($vat);
-        $item->setType($type);
+
         $item->setAmountPerUnit($amountPerUnit);
         $item->setAmountGross($amountGross);
-
         $item->setAmountNet($amountNet);
         $item->setAmountVat($amountVat);
     }
 
     /**
-     * @param $posType
+     * Find the correct type depending on the posType number
+     * @param int $posType
      * @return string
      */
     private static function findItemType($posType)
     {
         switch ((string)$posType) {
+            case C_WARENKORBPOS_TYP_ARTIKEL:
+                return 'goods';
             case C_WARENKORBPOS_TYP_VERSANDPOS:
                 return 'shipment';
+            case C_WARENKORBPOS_TYP_GUTSCHEIN:
+            case C_WARENKORBPOS_TYP_KUPON:
+                return 'voucher';
             default:
-                return 'goods';
+                return 'other';
         }
     }
 }

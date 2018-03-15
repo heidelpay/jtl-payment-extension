@@ -7,7 +7,7 @@
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
- * @author Ronja Wann, Florian Evertz
+ * @author Ronja Wann, Florian Evertz, David Owusu
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
@@ -142,7 +142,14 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->setPaymentTemplate($paymentMethodPrefix);
     }
 
-    public function prepareRequest($order, $currentPaymentMethod, $notifyURL) {
+    /**
+     * Prepare transaction request.
+     * The preparations will apply to the class property paymentObject
+     * @param Bestellung $order
+     * @param string $currentPaymentMethod
+     * @param string $notifyURL
+     */
+    public function prepareRequest(Bestellung $order, $currentPaymentMethod, $notifyURL) {
         $oPlugin = $this->getPlugin($currentPaymentMethod);
 
         $this->paymentObject->getRequest()->authentification(
@@ -160,6 +167,11 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
     }
 
+    /**
+     * Build and send a basket to the hPP. If successful the basketId will be added to the payment transaction.
+     * @param $currentPaymentMethod
+     * @param $order
+     */
     public function addBasketId($currentPaymentMethod, $order) {
         $oPlugin = $this->getPlugin($currentPaymentMethod);
         $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
