@@ -144,7 +144,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
     /**
      * Prepare transaction request.
-     * The preparations will apply to the class property paymentObject
+     * The preparations will apply to $this->paymentObject
      * @param Bestellung $order
      * @param string $currentPaymentMethod
      * @param string $notifyURL
@@ -169,10 +169,10 @@ class heidelpay_standard extends ServerPaymentMethod
 
     /**
      * Build and send a basket to the hPP. If successful the basketId will be added to the payment transaction.
-     * @param $currentPaymentMethod
-     * @param $order
+     * @param string $currentPaymentMethod
+     * @param Bestellung $order
      */
-    public function addBasketId($currentPaymentMethod, $order) {
+    public function addBasketId($currentPaymentMethod, Bestellung $order) {
         $oPlugin = $this->getPlugin($currentPaymentMethod);
         $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
 

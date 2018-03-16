@@ -73,7 +73,7 @@ class HeidelpayBasketHelper
         $vat = (int)$position->fMwSt;
         $type = self::findItemType($position->nPosTyp);
         $amountPerUnit = (int)round(bcmul($position->fPreisEinzelNetto, (100 + $vat), 1));
-        $amountGross = (int)bcmul($amountPerUnit, $position->nAnzahl, 3);
+        $amountGross = (int)bcmul($amountPerUnit, $position->nAnzahl, 1);
         $amountNet = (int)bcmul(round(bcmul($position->fPreisEinzelNetto, 100, 1)), $position->nAnzahl);
         $amountVat = $amountGross - $amountNet;
 
@@ -102,7 +102,7 @@ class HeidelpayBasketHelper
             case C_WARENKORBPOS_TYP_ARTIKEL:
                 return 'goods';
             case C_WARENKORBPOS_TYP_VERSANDPOS:
-                return 'shipment';
+                return 'shipping';
             case C_WARENKORBPOS_TYP_GUTSCHEIN:
             case C_WARENKORBPOS_TYP_KUPON:
                 return 'voucher';
