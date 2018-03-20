@@ -14,17 +14,20 @@ require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->
 
 use Heidelpay\PhpPaymentApi\PaymentMethods;
 
-class heidelpay_ddpg extends heidelpay_standard
+class heidelpay_cc extends heidelpay_standard
 {
+
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
+        $this->paymentObject = new PaymentMethods\CreditCardPaymentMethod();
     }
 
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
+    public function sendPaymentRequest()
     {
-        parent::prepareRequest($order, $currentPaymentMethod);
-        $this->b2cSecuredCheck($order);
-        $this->addBasketId($currentPaymentMethod, $order);
+        if ($this->getBookingMode($this->oPlugin, $this->currentPaymentMethod) === 'DB') {
+            $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
+        } else {
+            $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
+        }
     }
 }

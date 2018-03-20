@@ -10,21 +10,19 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
 
 use Heidelpay\PhpPaymentApi\PaymentMethods;
 
-class heidelpay_ddpg extends heidelpay_standard
+class heidelpay_p24 extends heidelpay_standard
 {
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\DirectDebitB2CSecuredPaymentMethod();
+        $this->paymentObject = new PaymentMethods\Przelewy24PaymentMethod();
     }
 
     public function prepareRequest(Bestellung $order, $currentPaymentMethod)
     {
         parent::prepareRequest($order, $currentPaymentMethod);
-        $this->b2cSecuredCheck($order);
-        $this->addBasketId($currentPaymentMethod, $order);
     }
 }
