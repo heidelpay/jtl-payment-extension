@@ -24,7 +24,6 @@ class heidelpay_standard extends ServerPaymentMethod
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
     public $oPlugin;
-    public $currentPaymentMethod;
 
     public function setLocal()
     {
@@ -68,13 +67,10 @@ class heidelpay_standard extends ServerPaymentMethod
         return hash('sha256', $secret . $orderId);
     }
 
-    public function initPaymentProcess($order)
+    public function initPaymentProcess()
     {
         $this->setPaymentObject();
-
-        $this->setCurrentPaymentMethodFromOrder($order);
-        $this->moduleID = $this->currentPaymentMethod;
-        $this->oPlugin = $this->getPlugin($this->currentPaymentMethod);
+        $this->oPlugin = $this->getPlugin($this->moduleID);
     }
 
     public function setCurrentPaymentMethodFromOrder($order)
@@ -92,12 +88,14 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function preparePaymentProcess($order)
     {
-        $this->initPaymentProcess($order);
+        $this->initPaymentProcess();
         $this->init(0);
+        $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);
 
-        JTLLOG::writeLog('ModulID:'. $this->moduleID . 'currentPaymentMethod: ' . $this->currentPaymentMethod, JTLLOG_LEVEL_DEBUG);
+        JTLLOG::writeLog('ModulID: ' . $this->moduleID
+            . 'currentPaymentMethod: ' . $this->currentPaymentMethod, JTLLOG_LEVEL_DEBUG);
 
-        $this->prepareRequest($order, $this->currentPaymentMethod);
+        $this->prepareRequest($order, $this->moduleID);
         $this->sendPaymentRequest();
 
         if ($this->paymentObject->getResponse()->isError()) {
@@ -106,10 +104,15 @@ class heidelpay_standard extends ServerPaymentMethod
             return;
         }
 
-        $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->currentPaymentMethod);
         $this->setPaymentTemplate($paymentMethodPrefix);
     }
 
+    /**
+     * Check whether order has same address for billing and shipping and
+     * whether it ist b2c.
+     *
+     * @param $order
+     */
     protected function b2cSecuredCheck($order)
     {
         if ($this->isEqualAddress($order) == false) {
@@ -132,9 +135,9 @@ class heidelpay_standard extends ServerPaymentMethod
         $oPlugin = $this->oPlugin;
 
         $hash = $this->generateHash($order);
-        if (property_exists($order, 'cId')) {
+        /*if (property_exists($order, 'cId')) {
             $hash = $order->cId;
-        }
+        }*/
         $notifyURL = $this->getNotificationURL($hash);
 
         $this->paymentObject->getRequest()->authentification(
