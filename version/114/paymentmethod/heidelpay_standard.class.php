@@ -13,13 +13,14 @@
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
-require_once __DIR__.'/classes/helper/HeidelpayBasketHelper.php';
+require_once __DIR__ . '/helper/HeidelpayBasketHelper.php';
+require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
 
 /*
  * heidelpay standard class
  */
 
-class heidelpay_standard extends ServerPaymentMethod
+abstract class heidelpay_standard extends ServerPaymentMethod
 {
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
@@ -104,7 +105,7 @@ class heidelpay_standard extends ServerPaymentMethod
             return;
         }
 
-        $this->setPaymentTemplate($paymentMethodPrefix);
+        $this->setPaymentTemplate();
     }
 
     /**
@@ -219,23 +220,19 @@ class heidelpay_standard extends ServerPaymentMethod
      * Gets prefix of current payment method
      *
      * @param $oPlugin
-     * @param $currentPaymentMethod
+     * @param $moduleId
      * @return string current payment method prefix
      */
-    public function getCurrentPaymentMethodPrefix($oPlugin, $currentPaymentMethod)
+    public function getCurrentPaymentMethodPrefix($oPlugin, $moduleId)
     {
-        $payCode = strtolower($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_paycode']);
+        $payCode = strtolower($oPlugin->oPluginEinstellungAssoc_arr [$moduleId . '_paycode']);
         return strtoupper('HP' . $payCode);
     }
 
     /**
      * Sets payment object for the chosen payment method
      */
-    public function setPaymentObject()
-    {
-
-    }
-
+    abstract public function setPaymentObject();
 
     /**
      * Checks if Sandbox-Mode active or not
@@ -283,9 +280,9 @@ class heidelpay_standard extends ServerPaymentMethod
      * @param $oPlugin
      * @return array with user data (name, address and mail)
      */
-    public function getCustomerData($oPlugin, $currentPaymentMethod)
+    public function getCustomerData($oPlugin, $moduleId)
     {
-        $payCode = $this->getCurrentPaymentMethodPrefix($oPlugin, $currentPaymentMethod);
+        $payCode = $this->getCurrentPaymentMethodPrefix($oPlugin, $moduleId);
         //PayPal Case
         if ($payCode == 'HPVA') {
             $user = $_SESSION ['Lieferadresse'];
@@ -462,54 +459,55 @@ class heidelpay_standard extends ServerPaymentMethod
      * @param $paymentMethodPrefix
      *
      */
-    public function setPaymentTemplate($paymentMethodPrefix)
+    public function setPaymentTemplate()
     {
         global $smarty;
+        $templateHelper = new HeidelpayTemplateHelper($this);
 
         $smarty->assign('pay_button_label', $this->getPayButtonLabel());
         $smarty->assign('paytext', utf8_decode($this->getPayText()));
 
         #setlocale(LC_TIME, $this->getLanguageCode());
+        $formFields = $this->getFormFields();
+        if($formFields) {
+            $templateHelper->addFieldsets($smarty, $formFields);
+        } else {
+            $this->redirect($this->paymentObject->getResponse()->getPaymentFormUrl());
+        }
+    }
 
+    public function getFormFields()
+    {
+        $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);
         switch ($paymentMethodPrefix) {
             case 'HPCC':
             case 'HPDC':
             case 'HPDD':
-                $smarty->assign('holder_label', $this->getHolderLabel());
-                $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
-                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
+                return ['holder'];
                 break;
             case 'HPDDPG':
             case 'HPIVPG':
-                $smarty->assign('holder_label', $this->getHolderLabel());
-                $smarty->assign('birthdate_label', $this->getBirthdateLabel());
-                $smarty->assign('salutation', $this->getSalutationArray());
-                $smarty->assign('salutation_pre', $this->getSalutation());
-                $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
-                $smarty->assign('is_PG', true);
-                $smarty->assign('birthdate', str_replace('.', '-', $_SESSION['Kunde']->dGeburtstag));
-                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
+                return [
+                    'holder',
+                    'birthdate',
+                    'salutation',
+                    'is_PG',
+                ];
                 break;
             case 'HPIDL':
             case 'HPEPS':
-                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
-                $smarty->assign('account_country', $this->paymentObject->getResponse()->getConfig()->getBankCountry());
-                $smarty->assign('account_bankname', $this->paymentObject->getResponse()->getConfig()->getBrands());
+                return ['account'];
                 break;
             case 'HPSA':
-                $smarty->assign('birthdate_label', $this->getBirthdateLabel());
-                $smarty->assign('privatepolicy_label', $this->getPrivatePolicyLabel());
-                $smarty->assign('action_url', $this->paymentObject->getResponse()->getPaymentFormUrl());
-                $smarty->assign('salutation', $this->getSalutationArray());
-                $smarty->assign('salutation_pre', $this->getSalutation());
-                $smarty->assign('holder', $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname);
-                $smarty->assign('birthdate', str_replace('.', '-', $_SESSION['Kunde']->dGeburtstag));
-                $optinText = $this->paymentObject->getResponse()->getConfig()->getOptinText();
-                $smarty->assign('optin', utf8_decode($optinText['optin']));
-                $smarty->assign('privacy_policy', utf8_decode($optinText['privacy_policy']));
+                return [
+                    'birthdate',
+                    'privacy',
+                    'salutation',
+                    'holder',
+                ];
                 break;
             default:
-                $this->redirect($this->paymentObject->getResponse()->getPaymentFormUrl());
+                return null;
         }
     }
 
