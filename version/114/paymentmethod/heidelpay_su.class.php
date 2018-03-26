@@ -20,9 +20,4 @@ class heidelpay_su extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\SofortPaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-    }
 }

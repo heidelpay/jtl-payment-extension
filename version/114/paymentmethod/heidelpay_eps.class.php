@@ -21,10 +21,4 @@ class heidelpay_eps extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\EPSPaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-
-    }
 }

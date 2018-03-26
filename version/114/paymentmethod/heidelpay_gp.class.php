@@ -21,10 +21,4 @@ class heidelpay_gp extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\GiropayPaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-
-    }
 }

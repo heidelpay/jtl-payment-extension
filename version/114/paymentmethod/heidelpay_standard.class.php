@@ -68,12 +68,18 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         return hash('sha256', $secret . $orderId);
     }
 
+    /**
+     * Initialize the payment process by set the payment method and the plugin.
+     */
     public function initPaymentProcess()
     {
         $this->setPaymentObject();
         $this->oPlugin = $this->getPlugin($this->moduleID);
     }
 
+    /**
+     * @param $order
+     */
     public function setCurrentPaymentMethodFromOrder($order)
     {
         $this->currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
@@ -91,10 +97,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         $this->initPaymentProcess();
         $this->init(0);
-        $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);
-
-        JTLLOG::writeLog('ModulID: ' . $this->moduleID
-            . 'currentPaymentMethod: ' . $this->currentPaymentMethod, JTLLOG_LEVEL_DEBUG);
 
         $this->prepareRequest($order, $this->moduleID);
         $this->sendPaymentRequest();
@@ -476,6 +478,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
+    /**
+     * @return array|null
+     */
     public function getFormFields()
     {
         $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);

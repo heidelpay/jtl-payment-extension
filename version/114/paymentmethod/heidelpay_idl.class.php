@@ -21,9 +21,4 @@ class heidelpay_idl extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\IDealPaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-    }
 }

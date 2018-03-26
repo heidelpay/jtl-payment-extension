@@ -21,9 +21,4 @@ class heidelpay_sa extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\SantanderInvoicePaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-    }
 }

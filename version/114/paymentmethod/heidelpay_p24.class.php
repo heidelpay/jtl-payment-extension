@@ -20,9 +20,4 @@ class heidelpay_p24 extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\Przelewy24PaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-    }
 }

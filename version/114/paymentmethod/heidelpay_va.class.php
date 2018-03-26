@@ -30,7 +30,6 @@ class heidelpay_va extends heidelpay_standard
 
     public function sendPaymentRequest()
     {
-
         if ($this->getBookingMode($this->oPlugin, $this->currentPaymentMethod) === 'DB') {
             $this->paymentObject->debit();
         } else {

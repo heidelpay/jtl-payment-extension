@@ -21,10 +21,4 @@ class heidelpay_pp extends heidelpay_standard
     {
         $this->paymentObject = new PaymentMethods\PrepaymentPaymentMethod();
     }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-
-    }
 }
