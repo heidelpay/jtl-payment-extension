@@ -1,9 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: David.Owusu
- * Date: 22.03.2018
- * Time: 15:40
+/*
+ * Simplifies adding payment variables to the template.
+ *
+ * Familiar template vars are grouped together and can be called by only on name.
+ *
+ * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
+ * @link https://dev.heidelpay.de/JTL
+ * @author David Owusu
+ * @category JTL
  */
 
 class HeidelpayTemplateHelper

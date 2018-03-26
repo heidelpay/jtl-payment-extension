@@ -12,13 +12,12 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\GiropayPaymentMethod;
 
 class heidelpay_gp extends heidelpay_standard
 {
-
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\GiropayPaymentMethod();
+        $this->paymentObject = new GiropayPaymentMethod();
     }
 }

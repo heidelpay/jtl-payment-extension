@@ -12,13 +12,13 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\SantanderInvoicePaymentMethod;
 
 class heidelpay_sa extends heidelpay_standard
 {
 
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\SantanderInvoicePaymentMethod();
+        $this->paymentObject = new SantanderInvoicePaymentMethod();
     }
 }

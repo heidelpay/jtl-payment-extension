@@ -78,17 +78,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
-     * @param $order
-     */
-    public function setCurrentPaymentMethodFromOrder($order)
-    {
-        $this->currentPaymentMethod = $_SESSION ['Zahlungsart']->cModulId;
-        if (empty($this->currentPaymentMethod)) {
-            $this->currentPaymentMethod = $order->Zahlungsart->cModulId;
-        }
-    }
-
-    /**
      * Prepares process for payment
      *
      * @param Bestellung $order

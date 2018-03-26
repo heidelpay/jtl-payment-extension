@@ -12,13 +12,13 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\PrepaymentPaymentMethod;
 
 class heidelpay_pp extends heidelpay_standard
 {
 
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\PrepaymentPaymentMethod();
+        $this->paymentObject = new PrepaymentPaymentMethod();
     }
 }

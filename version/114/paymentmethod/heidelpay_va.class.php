@@ -12,14 +12,14 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\PayPalPaymentMethod;
 
 class heidelpay_va extends heidelpay_standard
 {
 
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\PayPalPaymentMethod();
+        $this->paymentObject = new PayPalPaymentMethod();
     }
 
     public function prepareRequest(Bestellung $order, $currentPaymentMethod)

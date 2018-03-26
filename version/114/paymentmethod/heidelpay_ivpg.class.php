@@ -12,7 +12,7 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod;
 
 class heidelpay_ivpg extends heidelpay_standard
 {
@@ -30,6 +30,6 @@ class heidelpay_ivpg extends heidelpay_standard
 
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\InvoiceB2CSecuredPaymentMethod();
+        $this->paymentObject = new InvoiceB2CSecuredPaymentMethod();
     }
 }

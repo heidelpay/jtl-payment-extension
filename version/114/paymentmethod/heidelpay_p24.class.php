@@ -12,12 +12,12 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods;
+use Heidelpay\PhpPaymentApi\PaymentMethods\Przelewy24PaymentMethod;
 
 class heidelpay_p24 extends heidelpay_standard
 {
     public function setPaymentObject()
     {
-        $this->paymentObject = new PaymentMethods\Przelewy24PaymentMethod();
+        $this->paymentObject = new Przelewy24PaymentMethod();
     }
 }
