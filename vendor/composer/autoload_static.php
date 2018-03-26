@@ -28,6 +28,7 @@ class ComposerStaticInitbadef46de6d4939f7b7f0c55452ba087
         'H' => 
         array (
             'Heidelpay\\PhpPaymentApi\\' => 24,
+            'Heidelpay\\PhpBasketApi\\' => 23,
             'Heidelpay\\MessageCodeMapper\\' => 28,
         ),
     );
@@ -72,6 +73,10 @@ class ComposerStaticInitbadef46de6d4939f7b7f0c55452ba087
         'Heidelpay\\PhpPaymentApi\\' => 
         array (
             0 => __DIR__ . '/..' . '/heidelpay/php-payment-api/lib',
+        ),
+        'Heidelpay\\PhpBasketApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/heidelpay/php-basket-api/lib',
         ),
         'Heidelpay\\MessageCodeMapper\\' => 
         array (

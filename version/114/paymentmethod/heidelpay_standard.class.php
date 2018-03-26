@@ -7,19 +7,23 @@
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
- * @author Ronja Wann, Florian Evertz
+ * @author Ronja Wann, Florian Evertz, David Owusu
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
+require_once __DIR__.'/classes/Helper/HeidelpayBasketHelper.php';
 
 /*
- * Heidelpay
+ * heidelpay standard class
  */
 
 class heidelpay_standard extends ServerPaymentMethod
 {
+    /**
+     * @var \Heidelpay\PhpPaymentApi\AbstractMethod
+     */
     public $paymentObject = null;
     public $pluginName = "heidelpay_standard";
 
@@ -68,7 +72,7 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Prepares process for payment
      *
-     * @param $order
+     * @param Bestellung $order
      */
     public function preparePaymentProcess($order)
     {
@@ -94,27 +98,17 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $this->setPaymentObject($paymentMethodPrefix);
 
-        $this->paymentObject->getRequest()->authentification(
-            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
-            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
-        );
-        $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
-        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
-        $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
-        $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
-        $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+        $this->prepareRequest($order, $currentPaymentMethod, $notifyURL);
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA') AND
-            $this->isEqualAddress($order) == false) {
-            $this->redirect('warenkorb.php?hperroradd=1');
-        }
+        // Checks for secured paymethods
+        if ($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG' OR $paymentMethodPrefix == 'HPSA'){
+            if($this->isEqualAddress($order) == false) {
+                $this->redirect('warenkorb.php?hperroradd=1');
+            }
 
-        if (($paymentMethodPrefix == 'HPDDPG' OR $paymentMethodPrefix == 'HPIVPG') AND
-            $_SESSION['Kunde']->cFirma != null) {
-            $this->redirect('warenkorb.php?hperrorcom=1');
+            if( $_SESSION['Kunde']->cFirma != null) {
+                $this->redirect('warenkorb.php?hperrorcom=1');
+            }
         }
 
         switch ($paymentMethodPrefix) {
@@ -146,6 +140,48 @@ class heidelpay_standard extends ServerPaymentMethod
         }
 
         $this->setPaymentTemplate($paymentMethodPrefix);
+    }
+
+    /**
+     * Prepare transaction request.
+     * The preparations will apply to $this->paymentObject
+     * @param Bestellung $order
+     * @param string $currentPaymentMethod
+     * @param string $notifyURL
+     */
+    public function prepareRequest(Bestellung $order, $currentPaymentMethod, $notifyURL) {
+        $oPlugin = $this->getPlugin($currentPaymentMethod);
+
+        $this->paymentObject->getRequest()->authentification(
+            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
+            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
+            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
+
+        $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
+        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
+        $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
+        $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
+        $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+    }
+
+    /**
+     * Build and send a basket to the hPP. If successful the basketId will be added to the payment transaction.
+     * @param string $currentPaymentMethod
+     * @param Bestellung $order
+     */
+    public function addBasketId($currentPaymentMethod, Bestellung $order) {
+        $oPlugin = $this->getPlugin($currentPaymentMethod);
+        $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
+
+        if($response->isSuccess()) {
+            $this->paymentObject->getRequest()->getBasket()->setId($response->getBasketId());
+        } else {
+            Jtllog::writeLog('No basket could be added to your order. Order number: '
+                .$order->cBestellNr, JTLLOG_LEVEL_NOTICE);
+        }
     }
 
     /**
@@ -653,8 +689,8 @@ class heidelpay_standard extends ServerPaymentMethod
                 /* If the verification does not match this can mean some kind of manipulation or
                  * miss configuration. So you can log $e->getMessage() for debugging.*/
                 $callers = debug_backtrace();
-                Jtllog::write("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
-                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", 2, false, 'Notify');
+                Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
+                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
                 exit();
             }
         } else {
@@ -730,7 +766,7 @@ class heidelpay_standard extends ServerPaymentMethod
                             'order' => $order,
                             'error_msg' => $e
                         );
-                        Jtllog::write($logData, 1, false);
+                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
                     }
                     try {
                         $this->sendConfirmationMail($order);
@@ -742,7 +778,7 @@ class heidelpay_standard extends ServerPaymentMethod
                             'order' => $order,
                             'error_msg' => $e
                         );
-                        Jtllog::write($logData, 1, false);
+                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
                     }
                 }
 
