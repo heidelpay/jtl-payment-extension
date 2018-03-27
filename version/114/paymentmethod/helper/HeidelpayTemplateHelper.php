@@ -20,6 +20,11 @@ class HeidelpayTemplateHelper
         $this->paymentMethod = $paymentMethod;
     }
 
+    /**
+     * Adds multiple fieldsets at once.
+     * @param Smarty $smarty
+     * @param array $fieldset
+     */
     public function addFieldsets(Smarty $smarty, array $fieldset)
     {
         foreach ($fieldset as $fieldName) {
@@ -28,6 +33,11 @@ class HeidelpayTemplateHelper
         $this->addTemplateVars($smarty, 'action_url');
     }
 
+    /**
+     * Adds a set of fields corresponding to the given field name.
+     * @param Smarty $smarty
+     * @param $fieldName
+     */
     public function addTemplateVars(Smarty $smarty, $fieldName) {
         $paymentObject = $this->paymentMethod->paymentObject;
         if(!empty($_SESSION['Kunde'])) {
