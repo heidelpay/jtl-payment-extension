@@ -12,24 +12,28 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod;
+use Heidelpay\PhpPaymentApi\PaymentMethods\PayPalPaymentMethod;
 
-class heidelpay_ivpg extends heidelpay_standard
+class heidelpay_va extends heidelpay_standard
 {
-    /**
-     * @param $order
-     * @param $currentPaymentMethod
-     * @param $notifyURL
-     */
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-        $this->b2cSecuredCheck($order);
-        $this->addBasketId($currentPaymentMethod, $order);
-    }
 
     public function setPaymentObject()
     {
-        $this->paymentObject = new InvoiceB2CSecuredPaymentMethod();
+        $this->paymentObject = new PayPalPaymentMethod();
+    }
+
+    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
+    {
+        parent::prepareRequest($order, $currentPaymentMethod);
+
+    }
+
+    public function sendPaymentRequest()
+    {
+        if ($this->getBookingMode($this->oPlugin, $this->currentPaymentMethod) === 'DB') {
+            $this->paymentObject->debit();
+        } else {
+            parent::sendPaymentRequest();
+        }
     }
 }

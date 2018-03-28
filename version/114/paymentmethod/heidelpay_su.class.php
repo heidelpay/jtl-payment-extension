@@ -12,19 +12,12 @@
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
 
-use Heidelpay\PhpPaymentApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod;
+use Heidelpay\PhpPaymentApi\PaymentMethods\SofortPaymentMethod;
 
-class heidelpay_ddpg extends heidelpay_standard
+class heidelpay_su extends heidelpay_standard
 {
     public function setPaymentObject()
     {
-        $this->paymentObject = new DirectDebitB2CSecuredPaymentMethod();
-    }
-
-    public function prepareRequest(Bestellung $order, $currentPaymentMethod)
-    {
-        parent::prepareRequest($order, $currentPaymentMethod);
-        $this->b2cSecuredCheck($order);
-        $this->addBasketId($currentPaymentMethod, $order);
+        $this->paymentObject = new SofortPaymentMethod();
     }
 }

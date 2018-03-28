@@ -1,8 +1,8 @@
 <?php
 /*
- * SUMMARY
+ * Helper to create the basket object.
  *
- * DESC
+ * For some paymentmethods basket is required to improve acceptance rate of insurance provider.
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.

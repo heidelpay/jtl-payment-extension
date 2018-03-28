@@ -72,8 +72,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_cc.class.php</ClassFile>
+        <ClassName>heidelpay_cc</ClassName>
         <TemplateFile>template/heidelpay_CreditDebitCard.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Kreditkarte</Name>
@@ -126,8 +126,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_dc.class.php</ClassFile>
+        <ClassName>heidelpay_dc</ClassName>
         <TemplateFile>template/heidelpay_CreditDebitCard.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Debitkarte</Name>
@@ -180,8 +180,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_dd.class.php</ClassFile>
+        <ClassName>heidelpay_dd</ClassName>
         <TemplateFile>template/heidelpay_DirectDebit.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Lastschrift</Name>
@@ -225,8 +225,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_su.class.php</ClassFile>
+        <ClassName>heidelpay_su</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Sofort</Name>
@@ -270,8 +270,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_gp.class.php</ClassFile>
+        <ClassName>heidelpay_gp</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Giropay</Name>
@@ -315,8 +315,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_idl.class.php</ClassFile>
+        <ClassName>heidelpay_idl</ClassName>
         <TemplateFile>template/heidelpay_iDealEPS_Bank.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>iDeal</Name>
@@ -360,8 +360,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_eps.class.php</ClassFile>
+        <ClassName>heidelpay_eps</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>EPS</Name>
@@ -405,8 +405,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_p24.class.php</ClassFile>
+        <ClassName>heidelpay_p24</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Przelewy24</Name>
@@ -450,8 +450,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_pfc.class.php</ClassFile>
+        <ClassName>heidelpay_pfc</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>PostFinanceCard</Name>
@@ -495,8 +495,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_pfe.class.php</ClassFile>
+        <ClassName>heidelpay_pfe</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>PostFinanceEFinance</Name>
@@ -540,8 +540,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_va.class.php</ClassFile>
+        <ClassName>heidelpay_va</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>PayPal</Name>
@@ -594,8 +594,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_iv.class.php</ClassFile>
+        <ClassName>heidelpay_iv</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Rechnungskauf</Name>
@@ -639,8 +639,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl> 
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_pp.class.php</ClassFile>
+        <ClassName>heidelpay_pp</ClassName>
         <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Vorkasse</Name>
@@ -684,8 +684,8 @@
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>heidelpay_standard.class.php</ClassFile>
-        <ClassName>heidelpay_standard</ClassName>
+        <ClassFile>heidelpay_sa.class.php</ClassFile>
+        <ClassName>heidelpay_sa</ClassName>
         <TemplateFile>template/heidelpay_Santander.tpl</TemplateFile>
         <MethodLanguage iso="GER">
           <Name>Santander</Name>

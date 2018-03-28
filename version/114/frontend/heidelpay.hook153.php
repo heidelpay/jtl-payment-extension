@@ -11,5 +11,3 @@
  * @category JTL
  */
 
-require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-    $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
