@@ -21,7 +21,7 @@ class HeidelpayTemplateHelper
     }
 
     /**
-     * Adds multiple fieldsets at once.
+     * Adds multiple fieldsets at once
      * @param Smarty $smarty
      * @param array $fieldset
      */

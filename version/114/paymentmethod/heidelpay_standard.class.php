@@ -24,6 +24,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 {
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
+    /**
+     * @var Plugin
+     */
     public $oPlugin;
 
     public function setLocal()
@@ -512,11 +515,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPayButtonLabel()
     {
-        $payButtonLabel = 'Pay now';
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $payButtonLabel = 'Jetzt zahlen';
-        }
-        return $payButtonLabel;
+        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_paybutton'];
     }
 
     /**
@@ -526,11 +525,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPayText()
     {
-        $payText = 'Please complete the following data and complete the order process.';
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $payText = 'Bitte vervollständigen Sie die unten aufgeführten Daten und schließen Sie den Bestellprozess ab.';
-        }
-        return $payText;
+        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_paytext'];
     }
 
     /**
@@ -540,11 +535,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getHolderLabel()
     {
-        $holderLabel = 'Holder';
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $holderLabel = 'Kontoinhaber';
-        }
-        return $holderLabel;
+        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_holderlabel'];
     }
 
     /**
@@ -554,11 +545,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getBirthdateLabel()
     {
-        $birthdateLabel = 'Birthdate';
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $birthdateLabel = 'Geburtsdatum';
-        }
-        return $birthdateLabel;
+        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_birthdatelabel'];
     }
 
     /**
@@ -568,10 +555,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getSalutationArray()
     {
-        $salutationArray = array('MR' => 'Mr', 'MRS' => 'Mrs');
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $salutationArray = array('MR' => 'Herr', 'MRS' => 'Frau');
-        }
+        $salutationArray = [
+            'MR' => $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_mr'],
+            'MRS' => $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_mrs']
+        ];
+
         return $salutationArray;
     }
 
@@ -597,12 +585,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPrivatePolicyLabel($oPlugin)
     {
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            $privatePolicyLabel = $oPlugin->oPluginSprachvariable_arr['0']->oPluginSprachvariableSprache_arr['GER'];
-        } else {
-            $privatePolicyLabel = $oPlugin->oPluginSprachvariable_arr['0']->oPluginSprachvariableSprache_arr['ENG'];
-        }
-        return $privatePolicyLabel;
+        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_holderlabel'];
     }
 
     /**
@@ -639,15 +622,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
                 $payCode = explode('.', $args ['PAYMENT_CODE']);
+                $language = $_SESSION ['cISOSprache'] == 'ger' ? 'de' : 'en';
+                include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
+                    $oPlugin->nVersion . '/paymentmethod/lang/'.$language.'Mail.tpl';
+
                 if (strtoupper($payCode [0]) == 'DD' && !isset($args ['TRANSACTION_SOURCE'])) {
-                    $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
-                    if ($language == 'DE') {
-                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ddMail_de.tpl';
-                    } else {
-                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ddMail_en.tpl';
-                    }
                     $repl = array(
                         '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
                         '{ACC_BIC}' => $args ['ACCOUNT_BIC'],
@@ -668,14 +647,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
                         constant('DD_MAIL_HEADERS')
                     );
                 } elseif (strtoupper($payCode [0]) == 'PP' && !isset($args ['TRANSACTION_SOURCE'])) {
-                    $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
-                    if ($language == 'DE') {
-                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ppMail_de.tpl';
-                    } else {
-                        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-                            $oPlugin->nVersion . '/paymentmethod/template/heidelpay_ppMail_en.tpl';
-                    }
                     $repl = array(
                         '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
                         '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
@@ -785,6 +756,8 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 			`cKommentar` ="' . htmlspecialchars(utf8_decode($bookingtext)) . '" 
 			WHERE `cBestellNr` ="' . htmlspecialchars($orderId) . '";';
         $GLOBALS ['DB']->executeQuery($sql, 1);
+
+        mail('david.owusu@heidelpay.com', 'prepayment-text', strtr(constant('PREPAYMENT_TEXT'), $repl));
     }
 
     /**
@@ -839,7 +812,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function prepaymentText($res, $lang = 'EN')
     {
         if ($lang == 'DE') {
-            define(
+            defined('PREPAYMENT_TEXT') or define(
                 'PREPAYMENT_TEXT',
                 '<b>Bitte &uuml;berweisen Sie uns den Betrag von {CURRENCY} {AMOUNT} auf folgendes Konto:</b><br /><br />
 			Land :         {ACC_COUNTRY}<br>
@@ -853,7 +826,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 			und NICHTS ANDERES an.</b>'
             );
         } else {
-            define(
+            defined('PREPAYMENT_TEXT') or define(
                 'PREPAYMENT_TEXT',
                 '<b>Please transfer the amount of {CURRENCY} {AMOUNT} to the following account:</b><br /><br />
 					Country :         {ACC_COUNTRY}<br>
