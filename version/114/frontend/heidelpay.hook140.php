@@ -39,11 +39,7 @@ if (isset($_GET ['hperrorcom'])) {
     $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
     $divEnd = '</div>';
 
-    if ($_SESSION ['cISOSprache'] == 'ger') {
-        $hpErrorMsg = utf8_decode('Dieses Zahlverfahren steht nicht für Firmenkunden zur Verfügung');
-    } else {
-        $hpErrorMsg = utf8_decode('This paymentmethod is not available for corporate clients');
-    }
+    $hpErrorMsg = $oPlugin->oPluginSprachvariableAssoc_arr['hp_b2b_denied'];
 
     $errorSnip = $divStart . ' ' . $hpErrorMsg . ' ' . $divEnd;
     pq('#content')->prepend($errorSnip);
@@ -53,11 +49,7 @@ if (isset($_GET ['hperroradd'])) {
     $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
     $divEnd = '</div>';
 
-    if ($_SESSION ['cISOSprache'] == 'ger') {
-        $hpErrorMsg = utf8_decode('Rechnungs- und Lieferadresse müssen identisch sein');
-    } else {
-        $hpErrorMsg = utf8_decode('Billing- and shipping adress have to be equal');
-    }
+    $hpErrorMsg = $oPlugin->oPluginSprachvariableAssoc_arr['hp_equal_address'];
 
     $errorSnip = $divStart . ' ' . $hpErrorMsg . ' ' . $divEnd;
     pq('#content')->prepend($errorSnip);

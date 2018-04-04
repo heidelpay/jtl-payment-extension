@@ -36,7 +36,7 @@ if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'
 // if Versand oder Teilversand - Status s. defines_inc.php
 
 $payMethod = explode('_', $oBestellung->cModulId);
-
+Jtllog::writeLog('Synclog: paymethod: '.$payMethod[2]);
 if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
     preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $args_arr['oBestellung']->cKommentar, $result);

@@ -22,6 +22,9 @@ require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
 
 abstract class heidelpay_standard extends ServerPaymentMethod
 {
+    /**
+     * @var Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
+     */
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
     /**
@@ -87,8 +90,10 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function preparePaymentProcess($order)
     {
-        $this->initPaymentProcess();
+        //$this->initPaymentProcess();
         $this->init(0);
+
+        Jtllog::writeLog('ModulId: '.$this->moduleID, JTLLOG_LEVEL_DEBUG);
 
         $this->prepareRequest($order, $this->moduleID);
         $this->sendPaymentRequest();
@@ -208,6 +213,8 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 
         $sql = "SELECT * FROM `tzahlungsart` WHERE `cModulId` = '{$this->moduleID}'";
         $this->info = $GLOBALS ['DB']->executeQuery($sql, 1);
+
+        $this->initPaymentProcess();
     }
 
     /**
@@ -525,7 +532,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getPayText()
     {
-        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_paytext'];
+        return utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_paytext']);
     }
 
     /**
@@ -535,7 +542,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getHolderLabel()
     {
-        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_holderlabel'];
+        return utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_holderlabel']);
     }
 
     /**
@@ -545,7 +552,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getBirthdateLabel()
     {
-        return $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_birthdatelabel'];
+        return utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_birthdatelabel']);
     }
 
     /**
@@ -556,10 +563,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function getSalutationArray()
     {
         $salutationArray = [
-            'MR' => $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_mr'],
-            'MRS' => $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_mrs']
+            'MR' => utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_male']),
+            'MRS' => utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_female'])
         ];
-
         return $salutationArray;
     }
 
@@ -570,9 +576,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function getSalutation()
     {
-        $salutation = 'MRS';
+        $salutation = $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_female'];
         if ($_SESSION['Kunde']->cAnrede == 'm') {
-            $salutation = 'MR';
+            $salutation = $this->oPlugin->oPluginSprachvariableAssoc_arr['hp_salutation_male'];
         }
         return $salutation;
     }
@@ -601,6 +607,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 
         $HeidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
 
+        // load language file
+        $language = $_SESSION ['cISOSprache'] === 'ger' ? 'de' : 'en';
+        include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
+            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/general.php';
+
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
             $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
             $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
@@ -622,74 +633,19 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
                 $payCode = explode('.', $args ['PAYMENT_CODE']);
-                $language = $_SESSION ['cISOSprache'] == 'ger' ? 'de' : 'en';
-                include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-                    $oPlugin->nVersion . '/paymentmethod/lang/'.$language.'Mail.tpl';
 
-                if (strtoupper($payCode [0]) == 'DD' && !isset($args ['TRANSACTION_SOURCE'])) {
-                    $repl = array(
-                        '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
-                        '{ACC_BIC}' => $args ['ACCOUNT_BIC'],
-                        '{ACC_IDENT}' => $args ['ACCOUNT_IDENTIFICATION'],
-                        '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
-                        '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-                        '{HOLDER}' => $args ['ACCOUNT_HOLDER']
-                    );
-                    if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
-                        $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
-                    } else {
-                        $repl ['{IDENT_CREDITOR}'] = '-';
-                    }
-                    mail(
-                        $order->oRechnungsadresse->cMail,
-                        constant('DD_MAIL_SUBJECT'),
-                        strtr(constant('DD_MAIL_TEXT'), $repl),
-                        constant('DD_MAIL_HEADERS')
-                    );
-                } elseif (strtoupper($payCode [0]) == 'PP' && !isset($args ['TRANSACTION_SOURCE'])) {
-                    $repl = array(
-                        '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
-                        '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
-                        '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
-                        '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
-                        '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-                        '{USAGE}' => $args ['IDENTIFICATION_SHORTID']
-                    );
-                    mail(
-                        $order->oRechnungsadresse->cMail,
-                        constant('PP_MAIL_SUBJECT'),
-                        strtr(constant('PP_MAIL_TEXT'), $repl),
-                        constant('PP_MAIL_HEADERS')
-                    );
-                } elseif ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
+                // Send mail with payment information i.e. direct debit and pre payment
+                if(!isset($args ['TRANSACTION_SOURCE'])) {
+                    $this->sendPaymentMail($order, $args);
+                }
+
+                if ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $this->setPayInfo($args, $order->cBestellNr);
                 }
                 // Nur wenn nicht Vorkasse od. Rechnung
                 if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') {
-                    try {
-                        $this->setOrderStatusToPaid($order);
-                    } catch (Exception $e) {
-                        $e = 'Update order status failed on order: ' . $order . ' in file: ' .
-                            $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
-                        $logData = array(
-                            'module' => 'Heidelpay Standard',
-                            'order' => $order,
-                            'error_msg' => $e
-                        );
-                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
-                    }
-                    try {
-                        $this->sendConfirmationMail($order);
-                    } catch (Exception $e) {
-                        $e = 'Update order status failed on order: ' . $order . ' in file: ' .
-                            $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
-                        $logData = array(
-                            'module' => 'Heidelpay Standard',
-                            'order' => $order,
-                            'error_msg' => $e
-                        );
-                        Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
-                    }
+                    $this->setOrderStatusToPaid($order);
+                    $this->sendConfirmationMail($order);
                 }
 
                 if (strtoupper($payCode [1]) != 'PA' AND strtoupper($payCode [1]) != 'RG') {
@@ -714,6 +670,43 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             echo $this->getReturnURL($order);
         }
     }
+
+    public function sendPaymentMail(Bestellung $order, $args)
+    {
+    }
+
+    public function setOrderStatusToPaid($order)
+    {
+        try {
+            parent::setOrderStatusToPaid($order);
+        } catch (Exception $e) {
+            $e = 'Update order status failed on order: ' . $order . ' in file: ' .
+                $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
+            $logData = array(
+                'module' => 'Heidelpay Standard',
+                'order' => $order,
+                'error_msg' => $e
+            );
+            Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
+        }
+    }
+
+    public function sendConfirmationMail($order)
+    {
+        try {
+            parent::sendConfirmationMail($order);
+        } catch (Exception $e) {
+            $e = 'Update order status failed on order: ' . $order . ' in file: ' .
+                $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
+            $logData = array(
+                'module' => 'Heidelpay Standard',
+                'order' => $order,
+                'error_msg' => $e
+            );
+            Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
+        }
+    }
+
 
     /**
      * Verifies notification
@@ -742,22 +735,23 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function setPayInfo($post, $orderId)
     {
-        $bookingtext = 'Bitte überweisen Sie uns den Betrag von ' . $post['PRESENTATION_AMOUNT'] . ' ' .
-            $post['PRESENTATION_CURRENCY'] . ' nach Erhalt der Ware auf folgendes Konto:
-        
-  Kontoinhaber: ' . $post['CONNECTOR_ACCOUNT_HOLDER'] . '
-  IBAN: ' . $post['CONNECTOR_ACCOUNT_IBAN'] . '
-  BIC: ' . $post['CONNECTOR_ACCOUNT_BIC'] . '
-  
-  Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
-  ' . $post['IDENTIFICATION_SHORTID'];
+        $repl = [
+            '{PRESENTATION_AMOUNT}' => $post['PRESENTATION_AMOUNT'],
+            '{PRESENTATION_CURRENCY}' => $post['PRESENTATION_CURRENCY'],
+            '{ACCOUNT_HOLDER}' => $post['CONNECTOR_ACCOUNT_HOLDER'],
+            '{ACCOUNT_IBAN}' => $post['CONNECTOR_ACCOUNT_IBAN'],
+            '{ACCOUNT_BIC}' => $post['CONNECTOR_ACCOUNT_BIC'],
+            '{SHORTID}' => $post['IDENTIFICATION_SHORTID'],
+        ];
+
+        $bookingtext = strtr(utf8_decode(IV_PAY_INFO), $repl);
 
         $sql = 'UPDATE `tbestellung` SET 
 			`cKommentar` ="' . htmlspecialchars(utf8_decode($bookingtext)) . '" 
 			WHERE `cBestellNr` ="' . htmlspecialchars($orderId) . '";';
         $GLOBALS ['DB']->executeQuery($sql, 1);
 
-        mail('david.owusu@heidelpay.com', 'prepayment-text', strtr(constant('PREPAYMENT_TEXT'), $repl));
+        mail('david.owusu@heidelpay.com', 'prepayment-text',  $bookingtext);
     }
 
     /**
@@ -800,59 +794,5 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             }
             return false;
         }
-    }
-
-    /**
-     * prepares payment text
-     *
-     * @param $res
-     * @param string $lang
-     * @return string
-     */
-    public function prepaymentText($res, $lang = 'EN')
-    {
-        if ($lang == 'DE') {
-            defined('PREPAYMENT_TEXT') or define(
-                'PREPAYMENT_TEXT',
-                '<b>Bitte &uuml;berweisen Sie uns den Betrag von {CURRENCY} {AMOUNT} auf folgendes Konto:</b><br /><br />
-			Land :         {ACC_COUNTRY}<br>
-			Kontoinhaber : {ACC_OWNER}<br>
-			Konto-Nr. :    {ACC_NUMBER}<br>
-			Bankleitzahl:  {ACC_BANKCODE}<br>
-			IBAN:   	   {ACC_IBAN}<br>
-			BIC:           {ACC_BIC}<br>
-			<br /><br /><b>Geben sie bitte im Verwendungszweck UNBEDINGT die Identifikationsnummer<br />
-			{SHORTID}<br />
-			und NICHTS ANDERES an.</b>'
-            );
-        } else {
-            defined('PREPAYMENT_TEXT') or define(
-                'PREPAYMENT_TEXT',
-                '<b>Please transfer the amount of {CURRENCY} {AMOUNT} to the following account:</b><br /><br />
-					Country :         {ACC_COUNTRY}<br>
-					Account holder :  {ACC_OWNER}<br>
-					Account No. :     {ACC_NUMBER}<br>
-					Bank Code:        {ACC_BANKCODE}<br>
-					IBAN:   		  {ACC_IBAN}<br>
-					BIC:              {ACC_BIC}<br>
-					<br><br /><b>Please use the identification number <br />
-					{SHORTID}<br />
-					as the descriptor and nothing else. Otherwise we cannot match your transaction!</b>'
-            );
-        }
-
-        $repl = array(
-            '{CURRENCY}' => $res ['all'] ['PRESENTATION_CURRENCY'],
-            '{AMOUNT}' => $res ['all'] ['PRESENTATION_AMOUNT'],
-            '{ACC_COUNTRY}' => $res ['all'] ['CONNECTOR_ACCOUNT_COUNTRY'],
-            '{ACC_OWNER}' => $res ['all'] ['CONNECTOR_ACCOUNT_HOLDER'],
-            '{ACC_NUMBER}' => $res ['all'] ['CONNECTOR_ACCOUNT_NUMBER'],
-            '{ACC_BANKCODE}' => $res ['all'] ['CONNECTOR_ACCOUNT_BANK'],
-            '{ACC_IBAN}' => $res ['all'] ['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACC_BIC}' => $res ['all'] ['CONNECTOR_ACCOUNT_BIC'],
-            '{SHORTID}' => $res ['all'] ['IDENTIFICATION_SHORTID']
-        );
-
-        return strtr(constant('PREPAYMENT_TEXT'), $repl);
     }
 }

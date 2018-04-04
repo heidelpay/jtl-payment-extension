@@ -902,38 +902,40 @@
             </Variable>
 
             <Variable>
-                <Name>hp_salutation_mr</Name>
+                <Name>hp_salutation_male</Name>
                 <Description>Anrede Herr</Description>
                 <VariableLocalized iso="GER">Herr</VariableLocalized>
                 <VariableLocalized iso="ENG">Mr</VariableLocalized>
             </Variable>
 
             <Variable>
-                <Name>hp_salutation_mrs</Name>
+                <Name>hp_salutation_female</Name>
                 <Description>Anrede Herr</Description>
                 <VariableLocalized iso="GER">Frau</VariableLocalized>
                 <VariableLocalized iso="ENG">Mrs</VariableLocalized>
             </Variable>
 
             <Variable>
-                <Name>hp_payinfo</Name>
-                <Description>Bezahlinformation für Vorkasse</Description>
+                <Name>hp_b2b_denied</Name>
+                <Description>Meldung wenn kein B2B verfügbar</Description>
                 <VariableLocalized iso="GER">
-                    'Bitte überweisen Sie uns den Betrag von {PRESENTATION_AMOUNT}
-                    {PRESENTATION_CURRENCY} nach Erhalt der Ware auf folgendes Konto:
-
-                    Kontoinhaber: {CONNECTOR_ACCOUNT_HOLDER}
-                    IBAN: {CONNECTOR_ACCOUNT_IBAN}
-                    BIC: {CONNECTOR_ACCOUNT_BIC}
-
-                    Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
-                    ' . $post['IDENTIFICATION_SHORTID']
+                    Dieses Zahlverfahren steht nicht für Firmenkunden zur Verfügung
                 </VariableLocalized>
-                <VariableLocalized iso="ENG">Mrs</VariableLocalized>
+                <VariableLocalized iso="ENG">
+                    This paymentmethod is not available for corporate clients
+                </VariableLocalized>
             </Variable>
 
+            <Variable>
+                <Name>hp_equal_address</Name>
+                <Description>Meldung wenn Rechnungs- und Lieferadresse identisch sein müssen</Description>
+                <VariableLocalized iso="GER">
+                    Rechnungs- und Lieferadresse müssen identisch sein
+                </VariableLocalized>
+                <VariableLocalized iso="ENG">
+                    Billing- and shipping address have to be equal
+                </VariableLocalized>
+            </Variable>
         </Locales>
-
-
     </Install>
 </jtlshop3plugin>
