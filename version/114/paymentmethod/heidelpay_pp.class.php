@@ -21,4 +21,24 @@ class heidelpay_pp extends heidelpay_standard
     {
         $this->paymentObject = new PrepaymentPaymentMethod();
     }
+
+    public function sendPaymentMail(Bestellung $order, $args)
+    {
+        $firma = Shop::DB()->query("SELECT * FROM tfirma", 1);
+        $repl = array(
+            '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
+            '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
+            '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
+            '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
+            '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
+            '{USAGE}' => $args ['IDENTIFICATION_SHORTID'],
+            '{COMPANY_NAME}' => $firma->cName
+        );
+        mail(
+            $order->oRechnungsadresse->cMail,
+            strtr(constant('PP_MAIL_SUBJECT'), $repl),
+            strtr(constant('PP_MAIL_TEXT'), $repl),
+            constant('PP_MAIL_HEADERS')
+        );
+    }
 }

@@ -26,4 +26,33 @@ class heidelpay_dd extends heidelpay_standard
     {
         $this->paymentObject->debit();
     }
+
+    public function sendPaymentMail(Bestellung $order, $args)
+    {
+        $firma = Shop::DB()->query("SELECT * FROM tfirma", 1);
+        $repl = array(
+            '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
+            '{ACC_BIC}' => $args ['ACCOUNT_BIC'],
+            '{ACC_IDENT}' => $args ['ACCOUNT_IDENTIFICATION'],
+            '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
+            '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
+            '{HOLDER}' => $args ['ACCOUNT_HOLDER'],
+            '{COMPANY_NAME}' => $firma->cName
+        );
+        if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
+            $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
+        } else {
+            $repl ['{IDENT_CREDITOR}'] = '-';
+        }
+
+        $subject = strtr(constant('DD_MAIL_SUBJECT'), $repl);
+        $mail_text = strtr(constant('DD_MAIL_TEXT'), $repl);
+
+        mail(
+            $order->oRechnungsadresse->cMail,
+            $subject,
+            $mail_text,
+            constant('DD_MAIL_HEADERS')
+        );
+    }
 }
