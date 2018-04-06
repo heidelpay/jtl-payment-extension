@@ -52,7 +52,7 @@ class heidelpay_dd extends heidelpay_standard
             $order->oRechnungsadresse->cMail,
             $subject,
             $mail_text,
-            constant('DD_MAIL_HEADERS')
+            $this->getMailHeader()
         );
     }
 }

@@ -7,12 +7,6 @@
 * @category JTL
 */
 
-$headers = 'From: '.$einstellungen['emails']['email_master_absender_name'].' <'.$einstellungen['emails']['email_master_absender'].'>'. "\r\n";
-$headers .= 'Reply-To: '.$einstellungen['emails']['email_master_absender']. "\r\n";
-$headers .= 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-
-defined('DD_MAIL_HEADERS') or define('DD_MAIL_HEADERS', $headers);
 defined('DD_MAIL_SUBJECT') or define('DD_MAIL_SUBJECT','Zahlungsinformation zu Ihrer Bestellung bei {COMPANY_NAME}');
 defined('DD_MAIL_TEXT') or define('DD_MAIL_TEXT','
 <html><body><font face="helvetica">
@@ -27,7 +21,6 @@ defined('DD_MAIL_TEXT') or define('DD_MAIL_TEXT','
 </font></body></html>
 ');
 
-defined('PP_MAIL_HEADERS') or define('PP_MAIL_HEADERS', $headers);
 defined('PP_MAIL_SUBJECT') or define('PP_MAIL_SUBJECT','Zahlungsinformation zu Ihrer Bestellung bei {COMPANY_NAME}');
 defined('PP_MAIL_TEXT') or define('PP_MAIL_TEXT','
 <html><body><font face="helvetica">

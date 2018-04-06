@@ -50,16 +50,20 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function setShortId($shortId, $orderId)
     {
-        preg_match('/\d{4}[.]\d{4}[.]\d{4}/', $shortId) ? $shortId : false;
+        $shortId = preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $shortId) ? $shortId : false;
+
+        if($shortId == false) {
+            return false;
+        }
 
         if (!is_numeric($orderId)) {
             return false;
         }
 
-        $sql = 'UPDATE `tbestellung`
-        SET `cKommentar` = ?
-          WHERE `cBestellNr` = ?';
-        $GLOBALS ['DB']->executeQueryPrepared($sql, array($shortId, $orderId), 3);
+        $updateOrder = new stdClass();
+        $updateOrder->cKommentar = $shortId;
+
+        Shop::DB()->update('tbestellung', 'cBestellNr', $orderId, $updateOrder);
     }
 
     /**
@@ -92,8 +96,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         //$this->initPaymentProcess();
         $this->init(0);
-
-        Jtllog::writeLog('ModulId: '.$this->moduleID, JTLLOG_LEVEL_DEBUG);
 
         $this->prepareRequest($order, $this->moduleID);
         $this->sendPaymentRequest();
@@ -211,10 +213,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $this->name = 'Heidelpay';
         $this->caption = 'Heidelpay';
 
-        $sql = "SELECT * FROM `tzahlungsart` WHERE `cModulId` = '{$this->moduleID}'";
-        $this->info = $GLOBALS ['DB']->executeQuery($sql, 1);
-
+        $this->info = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->initPaymentProcess();
+        Jtllog::writeLog('info: '.print_r($this->info,1), 4);
     }
 
     /**
@@ -641,6 +642,8 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 
                 if ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
                     $this->setPayInfo($args, $order->cBestellNr);
+                } elseif (!isset($args ['TRANSACTION_SOURCE'])) {
+                    $this->setShortId($args['IDENTIFICATION_SHORTID'], $order->cBestellNr);
                 }
                 // Nur wenn nicht Vorkasse od. Rechnung
                 if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') {
@@ -687,7 +690,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -703,7 +706,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog((string)$logData, JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -744,14 +747,13 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             '{SHORTID}' => $post['IDENTIFICATION_SHORTID'],
         ];
 
-        $bookingtext = strtr(utf8_decode(IV_PAY_INFO), $repl);
+        $bookingtext = strtr(IV_PAY_INFO, $repl);
 
-        $sql = 'UPDATE `tbestellung` SET 
-			`cKommentar` ="' . htmlspecialchars(utf8_decode($bookingtext)) . '" 
-			WHERE `cBestellNr` ="' . htmlspecialchars($orderId) . '";';
-        $GLOBALS ['DB']->executeQuery($sql, 1);
+        $updateOrder = new stdClass();
+        $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
 
-        mail('david.owusu@heidelpay.com', 'prepayment-text',  $bookingtext);
+        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($orderId), $updateOrder);
+        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), 4);
     }
 
     /**
@@ -794,5 +796,18 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             }
             return false;
         }
+    }
+
+    protected function getMailHeader()
+    {
+        $settings = Shop::getSettings([
+            CONF_EMAILS,
+        ]);
+        $headers = 'From: '.$settings['emails']['email_master_absender_name'].' <'.$settings['emails']['email_master_absender'].'>'. "\r\n";
+        $headers .= 'Reply-To: '.$settings['emails']['email_master_absender']. "\r\n";
+        $headers .= 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+
+        return $headers;
     }
 }

@@ -7,12 +7,6 @@
 * @category JTL
 */
 
-$headers = 'From: '.$einstellungen['emails']['email_master_absender_name'].' <'.$einstellungen['emails']['email_master_absender'].'>'. "\r\n";
-$headers .= 'Reply-To: '.$einstellungen['emails']['email_master_absender']. "\r\n";
-$headers .= 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-
-define('DD_MAIL_HEADERS', $headers);
 define('DD_MAIL_SUBJECT','Additional information about your order at '.$firma->cName);
 define('DD_MAIL_TEXT','
 <html><body><font face="helvetica">
@@ -29,7 +23,6 @@ define('DD_MAIL_TEXT','
 </font></body></html>
 ');
 
-defined('PP_MAIL_HEADERS') or define('PP_MAIL_HEADERS', $headers);
 defined('PP_MAIL_SUBJECT') or define('PP_MAIL_SUBJECT','Payment information for your order at '.$firma->cName);
 defined('PP_MAIL_TEXT') or define('PP_MAIL_TEXT','
 <html><body><font face="helvetica">

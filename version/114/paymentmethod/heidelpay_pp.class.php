@@ -38,7 +38,7 @@ class heidelpay_pp extends heidelpay_standard
             $order->oRechnungsadresse->cMail,
             strtr(constant('PP_MAIL_SUBJECT'), $repl),
             strtr(constant('PP_MAIL_TEXT'), $repl),
-            constant('PP_MAIL_HEADERS')
+            $this->getMailHeader()
         );
     }
 }

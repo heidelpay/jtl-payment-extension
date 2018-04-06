@@ -16,14 +16,15 @@ use Heidelpay\XmlQuery;
 #ini_set('display_startup_errors', 1);
 #error_reporting(E_ALL);
 
-$oBestellung = Shop::DB()->query(
-    "SELECT tbestellung.kBestellung, tzahlungsart.cModulId
+$bestellNr = (int)$args_arr['oBestellung']->kBestellung;
+$query = "SELECT tbestellung.kBestellung, tzahlungsart.cModulId
             FROM tbestellung
             LEFT JOIN tzahlungsart ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-            WHERE tbestellung.kBestellung = '" . (int)$args_arr['oBestellung']->kBestellung . "'
-            LIMIT 1",
-    1
-);
+            WHERE tbestellung.kBestellung = :kBestellung";
+
+$oBestellung = Shop::DB()->executeQueryPrepared($query, ['kBestellung' => $bestellNr], 1);
+
+Jtllog::writeLog('sync-log: '.print_r($oBestellung,1),4);
 
 $_query_live_url = 'https://heidelpay.hpcgw.net/TransactionCore/xml';
 $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
@@ -36,7 +37,8 @@ if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'
 // if Versand oder Teilversand - Status s. defines_inc.php
 
 $payMethod = explode('_', $oBestellung->cModulId);
-Jtllog::writeLog('Synclog: paymethod: '.$payMethod[2]);
+Jtllog::writeLog('args-log: '.print_r($args_arr,1),4);
+
 if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
     preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $args_arr['oBestellung']->cKommentar, $result);
