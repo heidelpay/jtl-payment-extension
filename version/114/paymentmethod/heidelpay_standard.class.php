@@ -135,11 +135,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     protected function prepareRequest(Bestellung $order, $currentPaymentMethod)
     {
         $oPlugin = $this->oPlugin;
-
         $hash = $this->generateHash($order);
-        /*if (property_exists($order, 'cId')) {
-            $hash = $order->cId;
-        }*/
         $notifyURL = $this->getNotificationURL($hash);
 
         $this->paymentObject->getRequest()->authentification(
@@ -151,7 +147,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         );
 
         $this->paymentObject->getRequest()->getContact()->set('ip', $this->getIp());
-        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData($oPlugin, $currentPaymentMethod));
+        $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData());
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
@@ -279,41 +275,23 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      * Gets customer data from current session
      * sets customer address on shipping address in case of PayPal for PayPal buyer protection
      *
-     * @param $oPlugin
      * @return array with user data (name, address and mail)
      */
-    public function getCustomerData($oPlugin, $moduleId)
+    public function getCustomerData()
     {
-        $payCode = $this->getCurrentPaymentMethodPrefix($oPlugin, $moduleId);
-        //PayPal Case
-        if ($payCode == 'HPVA') {
-            $user = $_SESSION ['Lieferadresse'];
-            $mail = $_SESSION ['Kunde'];
-            $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
-                empty($user->cNachname) ? null : $user->cNachname,
-                empty($user->cFirma) ? null : $user->cFirma,
-                empty($user->kKunde) ? null : $user->kKunde,
-                empty($userStreet) ? null : $userStreet,
-                empty($user->cBundesland) ? null : $user->cBundesland,
-                empty($user->cPLZ) ? null : $user->cPLZ,
-                empty($user->cOrt) ? null : $user->cOrt,
-                empty($user->cLand) ? null : $user->cLand,
-                empty($mail->cMail) ? null : $mail->cMail);
-        } else {
-            $user = $_SESSION ['Kunde'];
-            $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
-            $userData = array(empty($user->cVorname) ? null : $user->cVorname,
-                empty($user->cNachname) ? null : $user->cNachname,
-                empty($user->cFirma) ? null : $user->cFirma,
-                empty($user->kKunde) ? null : $user->kKunde,
-                empty($userStreet) ? null : $userStreet,
-                empty($user->cBundesland) ? null : $user->cBundesland,
-                empty($user->cPLZ) ? null : $user->cPLZ,
-                empty($user->cOrt) ? null : $user->cOrt,
-                empty($user->cLand) ? null : $user->cLand,
-                empty($user->cMail) ? null : $user->cMail);
-        }
+        $user = $_SESSION ['Kunde'];
+        $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
+        $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+            empty($user->cNachname) ? null : $user->cNachname,
+            empty($user->cFirma) ? null : $user->cFirma,
+            empty($user->kKunde) ? null : $user->kKunde,
+            empty($userStreet) ? null : $userStreet,
+            empty($user->cBundesland) ? null : $user->cBundesland,
+            empty($user->cPLZ) ? null : $user->cPLZ,
+            empty($user->cOrt) ? null : $user->cOrt,
+            empty($user->cLand) ? null : $user->cLand,
+            empty($user->cMail) ? null : $user->cMail);
+
         return $this->encodeData($userData);
     }
 
@@ -606,31 +584,16 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         $this->init();
 
-        $HeidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
-
         // load language file
         $language = $_SESSION ['cISOSprache'] === 'ger' ? 'de' : 'en';
         include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
             $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/general.php';
 
-        if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
-            $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
-            $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
-            $identificationTransactionId = $HeidelpayResponse->getIdentification()->getTransactionId();
-            try {
-                $HeidelpayResponse->verifySecurityHash($secretPass, $identificationTransactionId);
-            } catch (\Exception $e) {
-                /* If the verification does not match this can mean some kind of manipulation or
-                 * miss configuration. So you can log $e->getMessage() for debugging.*/
-                $callers = debug_backtrace();
-                Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
-                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
-                exit();
-            }
-        } else {
-            $this->redirect('bestellvorgang.php');
-        }
-        if ($HeidelpayResponse->isSuccess()) {
+        $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
+        $this->checkHash($args, $heidelpayResponse);
+        $this->paymentObject->getPaymentCode();
+
+        if ($heidelpayResponse->isSuccess()) {
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
                 $payCode = explode('.', $args ['PAYMENT_CODE']);
@@ -638,13 +601,9 @@ abstract class heidelpay_standard extends ServerPaymentMethod
                 // Send mail with payment information i.e. direct debit and pre payment
                 if(!isset($args ['TRANSACTION_SOURCE'])) {
                     $this->sendPaymentMail($order, $args);
+                    $this->setPayInfo($args, $order->cBestellNr);
                 }
 
-                if ((strtoupper($payCode [0]) == 'IV') && (!isset($args ['TRANSACTION_SOURCE']))) {
-                    $this->setPayInfo($args, $order->cBestellNr);
-                } elseif (!isset($args ['TRANSACTION_SOURCE'])) {
-                    $this->setShortId($args['IDENTIFICATION_SHORTID'], $order->cBestellNr);
-                }
                 // Nur wenn nicht Vorkasse od. Rechnung
                 if (strtoupper($payCode [0]) != 'PP' AND strtoupper($payCode [0]) != 'IV') {
                     $this->setOrderStatusToPaid($order);
@@ -665,11 +624,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             echo $this->getReturnURL($order);
 
             /*save order */
-        } elseif ($HeidelpayResponse->isError()) {
-            $error = $HeidelpayResponse->getError();
+        } elseif ($heidelpayResponse->isError()) {
+            $error = $heidelpayResponse->getError();
             echo $this->getErrorReturnURL($order) . '&hperror=' . $error['code'] .
                 $this->disableInvoiceSecured($args);
-        } elseif ($HeidelpayResponse->isPending()) {
+        } elseif ($heidelpayResponse->isPending()) {
             echo $this->getReturnURL($order);
         }
     }
@@ -730,30 +689,38 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         return true;
     }
 
+    public function checkHash($args, $heidelpayResponse)
+    {
+        if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
+            $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
+            $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
+            $identificationTransactionId = $heidelpayResponse->getIdentification()->getTransactionId();
+            try {
+                $heidelpayResponse->verifySecurityHash($secretPass, $identificationTransactionId);
+            } catch (\Exception $e) {
+                /* If the verification does not match this can mean some kind of manipulation or
+                 * miss configuration. So you can log $e->getMessage() for debugging.*/
+                $callers = debug_backtrace();
+                Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
+                    $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
+                exit();
+            }
+        } else {
+            $this->redirect('bestellvorgang.php');
+        }
+    }
+
     /**
      * Sets payment information as comment in database
      *
      * @param $post response form payment
      * @param $orderId
      */
-    public function setPayInfo($post, $orderId)
+    protected function setPayInfo($post, $orderId)
     {
-        $repl = [
-            '{PRESENTATION_AMOUNT}' => $post['PRESENTATION_AMOUNT'],
-            '{PRESENTATION_CURRENCY}' => $post['PRESENTATION_CURRENCY'],
-            '{ACCOUNT_HOLDER}' => $post['CONNECTOR_ACCOUNT_HOLDER'],
-            '{ACCOUNT_IBAN}' => $post['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACCOUNT_BIC}' => $post['CONNECTOR_ACCOUNT_BIC'],
-            '{SHORTID}' => $post['IDENTIFICATION_SHORTID'],
-        ];
-
-        $bookingtext = strtr(IV_PAY_INFO, $repl);
-
-        $updateOrder = new stdClass();
-        $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
-
-        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($orderId), $updateOrder);
-        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), 4);
+        if(!empty($post['IDENTIFICATION_SHORTID'])) {
+            $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);
+        }
     }
 
     /**

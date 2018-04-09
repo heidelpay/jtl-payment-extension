@@ -36,4 +36,26 @@ class heidelpay_va extends heidelpay_standard
             parent::sendPaymentRequest();
         }
     }
+
+    public function getCustomerData()
+    {
+        $user = $_SESSION ['Lieferadresse'];
+        $mail = $_SESSION ['Kunde'];
+
+        $userStreet = $user->cStrasse . ' ' . $user->cHausnummer;
+        $userData = array(empty($user->cVorname) ? null : $user->cVorname,
+            empty($user->cNachname) ? null : $user->cNachname,
+            empty($user->cFirma) ? null : $user->cFirma,
+            empty($user->kKunde) ? null : $user->kKunde,
+            empty($userStreet) ? null : $userStreet,
+            empty($user->cBundesland) ? null : $user->cBundesland,
+            empty($user->cPLZ) ? null : $user->cPLZ,
+            empty($user->cOrt) ? null : $user->cOrt,
+            empty($user->cLand) ? null : $user->cLand,
+            empty($mail->cMail) ? null : $mail->cMail);
+
+        return $this->encodeData($userData);
+    }
+
+
 }
