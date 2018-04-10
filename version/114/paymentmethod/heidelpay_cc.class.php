@@ -24,7 +24,7 @@ class heidelpay_cc extends heidelpay_standard
 
     public function sendPaymentRequest()
     {
-        if ($this->getBookingMode($this->oPlugin, $this->currentPaymentMethod) === 'DB') {
+        if ($this->getBookingMode($this->oPlugin, $this->moduleID) === 'DB') {
             $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
         } else {
             $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');

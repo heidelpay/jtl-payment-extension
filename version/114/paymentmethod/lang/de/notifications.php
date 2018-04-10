@@ -12,11 +12,11 @@ defined('DD_MAIL_TEXT') or define('DD_MAIL_TEXT','
 <html><body><font face="helvetica">
     Der Betrag von <strong>{AMOUNT} {CURRENCY}</strong> wird in den nächsten Tagen von Ihrem Konto abgebucht.<br/><br/>
     <br/>
-    Die Abbuchung enthält die Mandatsreferenz-ID: <strong>{ACC_IDENT}</strong><br/>
-    und die Gläubiger ID: <strong>{IDENT_CREDITOR}</strong><br/>
-    <br/><i>Bitte sorgen Sie für ausreichende Deckung auf dem entsprechenden Konto.</i>
+    Die Abbuchung enth&auml;lt die Mandatsreferenz-ID: <strong>{ACC_IDENT}</strong><br/>
+    und die Gl&auml;ubiger ID: <strong>{IDENT_CREDITOR}</strong><br/>
+    <br/><i>Bitte sorgen Sie f&uuml;r ausreichende Deckung auf dem entsprechenden Konto.</i>
     <br/><br/>
-    Mit freundlichem Gruß<br />
+    Mit freundlichem Gru&szlig;<br />
     Ihr Team von {COMPANY_NAME}
 </font></body></html>
 ');
@@ -24,15 +24,15 @@ defined('DD_MAIL_TEXT') or define('DD_MAIL_TEXT','
 defined('PP_MAIL_SUBJECT') or define('PP_MAIL_SUBJECT','Zahlungsinformation zu Ihrer Bestellung bei {COMPANY_NAME}');
 defined('PP_MAIL_TEXT') or define('PP_MAIL_TEXT','
 <html><body><font face="helvetica">
-    Bitte überweisen Sie uns den Betrag von <strong>{AMOUNT} {CURRENCY}</strong> auf folgendes Konto:<br/><br/>
+    Bitte &uuml;berweisen Sie uns den Betrag von <strong>{AMOUNT} {CURRENCY}</strong> auf folgendes Konto:<br/><br/>
 
     Kontoinhaber: 	{ACC_OWNER}<br/>
     IBAN: 			{ACC_IBAN}<br/>
     BIC: 				{ACC_BIC}<br/><br/>
-    <i>Geben Sie als Verwendungszweck bitte ausschließlich diese Identifikationsnummer an:</i><br/>
+    <i>Geben Sie als Verwendungszweck bitte ausschlie&szlig;lich diese Identifikationsnummer an:</i><br/>
     <strong>{USAGE}</strong><br/><br/>
     <br/><br/>
-    Mit freundlichen Grüßen,<br />
+    Mit freundlichen Gr&uuml;&szlig;en,<br />
     Ihr Team von {COMPANY_NAME}
 </font></body></html>
 ');

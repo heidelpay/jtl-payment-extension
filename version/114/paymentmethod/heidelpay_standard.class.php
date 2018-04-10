@@ -668,7 +668,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
-
     /**
      * Verifies notification
      *
