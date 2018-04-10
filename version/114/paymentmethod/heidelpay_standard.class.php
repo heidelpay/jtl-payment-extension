@@ -32,15 +32,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public $oPlugin;
 
-    public function setLocal()
-    {
-        if ($_SESSION ['cISOSprache'] == 'ger') {
-            #setlocale(LC_ALL, 'de_DE');
-        } else {
-            #setlocale(LC_ALL, 'en_US');
-        }
-    }
-
     /**
      * Sets Short-ID in database as comment for the order
      *
@@ -94,7 +85,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     public function preparePaymentProcess($order)
     {
-        //$this->initPaymentProcess();
         $this->init(0);
 
         $this->prepareRequest($order, $this->moduleID);
@@ -447,7 +437,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $smarty->assign('pay_button_label', $this->getPayButtonLabel());
         $smarty->assign('paytext', utf8_decode($this->getPayText()));
 
-        #setlocale(LC_TIME, $this->getLanguageCode());
         $formFields = $this->getFormFields();
         if($formFields) {
             $templateHelper->addFieldsets($smarty, $formFields);
@@ -585,13 +574,12 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $this->init();
 
         // load language file
-        $language = $_SESSION ['cISOSprache'] === 'ger' ? 'de' : 'en';
+        $language = strtolower($this->getLanguageCode());
         include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
             $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/general.php';
 
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
-        $this->paymentObject->getPaymentCode();
 
         if ($heidelpayResponse->isSuccess()) {
             /* save order and transaction result to your database */
@@ -633,6 +621,12 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
+    /**
+     * Send a mail to the customer with paymentinformation if necessary.
+     * By default no mail is sent.
+     * @param Bestellung $order
+     * @param $args
+     */
     public function sendPaymentMail(Bestellung $order, $args)
     {
     }
@@ -653,6 +647,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
+    /**
+     * Send confirmation mail to customer.
+     * @param Bestellung $order
+     * @return $this|void
+     */
     public function sendConfirmationMail($order)
     {
         try {
@@ -689,6 +688,14 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         return true;
     }
 
+    /**
+     * Verify the SecurityHash.
+     * If the verification does not match this can mean some kind of manipulation or
+     * miss configuration. So you can log $e->getMessage() for debugging.
+     *
+     * @param array $args Data of the transaction resault
+     * @param \Heidelpay\PhpPaymentApi\Response $heidelpayResponse
+     */
     public function checkHash($args, $heidelpayResponse)
     {
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
@@ -698,8 +705,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             try {
                 $heidelpayResponse->verifySecurityHash($secretPass, $identificationTransactionId);
             } catch (\Exception $e) {
-                /* If the verification does not match this can mean some kind of manipulation or
-                 * miss configuration. So you can log $e->getMessage() for debugging.*/
                 $callers = debug_backtrace();
                 Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
                     $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
@@ -734,7 +739,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             return $order->BestellstatusURL;
         }
-
         return Shop::getURL() . '/bestellvorgang.php';
     }
 
@@ -765,6 +769,10 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         }
     }
 
+    /**
+     * Provide a mail-header for html utf-8 mails
+     * @return string
+     */
     protected function getMailHeader()
     {
         $settings = Shop::getSettings([
