@@ -16,9 +16,6 @@
 
 if (isset($_GET ['hperror'])) {
     if (preg_match('/[0-9]{3}\.[0-9]{3}\.[0-9]{3}/', $_GET ['hperror'])) {
-        include_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' .
-            $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
-
         $heidelpayError = $_GET['hperror'];
 
         $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';

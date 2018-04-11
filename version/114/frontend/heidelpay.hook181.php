@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ronja.wann
- * Date: 02.10.2017
- * Time: 10:09
- */
+/*
+ * Hook 181: Perform automatic finalize for secured invoice when JTL WAWI synchronize with the online shop.
+ * Reservation gets finalized if not happened yet and the order was send.
+ *
+ * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+ * @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
+ * @link https://dev.heidelpay.de/JTL
+ * @author Ronja Wann, David Owusu
+ * @category JTL
+*/
 
 
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
@@ -24,8 +28,6 @@ $query = "SELECT tbestellung.kBestellung, tzahlungsart.cModulId
 
 $oBestellung = Shop::DB()->executeQueryPrepared($query, ['kBestellung' => $bestellNr], 1);
 
-Jtllog::writeLog('sync-log: '.print_r($oBestellung,1),4);
-
 $_query_live_url = 'https://heidelpay.hpcgw.net/TransactionCore/xml';
 $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
 
@@ -37,7 +39,6 @@ if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'
 // if Versand oder Teilversand - Status s. defines_inc.php
 
 $payMethod = explode('_', $oBestellung->cModulId);
-Jtllog::writeLog('args-log: '.print_r($args_arr,1),4);
 
 if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
