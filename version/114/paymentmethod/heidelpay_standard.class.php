@@ -618,12 +618,13 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 
     /**
      * Send a mail to the customer with paymentinformation if necessary.
-     * By default no mail is sent.
+     * By default no mail is send.
      * @param Bestellung $order
      * @param $args
      */
     public function sendPaymentMail(Bestellung $order, $args)
     {
+        return false;
     }
 
     public function setOrderStatusToPaid($order)
@@ -710,16 +711,17 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
-     * Sets payment information as comment in database
+     * Sets payment information as comment in database. Default is to write no payInfo
      *
      * @param $post response form payment
      * @param $orderId
      */
     protected function setPayInfo($post, $orderId)
     {
-        if(!empty($post['IDENTIFICATION_SHORTID'])) {
+        /*if(!empty($post['IDENTIFICATION_SHORTID'])) {
             $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);
-        }
+        }*/
+        return false;
     }
 
     /**
