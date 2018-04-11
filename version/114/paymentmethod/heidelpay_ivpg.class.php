@@ -1,8 +1,6 @@
 <?php
 /*
- * SUMMARY
- *
- * DESC
+ * Secured Invoice paymentmethod
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
@@ -19,7 +17,6 @@ class heidelpay_ivpg extends heidelpay_iv
     /**
      * @param $order
      * @param $currentPaymentMethod
-     * @param $notifyURL
      */
     public function prepareRequest(Bestellung $order, $currentPaymentMethod)
     {

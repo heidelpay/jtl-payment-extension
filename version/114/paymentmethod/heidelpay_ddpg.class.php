@@ -1,6 +1,6 @@
 <?php
 /*
- * SUMMARY
+ * Secured direct debit paymentmethod
  *
  * DESC
  *

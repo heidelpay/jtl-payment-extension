@@ -1,6 +1,6 @@
 <?php
 /*
- * SUMMARY
+ * Basic abstract class for payment methods.
  *
  * DESC
  *
@@ -43,11 +43,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         $shortId = preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $shortId) ? $shortId : false;
 
-        if($shortId == false) {
-            return false;
-        }
-
-        if (!is_numeric($orderId)) {
+        if (!is_numeric($orderId) || $shortId == false) {
             return false;
         }
 
@@ -201,7 +197,6 @@ abstract class heidelpay_standard extends ServerPaymentMethod
 
         $this->info = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->initPaymentProcess();
-        Jtllog::writeLog('info: '.print_r($this->info,1), 4);
     }
 
     /**
@@ -576,7 +571,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         // load language file
         $language = strtolower($this->getLanguageCode());
         include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
-            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/general.php';
+            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
 
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);

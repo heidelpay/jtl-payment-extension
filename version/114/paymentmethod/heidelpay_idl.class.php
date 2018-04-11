@@ -1,8 +1,6 @@
 <?php
 /*
- * SUMMARY
- *
- * DESC
+ * IDeal paymentmethod
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.

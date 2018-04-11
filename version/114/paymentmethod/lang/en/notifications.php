@@ -1,10 +1,12 @@
 <?php
 /*
-* @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
-* @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
-* @link https://dev.heidelpay.de/JTL
-* @author Ronja Wann
-* @category JTL
+ * en language file for notifications.
+ *
+ * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+ * @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
+ * @link https://dev.heidelpay.de/JTL
+ * @author David Owusu
+ * @category JTL
 */
 
 define('DD_MAIL_SUBJECT','Additional information about your order at '.$firma->cName);
