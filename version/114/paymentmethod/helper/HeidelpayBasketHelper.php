@@ -32,7 +32,7 @@ class HeidelpayBasketHelper
      * @param array $oPluginSettings
      * @return Response If successful the response will contain a basket ID that can be added to the transaction request
      */
-    public static function sendBasketFromOrder($order, $oPluginSettings)
+    public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings)
     {
         $authentication = new Authentication(
             $oPluginSettings ['user'],

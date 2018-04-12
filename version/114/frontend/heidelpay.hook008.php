@@ -13,9 +13,10 @@ if (array_key_exists('disableInvoice', $_GET) && $_GET['disableInvoice']) {
 if ($_SESSION['InvoiceDisabled']) {
     $zahlungsArray = Shop::Smarty()->getTemplateVars('Zahlungsarten', null, false);
 
+    $hpPluginPattern = '/kPlugin_[0-9]+_heidelpaygesicherterechnungplugin/';
     //Search for heidelpay Secured Invoice in smarty Object and remove it
     foreach ($zahlungsArray as $key => $class) {
-        if ($class->cModulId == 'kPlugin_10_heidelpaygesicherterechnungplugin') {
+        if (preg_match($hpPluginPattern, $class->cModulId)) {
             unset($zahlungsArray[$key]);
             Shop::Smarty()->assign('Zahlungsarten', $zahlungsArray);
         }

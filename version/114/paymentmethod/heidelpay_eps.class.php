@@ -1,6 +1,6 @@
 <?php
 /*
- * SUMMARY
+ * EPS paymentmethod
  *
  * DESC
  *

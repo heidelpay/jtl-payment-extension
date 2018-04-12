@@ -1,6 +1,6 @@
 <?php
 /*
- * SUMMARY
+ * Secured direct debit paymentmethod
  *
  * DESC
  *
@@ -10,11 +10,11 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_dd.class.php';
 
 use Heidelpay\PhpPaymentApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod;
 
-class heidelpay_ddpg extends heidelpay_standard
+class heidelpay_ddpg extends heidelpay_dd
 {
     public function setPaymentObject()
     {

@@ -1,8 +1,6 @@
 <?php
 /*
- * SUMMARY
- *
- * DESC
+ * Debit card paymentmethod
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
@@ -24,7 +22,7 @@ class heidelpay_dc extends heidelpay_standard
 
     public function sendPaymentRequest()
     {
-        if ($this->getBookingMode($this->oPlugin, $this->currentPaymentMethod) === 'DB') {
+        if ($this->getBookingMode($this->oPlugin, $this->moduleID) === 'DB') {
             $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
         } else {
             $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
