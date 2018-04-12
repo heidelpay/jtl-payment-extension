@@ -4,7 +4,7 @@
  * Reservation gets finalized if not happened yet and the order was send.
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
  * @author Ronja Wann, David Owusu
  * @category JTL
