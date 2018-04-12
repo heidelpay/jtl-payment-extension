@@ -120,7 +120,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     protected function prepareRequest(Bestellung $order, $currentPaymentMethod)
     {
-        $oPlugin = $this->oPlugin;
+        global $oPlugin;
         $hash = $this->generateHash($order);
         $notifyURL = $this->getNotificationURL($hash);
 
@@ -136,7 +136,11 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData());
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
+        // Set Criterions
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+        $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('/push gw'));
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOP.TYPE', 'JTL '.Shop::getVersion());
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->getCurrentVersion());
     }
 
     /**

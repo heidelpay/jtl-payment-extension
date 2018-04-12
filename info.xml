@@ -814,7 +814,6 @@
 
         </PaymentMethod>
 
-
         <Adminmenu>
             <Settingslink sort="1">
                 <Name>Einstellungen</Name>
@@ -861,6 +860,27 @@
                 </Setting>
             </Settingslink>
         </Adminmenu>
+
+        <FrontendLink>
+            <Link>
+                <Filename>push.php</Filename>
+                <Name>push gw</Name>
+                <!--<Template>push.tpl</Template>-->
+                <FullscreenTemplate>push.tpl</FullscreenTemplate>
+                <VisibleAfterLogin>N</VisibleAfterLogin>
+                <PrintButton>N</PrintButton>
+                <NoFollow>Y</NoFollow>
+                <SSL>2</SSL>
+                <LinkLanguage iso="ENG">
+                    <Seo>Push Notifications</Seo>
+                    <Name>Push Notifications</Name>
+                    <Title> </Title>
+                    <MetaTitle> </MetaTitle>
+                    <MetaKeywords> </MetaKeywords>
+                    <MetaDescription> </MetaDescription>
+                </LinkLanguage>
+            </Link>
+        </FrontendLink>
 
         <Locales>
             <Variable>
