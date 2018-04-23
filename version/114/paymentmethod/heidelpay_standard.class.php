@@ -20,7 +20,7 @@ require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
  * heidelpay standard class
  */
 
-abstract class heidelpay_standard extends ServerPaymentMethod
+class heidelpay_standard extends ServerPaymentMethod
 {
     /**
      * @var Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
@@ -42,14 +42,12 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function setShortId($shortId, $orderId)
     {
         $shortId = preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $shortId) ? $shortId : false;
-
         if (!is_numeric($orderId) || $shortId == false) {
             return false;
         }
 
         $updateOrder = new stdClass();
         $updateOrder->cKommentar = $shortId;
-
         Shop::DB()->update('tbestellung', 'cBestellNr', $orderId, $updateOrder);
     }
 
@@ -68,7 +66,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     /**
      * Initialize the payment process by set the payment method and the plugin.
      */
-    public function initPaymentProcess()
+    protected function initPaymentProcess()
     {
         $this->setPaymentObject();
         $this->oPlugin = $this->getPlugin($this->moduleID);
@@ -138,7 +136,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
         // Set Criterions
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
-        $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('/push gw'));
+        $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('push-gw'));
         $this->paymentObject->getRequest()->getCriterion()->set('SHOP.TYPE', 'JTL '.Shop::getVersion());
         $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->getCurrentVersion());
     }
@@ -219,7 +217,10 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment object for the chosen payment method
      */
-    abstract public function setPaymentObject();
+    public function setPaymentObject()
+    {
+        return false;
+    }
 
     /**
      * Checks if Sandbox-Mode active or not
@@ -227,7 +228,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      * @param $oPlugin
      * @return bool true = sandbox mode active, false = live mode active (productive system)
      */
-    public function isSandboxMode($oPlugin, $currentPaymentMethod)
+    protected function isSandboxMode($oPlugin, $currentPaymentMethod)
     {
         if ($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_transmode'] == 'LIVE') {
             return false;
@@ -698,6 +699,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function checkHash($args, $heidelpayResponse)
     {
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
+            //global $oPlugin;
             $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
             $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
             $identificationTransactionId = $heidelpayResponse->getIdentification()->getTransactionId();

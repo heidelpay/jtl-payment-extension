@@ -53,6 +53,7 @@
         </Version>
         <Version nr="114">
             <CreateDate>2018-02-02</CreateDate>
+            <SQL>install.sql</SQL>
         </Version>
         <Hooks>
             <Hook id="008">heidelpay.hook008.php</Hook>
@@ -593,7 +594,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
-                <PreOrder>1</PreOrder>
+                <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
@@ -638,7 +639,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>PREPAYMENT</TSCode>
-                <PreOrder>1</PreOrder>
+                <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
@@ -728,7 +729,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
-                <PreOrder>1</PreOrder>
+                <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
@@ -863,17 +864,17 @@
 
         <FrontendLink>
             <Link>
-                <Filename>push.php</Filename>
-                <Name>push gw</Name>
+                <Filename>pushgw.php</Filename>
+                <Name>push-gw</Name>
                 <!--<Template>push.tpl</Template>-->
-                <FullscreenTemplate>push.tpl</FullscreenTemplate>
+                <FullscreenTemplate>pushgw.tpl</FullscreenTemplate>
                 <VisibleAfterLogin>N</VisibleAfterLogin>
                 <PrintButton>N</PrintButton>
                 <NoFollow>Y</NoFollow>
                 <SSL>2</SSL>
                 <LinkLanguage iso="ENG">
-                    <Seo>Push Notifications</Seo>
-                    <Name>Push Notifications</Name>
+                    <Seo>push-gw</Seo>
+                    <Name>push-gw</Name>
                     <Title> </Title>
                     <MetaTitle> </MetaTitle>
                     <MetaKeywords> </MetaKeywords>
