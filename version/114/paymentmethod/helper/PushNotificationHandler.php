@@ -1,14 +1,24 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: David.Owusu
- * Date: 13.04.2018
- * Time: 14:04
+/*
+ * Class to handle push notifications
+ *
+ * DESC
+ *
+ * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
+ * @link https://dev.heidelpay.de/JTL
+ * @author David Owusu
+ * @category JTL
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
+    . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
 
 use Heidelpay\PhpPaymentApi\Push;
 
+/**
+ * Class PushNotificationHandler
+ */
 class PushNotificationHandler
 {
     public $isHashValid;
@@ -16,17 +26,35 @@ class PushNotificationHandler
      * @var \Heidelpay\PhpPaymentApi\Response|null
      */
     private $response;
-    private $waitTime;
     private $paymentModule;
     private $oPlugin;
 
+    /**
+     * PushNotificationHandler constructor.
+     * @param $xmlResponse
+     */
     public function __construct($xmlResponse)
     {
-        global $oPlugin;
+        // Check POST-data and assign response object
+        $this->init($xmlResponse);
 
-        // Check for POST-data
+        $this->oPlugin = $this->getPluginFromResponse();
+        $this->checkSecurityHash();
+
+        $moduleID = $this->getModuleIdFromResponse($this->response);
+
+        if (!empty($moduleID)) {
+            $this->paymentModule = new heidelpay_standard($moduleID);
+        }
+    }
+
+    /**
+     * @param $xmlResponse
+     */
+    private function init($xmlResponse)
+    {
         if (empty($xmlResponse)) {
-            http_response_code(400);
+            http_response_code(200);
             exit();
         }
         // Try to create a response-object from push
@@ -34,28 +62,9 @@ class PushNotificationHandler
             $pushResponse = new Push($xmlResponse);
             $this->response = $pushResponse->getResponse();
         } catch (\Exception $e) {
-            http_response_code(400);
+            http_response_code(200);
+            exit();
         }
-
-        $this->oPlugin = $this->getPluginFromResponse();
-        $oPlugin = $this->oPlugin;
-        $this->checkSecurityHash();
-
-        $moduleID = $this->getModuleIdFromResponse($this->response);
-
-        if (!empty($moduleID)) {
-            require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
-                . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
-
-            $this->paymentModule = new heidelpay_standard($moduleID);
-        }
-
-        $logData = [
-            'moudleId' => $moduleID,
-            'response' => $this->response
-        ];
-
-        Jtllog::writeLog('PNH init: ' . print_r($logData, 1), 4);
     }
 
     /**
@@ -68,51 +77,43 @@ class PushNotificationHandler
         return new Plugin($kPlugin);
     }
 
+    /**
+     * @param $response
+     * @return mixed
+     */
     private function getModuleIdFromResponse($response)
     {
-        /*try {
-            return $response->getCriterion()->get('PAYMETHOD');
-        } catch(\Exception $e) {
-            http_response_code(400);
-        }*/
-
         if (!empty($response)) {
             return $response->getCriterion()->get('PAYMETHOD');
-        } else {
-            http_response_code(400);
         }
+        http_response_code(200);
     }
 
+    /**
+     * @return bool
+     */
     public function checkSecurityHash()
     {
-        //global $oPlugin;
         $secretPass = $this->oPlugin->oPluginEinstellungAssoc_arr ['secret'];
         $identificationTransactionId = $this->response->getIdentification()->getTransactionId();
 
-        /*$logData = [
-            'secret' => $this->oPlugin,
-            'identificationTransactionId' => $identificationTransactionId
-        ];
-
-        Jtllog::writeLog(print_r($logData,1), 4);*/
-
         try {
             $this->response->verifySecurityHash($secretPass, $identificationTransactionId);
-            Jtllog::writeLog('security Hash is valid', 4);
         } catch (\Exception $e) {
             $callers = debug_backtrace();
-            /*Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
-                $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify'); */
 
-            Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ":".$e->getMessage()." Remote ip-address: " .
+            Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ":" . $e->getMessage() . " Remote ip-address: " .
                 $_SERVER ['REMOTE_ADDR'], JTLLOG_LEVEL_NOTICE, false, 'Notify');
             exit();
         }
 
-
         return true;
     }
 
+    /**
+     * Handle incoming push notifications.
+     * Only incoming payments are handled that are successful and not pending.
+     */
     public function handlePush()
     {
         $paymentCode = $this->response->getPayment()->getCode();
@@ -126,43 +127,22 @@ class PushNotificationHandler
         $orderUpdate->cBestellNr = $order->cBestellNr;
         $orderUpdate->kBestellung = $order->kBestellung;
 
-        $logData = array();
-
         if ($this->response->isSuccess() && !$this->response->isPending()) {
-
-            if ($statusChange = BESTELLUNG_STATUS_BEZAHLT) {
+            if ($statusChange == BESTELLUNG_STATUS_BEZAHLT) {
                 $incomingPayment = new stdClass();
                 $incomingPayment->fBetrag = $this->response->getPresentation()->getAmount();
                 $incomingPayment->cISO = $this->response->getPresentation()->getCurrency();
                 $incomingPayment->cHinweis = $this->response->getIdentification()->getUniqueId();
 
                 $this->addIncomingPayment($order, $incomingPayment);
-                $this->paymentModule->sendConfirmationMail($order);
             }
-
-            /*if ($this->response->getPresentation()->getAmount() >= $order->fGesamtsumme) {
-                if ($statusChange != false AND $order->cStatus != $statusChange) {
-                    $this->paymentModule->setOrderStatusToPaid($order);
-                }
-            } else {
-                Jtllog::writeLog('heidelpay push-gw: Amount was too low', 3);
-            }*/
         }
-
-        if ($this->response->isPending()) {
-            $logData['Response Status'] = 'isPending';
-        }
-
-        if ($this->response->isSuccess() && !$this->response->isPending()) {
-            $logData['Response Status'] = 'Tüdelü not pending and success!!';
-        }
-
-        $logData['||=---- TransactionId |--->'] = $order->cBestellNr;
-        $logData['||=---- Bestellung |--->'] = $order;
-
-        Jtllog::writeLog('heidelpay push-gw: Push log - ' . print_r($logData, 1), 4);
     }
 
+    /**
+     * @param $transactionType
+     * @return int|null
+     */
     public function checkStatusChange($transactionType)
     {
         switch ($transactionType) {
@@ -177,22 +157,36 @@ class PushNotificationHandler
         }
     }
 
+    /**
+     * @param $response
+     * @return Bestellung|null
+     */
     private function loadOrder($response)
     {
         $bestellNr = $response->getIdentification()
             ->getTransactionId();
+        $bestellRef = Shop::DB()->select('xplugin_heidelpay_standard_order_reference', 'cTempBestellNr', $bestellNr);
+
+        if($bestellRef) {
+            $bestellNr = $bestellRef->cBestellNr;
+        }
 
         $bestellungDB = Shop::DB()->select('tbestellung', 'cBestellNr', $bestellNr);
+
         if (!empty($bestellungDB)) {
             $order = new Bestellung($bestellungDB->kBestellung);
         } else {
-            Jtllog::writeLog('heidelpay push-gw: No Order Found matching the response for ' . $bestellNr, JTLLOG_LEVEL_NOTICE);
+            Jtllog::writeLog('heidelpay push-gw: No Order Found matching the response for order number: ' . $bestellNr, JTLLOG_LEVEL_NOTICE);
             return null;
         }
 
         return $order;
     }
 
+    /**
+     * @param $order
+     * @param $incomingPayment
+     */
     private function addIncomingPayment($order, $incomingPayment)
     {
         if ($this->paymentExists($incomingPayment)) {
@@ -201,6 +195,10 @@ class PushNotificationHandler
         $this->paymentModule->addIncomingPayment($order, $incomingPayment);
     }
 
+    /**
+     * @param $incomingPayment
+     * @return bool
+     */
     private function paymentExists($incomingPayment)
     {
         $dbPayment = Shop::DB()->select('tzahlungseingang', 'cHinweis', $incomingPayment->cHinweis);
@@ -210,9 +208,12 @@ class PushNotificationHandler
         return true;
     }
 
+    /**
+     *
+     */
     public function saveResponse()
     {
-        $referenceId = $this->referenceExists()?$this->response->getIdentification()->getReferenceId():NULL;
+        $referenceId = $this->referenceExists() ? $this->response->getIdentification()->getReferenceId() : NULL;
 
         $dbResponse = new stdClass();
         $dbResponse->transaction_id = $this->response->getIdentification()->getTransactionId();
@@ -221,22 +222,12 @@ class PushNotificationHandler
         $dbResponse->timestamp = $this->response->getProcessing()->timestamp;
 
         $pluginTableName = 'xplugin_heidelpay_standard_push_notification';
-
-        Jtllog::writeLog(print_r($dbResponse,1), JTLLOG_LEVEL_DEBUG);
-
         Shop::DB()->insert($pluginTableName, $dbResponse);
     }
 
-    /*public function orderUpdate($updatedOrder)
-    {
-        Jtllog::writeLog('heidelpay push-gw: Order status updated for '
-            . $this->response->getIdentification()->getTransactionId(), JTLLOG_LEVEL_NOTICE);
-
-        Shop::DB()->update('tbestellung', 'kBestellung',
-            $updatedOrder->kBestellung,
-            $updatedOrder);
-    }*/
-
+    /**
+     * @return bool
+     */
     public function referenceExists()
     {
         $reference = $this->response->getIdentification()->getReferenceId();
@@ -246,23 +237,16 @@ class PushNotificationHandler
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function isTimeStampNew()
     {
         $previousPush = Shop::DB()->select('xplugin_heidelpay_standard_push_notification',
             'unique_id',
-            $this->response->getIdentification()->getUniqueId())
-        ;
+            $this->response->getIdentification()->getUniqueId());
 
-        if($previousPush !== null ) {
-            if($previousPush->timestamp < $this->response->getProcessing()->timestamp) {
-                Jtllog::writeLog('TimestampCheck: previeous: '
-                    .$previousPush->timestamp.' recent: '
-                    .$this->response->getProcessing()->timestamp,
-                    JTLLOG_LEVEL_DEBUG);
-            } else {
-                Jtllog::writeLog('TimestampCheck: recent push is older then the existing ',
-                    JTLLOG_LEVEL_DEBUG);
-            }
+        if ($previousPush !== null AND !$this->response->isPending()) {
             return $previousPush->timestamp < $this->response->getProcessing()->timestamp;
         }
         return true;

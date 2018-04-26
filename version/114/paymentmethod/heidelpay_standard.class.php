@@ -323,6 +323,8 @@ class heidelpay_standard extends ServerPaymentMethod
         if (empty($orderId)) {
             $orderId = baueBestellnummer();
         }
+        $_SESSION['hp_temp_orderId'] = $orderId;
+        Jtllog::writeLog('orderID'.$orderId);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {
@@ -452,6 +454,7 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);
         switch ($paymentMethodPrefix) {
+            /** @noinspection Fallthrough */
             case 'HPCC':
             case 'HPDC':
             case 'HPDD':
@@ -466,6 +469,7 @@ class heidelpay_standard extends ServerPaymentMethod
                     'is_PG',
                 ];
                 break;
+            /** @noinspection Fallthrough */
             case 'HPIDL':
             case 'HPEPS':
                 return ['account'];

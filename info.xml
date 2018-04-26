@@ -60,6 +60,7 @@
             <Hook id="140">heidelpay.hook140.php</Hook>
             <Hook id="153">heidelpay.hook153.php</Hook>
             <Hook id="181">heidelpay.hook181.php</Hook>
+            <Hook id="207">heidelpay.hook207.php</Hook>
         </Hooks>
         <PaymentMethod>
             <Method>
@@ -594,7 +595,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
-                <PreOrder>0</PreOrder>
+                <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
@@ -639,7 +640,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>PREPAYMENT</TSCode>
-                <PreOrder>0</PreOrder>
+                <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
@@ -729,7 +730,7 @@
                 <SendMail>1</SendMail>
                 <Provider>Heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
-                <PreOrder>0</PreOrder>
+                <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
                 <Curl>1</Curl>
                 <Sockets>0</Sockets>
