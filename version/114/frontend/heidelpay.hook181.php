@@ -44,6 +44,8 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
     preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $args_arr['oBestellung']->cKommentar, $result);
 
+    Jtllog::writeLog('shortId for finalize: '.print_r($result,1),4);
+
     if (!empty($result[0])) {
         $xml_params = array(
             'type' => 'STANDARD',
@@ -74,26 +76,10 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'user_password' => $oPlugin->oPluginEinstellungAssoc_arr ['pass']
         );
 
-        $resLinkedTxn = $xmlQueryClass->doRequest(
-            array(
-                'load' => urlencode($xmlQueryClass->getXMLRequest($config, $xml_params_fin))
-            ),
-            $url
-        );
+        $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result);
 
-        $resLinkedTxnXMLObject = new SimpleXMLElement($resLinkedTxn);
-
-        $resLinkedTxnCount = (string)$resLinkedTxnXMLObject->Result['count'];
-
-        //check if FI already exists, if so stop executing
-        foreach ($resLinkedTxnXMLObject->Result->Transaction as $key => $val) {
-            if ((string)$val->Payment['code'] == 'IV.FI') {
-                return;
-            }
-        }
-
-        //if PA and other transactions (not FI) exist, do finalize
-        if ($resLinkedTxnCount >= 1) {
+        //if finalize wasn't found in the database, do finalize
+        if ($finalizedOrder === null) {
             $res = $xmlQueryClass->doRequest(
                 array(
                     'load' => urlencode($xmlQueryClass->getXMLRequest($config, $xml_params))
@@ -132,6 +118,11 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
                     Shop::getURL() . ' failed.
 			Error messsage: ' . print_r($errorCode['message'], 1)
                 );
+            } else {
+                Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
+                    'cshort_id' => $result[0],
+                    'kBestellung' => $bestellNr
+                ]);
             }
         }
     }

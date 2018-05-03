@@ -21,12 +21,17 @@ use Heidelpay\PhpPaymentApi\Push;
  */
 class PushNotificationHandler
 {
-    public $isHashValid;
     /**
      * @var \Heidelpay\PhpPaymentApi\Response|null
      */
     private $response;
+    /**
+     * @var heidelpay_standard
+     */
     private $paymentModule;
+    /**
+     * @var Plugin
+     */
     private $oPlugin;
 
     /**
@@ -50,6 +55,7 @@ class PushNotificationHandler
 
     /**
      * @param $xmlResponse
+     * @return void
      */
     private function init($xmlResponse)
     {
@@ -78,7 +84,7 @@ class PushNotificationHandler
     }
 
     /**
-     * @param $response
+     * @param \Heidelpay\PhpPaymentApi\Response
      * @return mixed
      */
     private function getModuleIdFromResponse($response)
@@ -92,7 +98,7 @@ class PushNotificationHandler
     /**
      * @return bool
      */
-    public function checkSecurityHash()
+    private function checkSecurityHash()
     {
         $secretPass = $this->oPlugin->oPluginEinstellungAssoc_arr ['secret'];
         $identificationTransactionId = $this->response->getIdentification()->getTransactionId();
@@ -102,8 +108,8 @@ class PushNotificationHandler
         } catch (\Exception $e) {
             $callers = debug_backtrace();
 
-            Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ":" . $e->getMessage() . " Remote ip-address: " .
-                $_SERVER ['REMOTE_ADDR'], JTLLOG_LEVEL_NOTICE, false, 'Notify');
+            Jtllog::writeLog("Heidelpay - " . $callers [0] ['function'] . ": Invalid response hash from " .
+                $_SERVER ['REMOTE_ADDR'] . ", suspecting manipulation", JTLLOG_LEVEL_NOTICE, false, 'Notify');
             exit();
         }
 
@@ -124,26 +130,43 @@ class PushNotificationHandler
 
         $orderUpdate = new stdClass();
         $orderUpdate->cStatus = $statusChange;
-        $orderUpdate->cBestellNr = $order->cBestellNr;
-        $orderUpdate->kBestellung = $order->kBestellung;
+        //$orderUpdate->cBestellNr = $order->cBestellNr;
+       // $orderUpdate->kBestellung = $order->kBestellung;
 
-        if ($this->response->isSuccess() && !$this->response->isPending()) {
+        if ($this->response->isSuccess() && !$this->response->isPending() && $order != null) {
+            $incomingPayment = new stdClass();
+            $incomingPayment->fBetrag = $this->response->getPresentation()->getAmount();
+            $incomingPayment->cISO = $this->response->getPresentation()->getCurrency();
+            $incomingPayment->cHinweis = $this->response->getIdentification()->getUniqueId();
+
             if ($statusChange == BESTELLUNG_STATUS_BEZAHLT) {
-                $incomingPayment = new stdClass();
-                $incomingPayment->fBetrag = $this->response->getPresentation()->getAmount();
-                $incomingPayment->cISO = $this->response->getPresentation()->getCurrency();
-                $incomingPayment->cHinweis = $this->response->getIdentification()->getUniqueId();
-
                 $this->addIncomingPayment($order, $incomingPayment);
             }
+            
+            if ($statusChange == BESTELLUNG_STATUS_STORNO) {
+                if($order->fGesamtsumme == $this->response->getPresentation()->getAmount()) {
+                    //$this->setOrderStatus($order, $orderUpdate);
+                    $this->paymentModule->cancelOrder($order->kBestellung);
+                    Jtllog::writeLog('storno case:'.$order->fGesamtsumme.
+                        ' response amount: '.$this->response->getPresentation()->getAmount());
+                }
+
+                if($order->fGesamtsumme > $this->response->getPresentation()->getAmount()) {
+                }
+            }
         }
+    }
+
+    private function setOrderStatus ($order, $orderUpdate)
+    {
+        Shop::DB()->update('tbestellung', 'cBestellNr', $order->cBestellNr, $orderUpdate);
     }
 
     /**
      * @param $transactionType
      * @return int|null
      */
-    public function checkStatusChange($transactionType)
+    private function checkStatusChange($transactionType)
     {
         switch ($transactionType) {
             case 'RC':
@@ -152,21 +175,27 @@ class PushNotificationHandler
             case 'RB':
                 return BESTELLUNG_STATUS_BEZAHLT;
                 break;
+            case 'CB':
+                return BESTELLUNG_STATUS_STORNO;
+                break;
             default:
                 return null;
         }
     }
 
     /**
+     * Load order from the database depending on transaction ID.
+     * If payment was done before order was created the transaction uses a temporary order number.
      * @param $response
      * @return Bestellung|null
      */
-    private function loadOrder($response)
+    private function loadOrder(\Heidelpay\PhpPaymentApi\Response $response)
     {
         $bestellNr = $response->getIdentification()
             ->getTransactionId();
         $bestellRef = Shop::DB()->select('xplugin_heidelpay_standard_order_reference', 'cTempBestellNr', $bestellNr);
 
+        // if a reference to an order exists use use that order number instead.
         if($bestellRef) {
             $bestellNr = $bestellRef->cBestellNr;
         }
@@ -176,7 +205,8 @@ class PushNotificationHandler
         if (!empty($bestellungDB)) {
             $order = new Bestellung($bestellungDB->kBestellung);
         } else {
-            Jtllog::writeLog('heidelpay push-gw: No Order Found matching the response for order number: ' . $bestellNr, JTLLOG_LEVEL_NOTICE);
+            Jtllog::writeLog('heidelpay push-gw: No Order Found matching the transaction with short ID: '
+                . $response->getIdentification()->getShortId(), JTLLOG_LEVEL_ERROR);
             return null;
         }
 
@@ -246,8 +276,8 @@ class PushNotificationHandler
             'unique_id',
             $this->response->getIdentification()->getUniqueId());
 
-        if ($previousPush !== null AND !$this->response->isPending()) {
-            return $previousPush->timestamp < $this->response->getProcessing()->timestamp;
+        if ($previousPush !== null) {
+            return $previousPush->timestamp <= $this->response->getProcessing()->timestamp;
         }
         return true;
     }
