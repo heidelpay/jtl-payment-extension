@@ -44,22 +44,11 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
     preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $args_arr['oBestellung']->cKommentar, $result);
 
-    Jtllog::writeLog('shortId for finalize: '.print_r($result,1),4);
-
     if (!empty($result[0])) {
         $xml_params = array(
             'type' => 'STANDARD',
             'methods' => array('IV'),
             'types' => array('PA'),
-            'identification' => $result,
-            'procRes' => 'ACK',
-            'transType' => 'PAYMENT'
-        );
-
-        $xml_params_fin = array(
-            'type' => 'LINKED_TRANSACTIONS',
-            'methods' => array('IV'),
-            'types' => array('FI'),
             'identification' => $result,
             'procRes' => 'ACK',
             'transType' => 'PAYMENT'
@@ -76,7 +65,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'user_password' => $oPlugin->oPluginEinstellungAssoc_arr ['pass']
         );
 
-        $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result);
+        $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result[0]);
 
         //if finalize wasn't found in the database, do finalize
         if ($finalizedOrder === null) {
@@ -88,9 +77,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
 
             $resXMLObject = new SimpleXMLElement($res);
-
             $resUniquieId = (string)$resXMLObject->Result->Transaction->Identification->UniqueID;
-
             $paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
 
             $paymentObject->getRequest()->authentification(
