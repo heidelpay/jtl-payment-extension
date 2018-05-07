@@ -2,8 +2,6 @@
 /*
  * Class to handle push notifications
  *
- * DESC
- *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
  * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  * @link https://dev.heidelpay.de/JTL
@@ -130,8 +128,6 @@ class PushNotificationHandler
 
         $orderUpdate = new stdClass();
         $orderUpdate->cStatus = $statusChange;
-        //$orderUpdate->cBestellNr = $order->cBestellNr;
-       // $orderUpdate->kBestellung = $order->kBestellung;
 
         if ($this->response->isSuccess() && !$this->response->isPending() && $order != null) {
             $incomingPayment = new stdClass();
