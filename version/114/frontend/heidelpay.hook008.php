@@ -10,7 +10,7 @@ if (array_key_exists('disableInvoice', $_GET) && $_GET['disableInvoice']) {
     $_SESSION['InvoiceDisabled'] = true;
 }
 
-if ($_SESSION['InvoiceDisabled']) {
+if (isset($_SESSION['InvoiceDisabled'])) {
     $zahlungsArray = Shop::Smarty()->getTemplateVars('Zahlungsarten', null, false);
 
     $hpPluginPattern = '/kPlugin_[0-9]+_heidelpaygesicherterechnungplugin/';
