@@ -9,8 +9,8 @@
  * @category JTL
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
-    . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';
+/*require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
+    . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';*/
 
 use Heidelpay\PhpPaymentApi\Push;
 
@@ -38,17 +38,38 @@ class PushNotificationHandler
      */
     public function __construct($xmlResponse)
     {
+        global $oPlugin;
         // Check POST-data and assign response object
         $this->init($xmlResponse);
 
         $this->oPlugin = $this->getPluginFromResponse();
+        $oPlugin = $this->oPlugin;
+
+        Jtllog::writeLog('version '.$this->oPlugin->nVersion);
         $this->checkSecurityHash();
 
         $moduleID = $this->getModuleIdFromResponse($this->response);
 
         if (!empty($moduleID)) {
-            $this->paymentModule = new heidelpay_standard($moduleID);
+            $shopPaymethod = Shop::DB()->select('tpluginzahlungsartklasse', 'cModulId', $moduleID);
+            Jtllog::writeLog(print_r($shopPaymethod,1));
+
+            try {
+                require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/114/paymentmethod/'
+                    .$shopPaymethod->cClassPfad;
+                $classname = $shopPaymethod->cClassName;
+                $this->paymentModule = new $classname($moduleID);
+                Jtllog::writeLog('PaymentModule created');
+            } catch (\Exception $exception) {
+                Jtllog::writeLog('heidelpay push-log: Push notification could not be processed - Paymethod not found: '
+                    .$moduleID);
+            }
         }
+    }
+
+    private function loadPaymentModule()
+    {
+
     }
 
     /**
@@ -139,7 +160,7 @@ class PushNotificationHandler
                 $this->addIncomingPayment($order, $incomingPayment);
             }
             
-            if ($statusChange == BESTELLUNG_STATUS_STORNO) {
+            /*if ($statusChange == BESTELLUNG_STATUS_STORNO) {
                 if($order->fGesamtsumme == $this->response->getPresentation()->getAmount()) {
                     //$this->setOrderStatus($order, $orderUpdate);
                     $this->paymentModule->cancelOrder($order->kBestellung);
@@ -149,7 +170,7 @@ class PushNotificationHandler
 
                 if($order->fGesamtsumme > $this->response->getPresentation()->getAmount()) {
                 }
-            }
+            }*/
         }
     }
 
@@ -228,10 +249,13 @@ class PushNotificationHandler
     private function paymentExists($incomingPayment)
     {
         $dbPayment = Shop::DB()->select('tzahlungseingang', 'cHinweis', $incomingPayment->cHinweis);
-        if (empty($dbPayment)) {
+
+        return !empty($dbPayment);
+
+        /*if (empty($dbPayment)) {
             return false;
         }
-        return true;
+        return true;*/
     }
 
     /**

@@ -194,8 +194,8 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         parent::init($nAgainCheckout);
 
-        $this->name = 'Heidelpay';
-        $this->caption = 'Heidelpay';
+        $this->name = 'heidelpay';
+        $this->caption = 'heidelpay';
 
         $this->info = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->initPaymentProcess();
@@ -644,7 +644,7 @@ class heidelpay_standard extends ServerPaymentMethod
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
                 $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
             $logData = array(
-                'module' => 'Heidelpay Standard',
+                'module' => 'heidelpay Standard',
                 'order' => $order,
                 'error_msg' => $e
             );
@@ -665,7 +665,7 @@ class heidelpay_standard extends ServerPaymentMethod
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
                 $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
             $logData = array(
-                'module' => 'Heidelpay Standard',
+                'module' => 'heidelpay Standard',
                 'order' => $order,
                 'error_msg' => $e
             );
