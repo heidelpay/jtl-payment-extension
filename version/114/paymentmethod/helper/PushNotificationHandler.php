@@ -251,11 +251,6 @@ class PushNotificationHandler
         $dbPayment = Shop::DB()->select('tzahlungseingang', 'cHinweis', $incomingPayment->cHinweis);
 
         return !empty($dbPayment);
-
-        /*if (empty($dbPayment)) {
-            return false;
-        }
-        return true;*/
     }
 
     /**
@@ -263,16 +258,20 @@ class PushNotificationHandler
      */
     public function saveResponse()
     {
-        $referenceId = $this->referenceExists() ? $this->response->getIdentification()->getReferenceId() : NULL;
+        if(!$this->response->isPending()){
+            $referenceId = $this->referenceExists() ? $this->response->getIdentification()->getReferenceId() : NULL;
 
-        $dbResponse = new stdClass();
-        $dbResponse->transaction_id = $this->response->getIdentification()->getTransactionId();
-        $dbResponse->unique_id = $this->response->getIdentification()->getUniqueId();
-        $dbResponse->reference_id = $referenceId;
-        $dbResponse->timestamp = $this->response->getProcessing()->timestamp;
+            $dbResponse = new stdClass();
+            $dbResponse->transaction_id = $this->response->getIdentification()->getTransactionId();
+            $dbResponse->unique_id = $this->response->getIdentification()->getUniqueId();
+            $dbResponse->reference_id = $referenceId;
+            $dbResponse->timestamp = $this->response->getProcessing()->timestamp;
 
-        $pluginTableName = 'xplugin_heidelpay_standard_push_notification';
-        Shop::DB()->insert($pluginTableName, $dbResponse);
+            $pluginTableName = 'xplugin_heidelpay_standard_push_notification';
+            return Shop::DB()->insert($pluginTableName, $dbResponse);
+        }
+
+        return false;
     }
 
     /**
@@ -297,7 +296,7 @@ class PushNotificationHandler
             $this->response->getIdentification()->getUniqueId());
 
         if ($previousPush !== null) {
-            return $previousPush->timestamp <= $this->response->getProcessing()->timestamp;
+            return $previousPush->timestamp < $this->response->getProcessing()->timestamp;
         }
         return true;
     }

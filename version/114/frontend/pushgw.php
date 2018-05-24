@@ -14,8 +14,11 @@ $xml = file_get_contents("php://input");
 $pushHandler = new PushNotificationHandler($xml);
 
 sleep(3);
+//TODO: adjust delay for release
 
-if($pushHandler->isTimeStampNew()) {
-    $pushHandler->saveResponse();
+
+$responseSaved = $pushHandler->saveResponse();
+
+if($pushHandler->isTimeStampNew() AND $responseSaved != 0) {
     $pushHandler->handlePush();
 }
