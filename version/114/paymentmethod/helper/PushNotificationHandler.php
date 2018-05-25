@@ -45,21 +45,18 @@ class PushNotificationHandler
         $this->oPlugin = $this->getPluginFromResponse();
         $oPlugin = $this->oPlugin;
 
-        Jtllog::writeLog('version '.$this->oPlugin->nVersion);
         $this->checkSecurityHash();
 
         $moduleID = $this->getModuleIdFromResponse($this->response);
 
         if (!empty($moduleID)) {
             $shopPaymethod = Shop::DB()->select('tpluginzahlungsartklasse', 'cModulId', $moduleID);
-            Jtllog::writeLog(print_r($shopPaymethod,1));
 
             try {
                 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/114/paymentmethod/'
                     .$shopPaymethod->cClassPfad;
                 $classname = $shopPaymethod->cClassName;
                 $this->paymentModule = new $classname($moduleID);
-                Jtllog::writeLog('PaymentModule created');
             } catch (\Exception $exception) {
                 Jtllog::writeLog('heidelpay push-log: Push notification could not be processed - Paymethod not found: '
                     .$moduleID);
@@ -149,7 +146,7 @@ class PushNotificationHandler
 
         $orderUpdate = new stdClass();
         $orderUpdate->cStatus = $statusChange;
-
+        
         if ($this->response->isSuccess() && !$this->response->isPending() && $order != null) {
             $incomingPayment = new stdClass();
             $incomingPayment->fBetrag = $this->response->getPresentation()->getAmount();
@@ -268,7 +265,8 @@ class PushNotificationHandler
             $dbResponse->timestamp = $this->response->getProcessing()->timestamp;
 
             $pluginTableName = 'xplugin_heidelpay_standard_push_notification';
-            return Shop::DB()->insert($pluginTableName, $dbResponse);
+            $result = Shop::DB()->insert($pluginTableName, $dbResponse);
+            return $result === null ? false : true;
         }
 
         return false;
@@ -295,7 +293,7 @@ class PushNotificationHandler
             'unique_id',
             $this->response->getIdentification()->getUniqueId());
 
-        if ($previousPush !== null) {
+        if ($previousPush != null) {
             return $previousPush->timestamp < $this->response->getProcessing()->timestamp;
         }
         return true;

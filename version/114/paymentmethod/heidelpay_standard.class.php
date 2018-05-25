@@ -144,6 +144,8 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Send the payment request using authorize as default.
      * Override this method in the child class if another transaction mode should be used.
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     protected function sendPaymentRequest()
     {
@@ -750,10 +752,14 @@ class heidelpay_standard extends ServerPaymentMethod
 
     public function disableInvoiceSecured($response)
     {
-        if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
-            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
-            return '&disableInvoice=true';
+        $payCode = explode('.', $response ['PAYMENT_CODE']);
+        if($payCode === 'IV') {
+            if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
+                $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+                return '&disableInvoice=true';
+            }
         }
+
         return '';
     }
 

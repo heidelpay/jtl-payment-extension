@@ -14,8 +14,23 @@ require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->
 
 use Heidelpay\PhpPaymentApi\PaymentMethods\DirectDebitB2CSecuredPaymentMethod;
 
+/**
+ * Class heidelpay_ddpg
+ */
 class heidelpay_ddpg extends heidelpay_dd
 {
+    /**
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
+     */
+    public function sendPaymentRequest()
+    {
+        if ($this->getBookingMode($this->oPlugin, $this->moduleID) === 'DB') {
+                $this->paymentObject->debit();
+        } else {
+            $this->paymentObject->authorize();
+        }
+    }
+
     public function setPaymentObject()
     {
         $this->paymentObject = new DirectDebitB2CSecuredPaymentMethod();

@@ -16,9 +16,6 @@ $pushHandler = new PushNotificationHandler($xml);
 sleep(3);
 //TODO: adjust delay for release
 
-
-$responseSaved = $pushHandler->saveResponse();
-
-if($pushHandler->isTimeStampNew() AND $responseSaved != 0) {
+if($pushHandler->isTimeStampNew() && $pushHandler->saveResponse()) {
     $pushHandler->handlePush();
 }

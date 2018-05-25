@@ -798,6 +798,16 @@
                     <Description>Transaction Channel ID:</Description>
                     <ValueName>channel</ValueName>
                 </Setting>
+                <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">
+                    <Name>Buchungsmodus</Name>
+                    <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.
+                    </Description>
+                    <ValueName>bookingmode</ValueName>
+                    <SelectboxOptions>
+                        <Option value="DB" sort="1">Sofortbuchung</Option>
+                        <Option value="PA" sort="2">Reservierung</Option>
+                    </SelectboxOptions>
+                </Setting>
                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
                     <Name>Transaktionsmodus</Name>
                     <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
