@@ -2,6 +2,8 @@
 
 namespace Heidelpay\Tests\PhpPaymentApi\Integration\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
 use Heidelpay\PhpPaymentApi\PaymentMethods\PrepaymentPaymentMethod as Prepayment;
 use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
 
@@ -12,7 +14,7 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * This does not have to mean that your integration is broken. Please verify the given debug information
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
  * @link  http://dev.heidelpay.com/heidelpay-php-api/
  *
@@ -175,7 +177,7 @@ class PrepaymentPaymentMethodTest extends BasePaymentMethodTest
 
         $this->paymentObject->refund((string)$referenceId);
 
-        $this->assertEquals('PP.RF', $this->paymentObject->getRequest()->getPayment()->getCode());
+        $this->assertEquals(PaymentMethod::PREPAYMENT . '.' . TransactionType::REFUND, $this->paymentObject->getRequest()->getPayment()->getCode());
 
         $this->logDataToDebug();
 
