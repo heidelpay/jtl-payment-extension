@@ -23,7 +23,7 @@ require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
 class heidelpay_standard extends ServerPaymentMethod
 {
     /**
-     * @var Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
+     * @var \Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
      */
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
@@ -54,7 +54,7 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * generates hash for criterion secret with secretPhrase and orderID
      *
-     * @param $secret secret phrase from backend
+     * @param $secret String secret phrase from backend
      * @param $orderId
      * @return string hashed secret string
      */
@@ -80,17 +80,32 @@ class heidelpay_standard extends ServerPaymentMethod
     public function preparePaymentProcess($order)
     {
         $this->init(0);
-
         $this->prepareRequest($order, $this->moduleID);
-        $this->sendPaymentRequest();
 
-        if ($this->paymentObject->getResponse()->isError()) {
-            $errorCode = $this->paymentObject->getResponse()->getError();
-            $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
-            return;
+        try {
+            $this->sendPaymentRequest();
+        } catch (\Exception $exception) {
+            $this->redirect($this->getErrorReturnURL($order));
         }
 
-        $this->setPaymentTemplate();
+        if ($this->paymentObject->getResponse()->isError()) {
+            $error = $this->paymentObject->getResponse()->getError();
+            $errorCode = !empty($error['code']) ? $error['code'] : '000.000.000';
+
+            $logData = array(
+                'module' => 'heidelpay Standard',
+                'error_msg' => $error['message']
+            );
+
+            Jtllog::writeLog(print_r($logData, 1), JTLLOG_LEVEL_NOTICE);
+            $errorPage = $this->getErrorReturnURL($order);
+            $parameterConnector = preg_match('/.php$/', $errorPage) ? '?' : '&';
+
+            $this->redirect($this->getErrorReturnURL($order) . $parameterConnector . 'hperror=' . $errorCode);
+        } else {
+            $this->setPaymentTemplate();
+        }
+
     }
 
     /**
@@ -747,6 +762,7 @@ class heidelpay_standard extends ServerPaymentMethod
             $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             return $order->BestellstatusURL;
         }
+
         return Shop::getURL() . '/bestellvorgang.php';
     }
 

@@ -9,7 +9,7 @@
  * @category JTL
 */
 $order = $args_arr['oBestellung'];
-Jtllog::writeLog('HOOK_75 Check - Session-Bestellnr: '.$_SESSION['hp_temp_orderId'].' lokal-Bestellnr: '.$order->cBestellNr);
+
 if(!empty($_SESSION['hp_temp_orderId']) AND $_SESSION['hp_temp_orderId'] != $order->cBestellNr) {
 
     $orderReference = new stdClass();
