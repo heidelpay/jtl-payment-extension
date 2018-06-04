@@ -54,15 +54,6 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'transType' => 'PAYMENT'
         );
 
-        $xml_params_fin = array(
-            'type' => 'LINKED_TRANSACTIONS',
-            'methods' => array('IV'),
-            'types' => array('FI'),
-            'identification' => $result,
-            'procRes' => 'ACK',
-            'transType' => 'PAYMENT'
-        );
-
         $sandboxMode = 1;
 
         $xmlQueryClass = new XmlQuery();
@@ -74,26 +65,10 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'user_password' => $oPlugin->oPluginEinstellungAssoc_arr ['pass']
         );
 
-        $resLinkedTxn = $xmlQueryClass->doRequest(
-            array(
-                'load' => urlencode($xmlQueryClass->getXMLRequest($config, $xml_params_fin))
-            ),
-            $url
-        );
+        $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result[0]);
 
-        $resLinkedTxnXMLObject = new SimpleXMLElement($resLinkedTxn);
-
-        $resLinkedTxnCount = (string)$resLinkedTxnXMLObject->Result['count'];
-
-        //check if FI already exists, if so stop executing
-        foreach ($resLinkedTxnXMLObject->Result->Transaction as $key => $val) {
-            if ((string)$val->Payment['code'] == 'IV.FI') {
-                return;
-            }
-        }
-
-        //if PA and other transactions (not FI) exist, do finalize
-        if ($resLinkedTxnCount >= 1) {
+        //if finalize wasn't found in the database, do finalize
+        if ($finalizedOrder === null) {
             $res = $xmlQueryClass->doRequest(
                 array(
                     'load' => urlencode($xmlQueryClass->getXMLRequest($config, $xml_params))
@@ -102,9 +77,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
 
             $resXMLObject = new SimpleXMLElement($res);
-
             $resUniquieId = (string)$resXMLObject->Result->Transaction->Identification->UniqueID;
-
             $paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
 
             $paymentObject->getRequest()->authentification(
@@ -132,6 +105,11 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
                     Shop::getURL() . ' failed.
 			Error messsage: ' . print_r($errorCode['message'], 1)
                 );
+            } else {
+                Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
+                    'cshort_id' => $result[0],
+                    'kBestellung' => $bestellNr
+                ]);
             }
         }
     }

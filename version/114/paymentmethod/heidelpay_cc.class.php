@@ -14,7 +14,6 @@ use Heidelpay\PhpPaymentApi\PaymentMethods\CreditCardPaymentMethod;
 
 class heidelpay_cc extends heidelpay_standard
 {
-
     public function setPaymentObject()
     {
         $this->paymentObject = new CreditCardPaymentMethod();

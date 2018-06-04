@@ -12,7 +12,9 @@
  *
  *
  */
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
 
+use \Heidelpay\MessageCodeMapper\MessageCodeMapper;
 
 if (isset($_GET ['hperror'])) {
     if (preg_match('/[0-9]{3}\.[0-9]{3}\.[0-9]{3}/', $_GET ['hperror'])) {
@@ -20,7 +22,7 @@ if (isset($_GET ['hperror'])) {
 
         $local = ($_SESSION ['cISOSprache'] == 'ger') ? 'de_DE' : 'en_US';
 
-        $customerErrorMessage = new \Heidelpay\MessageCodeMapper\MessageCodeMapper($local);
+        $customerErrorMessage = new MessageCodeMapper($local);
 
         $divStart = '<div class="alert alert-danger"><strong>Error:</strong><br>';
         $divEnd = '</div>';

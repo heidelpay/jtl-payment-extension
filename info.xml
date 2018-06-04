@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding="ISO-8859-1"?>
 <jtlshop3plugin>
-    <Name>Heidelpay Standard</Name>
-    <Description>Heidelpay Standard Modul.</Description>
+    <Name>heidelpay Standard</Name>
+    <Description>heidelpay Standard Modul.</Description>
     <Author>Ronja Wann/Jens Richter</Author>
     <URL>http://www.heidelpay.de</URL>
     <XMLVersion>101</XMLVersion>
@@ -53,20 +53,22 @@
         </Version>
         <Version nr="114">
             <CreateDate>2018-02-02</CreateDate>
+            <SQL>install.sql</SQL>
         </Version>
         <Hooks>
             <Hook id="008">heidelpay.hook008.php</Hook>
             <Hook id="140">heidelpay.hook140.php</Hook>
             <Hook id="153">heidelpay.hook153.php</Hook>
             <Hook id="181">heidelpay.hook181.php</Hook>
+            <Hook id="207">heidelpay.hook207.php</Hook>
         </Hooks>
         <PaymentMethod>
             <Method>
-                <Name>Heidelpay Kreditkarte Plugin</Name>
+                <Name>heidelpay Kreditkarte Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>CREDIT_CARD</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -117,11 +119,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Debitkarte Plugin</Name>
+                <Name>heidelpay Debitkarte Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>CREDIT_CARD</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -172,11 +174,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Lastschrift Plugin</Name>
+                <Name>heidelpay Lastschrift Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_DEBIT</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -217,11 +219,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Sofort Plugin</Name>
+                <Name>heidelpay Sofort Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -262,11 +264,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Giropay Plugin</Name>
+                <Name>heidelpay Giropay Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>GIROPAY</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -307,11 +309,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay iDeal Plugin</Name>
+                <Name>heidelpay iDeal Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -352,11 +354,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay EPS Plugin</Name>
+                <Name>heidelpay EPS Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -397,11 +399,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Przelewy24 Plugin</Name>
+                <Name>heidelpay Przelewy24 Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -442,11 +444,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay PostFinance Card Plugin</Name>
+                <Name>heidelpay PostFinance Card Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -487,11 +489,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay PostFinance EFinance Plugin</Name>
+                <Name>heidelpay PostFinance EFinance Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_E_BANKING</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -532,11 +534,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay PayPal Plugin</Name>
+                <Name>heidelpay PayPal Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>PAYPAL</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -587,11 +589,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Rechnung Plugin</Name>
+                <Name>heidelpay Rechnung Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>1</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
                 <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
@@ -632,11 +634,11 @@
             </Method>
 
             <Method>
-                <Name>Heidelpay Vorkasse Plugin</Name>
+                <Name>heidelpay Vorkasse Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>1</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>PREPAYMENT</TSCode>
                 <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
@@ -677,11 +679,11 @@
             </Method>
 
             <!--   <Method>
-                 <Name>Heidelpay Santander Plugin</Name>
+                 <Name>heidelpay Santander Plugin</Name>
                  <PictureURL>template/heidelpay.png</PictureURL>
                  <Sort>3</Sort>
                  <SendMail>1</SendMail>
-                 <Provider>Heidelpay</Provider>
+                 <Provider>heidelpay</Provider>
                  <TSCode>INVOICE</TSCode>
                  <PreOrder>1</PreOrder>
                  <Soap>0</Soap>
@@ -722,11 +724,11 @@
                </Method>
           -->
             <Method>
-                <Name>Heidelpay Gesicherte Rechnung Plugin</Name>
+                <Name>heidelpay Gesicherte Rechnung Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>1</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>INVOICE</TSCode>
                 <PreOrder>1</PreOrder>
                 <Soap>0</Soap>
@@ -768,11 +770,11 @@
 
 
             <Method>
-                <Name>Heidelpay Gesicherte Lastschrift Plugin</Name>
+                <Name>heidelpay Gesicherte Lastschrift Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
                 <Sort>3</Sort>
                 <SendMail>0</SendMail>
-                <Provider>Heidelpay</Provider>
+                <Provider>heidelpay</Provider>
                 <TSCode>DIRECT_DEBIT</TSCode>
                 <PreOrder>0</PreOrder>
                 <Soap>0</Soap>
@@ -796,6 +798,16 @@
                     <Description>Transaction Channel ID:</Description>
                     <ValueName>channel</ValueName>
                 </Setting>
+                <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">
+                    <Name>Buchungsmodus</Name>
+                    <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.
+                    </Description>
+                    <ValueName>bookingmode</ValueName>
+                    <SelectboxOptions>
+                        <Option value="DB" sort="1">Sofortbuchung</Option>
+                        <Option value="PA" sort="2">Reservierung</Option>
+                    </SelectboxOptions>
+                </Setting>
                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
                     <Name>Transaktionsmodus</Name>
                     <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
@@ -814,18 +826,17 @@
 
         </PaymentMethod>
 
-
         <Adminmenu>
             <Settingslink sort="1">
                 <Name>Einstellungen</Name>
                 <Setting type="text" initialValue="Y" sort="1" conf="N">
-                    <Name>Heidelpay Einstellungen</Name>
+                    <Name>heidelpay Einstellungen</Name>
                     <Description></Description>
                     <ValueName>heidelpay_headline</ValueName>
                 </Setting>
                 <Setting type="selectbox" initialValue="N" sort="2" conf="Y">
-                    <Name>Heidelpay aktivieren</Name>
-                    <Description>Soll Heidelpay aktiviert werden?</Description>
+                    <Name>heidelpay aktivieren</Name>
+                    <Description>Soll heidelpay aktiviert werden?</Description>
                     <ValueName>heidelpay_aktiv</ValueName>
                     <SelectboxOptions>
                         <Option value="Y" sort="1">Ja</Option>
@@ -861,6 +872,27 @@
                 </Setting>
             </Settingslink>
         </Adminmenu>
+
+        <FrontendLink>
+            <Link>
+                <Filename>pushgw.php</Filename>
+                <Name>push-gw</Name>
+                <!--<Template>push.tpl</Template>-->
+                <FullscreenTemplate>pushgw.tpl</FullscreenTemplate>
+                <VisibleAfterLogin>N</VisibleAfterLogin>
+                <PrintButton>N</PrintButton>
+                <NoFollow>Y</NoFollow>
+                <SSL>2</SSL>
+                <LinkLanguage iso="ENG">
+                    <Seo>push-gw</Seo>
+                    <Name>push-gw</Name>
+                    <Title> </Title>
+                    <MetaTitle> </MetaTitle>
+                    <MetaKeywords> </MetaKeywords>
+                    <MetaDescription> </MetaDescription>
+                </LinkLanguage>
+            </Link>
+        </FrontendLink>
 
         <Locales>
             <Variable>

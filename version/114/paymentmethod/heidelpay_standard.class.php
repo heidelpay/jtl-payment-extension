@@ -20,10 +20,10 @@ require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
  * heidelpay standard class
  */
 
-abstract class heidelpay_standard extends ServerPaymentMethod
+class heidelpay_standard extends ServerPaymentMethod
 {
     /**
-     * @var Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
+     * @var \Heidelpay\PhpPaymentApi\PaymentMethods\BasicPaymentMethodTrait
      */
     public $paymentObject;
     public $pluginName = "heidelpay_standard";
@@ -42,21 +42,19 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function setShortId($shortId, $orderId)
     {
         $shortId = preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $shortId) ? $shortId : false;
-
         if (!is_numeric($orderId) || $shortId == false) {
             return false;
         }
 
         $updateOrder = new stdClass();
         $updateOrder->cKommentar = $shortId;
-
         Shop::DB()->update('tbestellung', 'cBestellNr', $orderId, $updateOrder);
     }
 
     /**
      * generates hash for criterion secret with secretPhrase and orderID
      *
-     * @param $secret secret phrase from backend
+     * @param $secret String secret phrase from backend
      * @param $orderId
      * @return string hashed secret string
      */
@@ -68,7 +66,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     /**
      * Initialize the payment process by set the payment method and the plugin.
      */
-    public function initPaymentProcess()
+    protected function initPaymentProcess()
     {
         $this->setPaymentObject();
         $this->oPlugin = $this->getPlugin($this->moduleID);
@@ -82,17 +80,32 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function preparePaymentProcess($order)
     {
         $this->init(0);
-
         $this->prepareRequest($order, $this->moduleID);
-        $this->sendPaymentRequest();
 
-        if ($this->paymentObject->getResponse()->isError()) {
-            $errorCode = $this->paymentObject->getResponse()->getError();
-            $this->redirect('bestellvorgang.php?heidelpayErrorCode=' . $errorCode['code']);
-            return;
+        try {
+            $this->sendPaymentRequest();
+        } catch (\Exception $exception) {
+            $this->redirect($this->getErrorReturnURL($order));
         }
 
-        $this->setPaymentTemplate();
+        if ($this->paymentObject->getResponse()->isError()) {
+            $error = $this->paymentObject->getResponse()->getError();
+            $errorCode = !empty($error['code']) ? $error['code'] : '000.000.000';
+
+            $logData = array(
+                'module' => 'heidelpay Standard',
+                'error_msg' => $error['message']
+            );
+
+            Jtllog::writeLog(print_r($logData, 1), JTLLOG_LEVEL_NOTICE);
+            $errorPage = $this->getErrorReturnURL($order);
+            $parameterConnector = preg_match('/.php$/', $errorPage) ? '?' : '&';
+
+            $this->redirect($this->getErrorReturnURL($order) . $parameterConnector . 'hperror=' . $errorCode);
+        } else {
+            $this->setPaymentTemplate();
+        }
+
     }
 
     /**
@@ -120,7 +133,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      */
     protected function prepareRequest(Bestellung $order, $currentPaymentMethod)
     {
-        $oPlugin = $this->oPlugin;
+        global $oPlugin;
         $hash = $this->generateHash($order);
         $notifyURL = $this->getNotificationURL($hash);
 
@@ -136,12 +149,18 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->customerAddress(...$this->getCustomerData());
         $this->paymentObject->getRequest()->basketData(...$this->getBasketData($order, $oPlugin));
         $this->paymentObject->getRequest()->async($this->getLanguageCode(), $notifyURL);
+        // Set Criterions
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
+        $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('push-gw'));
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOP.TYPE', 'JTL '.Shop::getVersion());
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->getCurrentVersion());
     }
 
     /**
      * Send the payment request using authorize as default.
      * Override this method in the child class if another transaction mode should be used.
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     protected function sendPaymentRequest()
     {
@@ -192,8 +211,8 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         parent::init($nAgainCheckout);
 
-        $this->name = 'Heidelpay';
-        $this->caption = 'Heidelpay';
+        $this->name = 'heidelpay';
+        $this->caption = 'heidelpay';
 
         $this->info = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->initPaymentProcess();
@@ -215,7 +234,10 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment object for the chosen payment method
      */
-    abstract public function setPaymentObject();
+    public function setPaymentObject()
+    {
+        return false;
+    }
 
     /**
      * Checks if Sandbox-Mode active or not
@@ -223,7 +245,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
      * @param $oPlugin
      * @return bool true = sandbox mode active, false = live mode active (productive system)
      */
-    public function isSandboxMode($oPlugin, $currentPaymentMethod)
+    protected function isSandboxMode($oPlugin, $currentPaymentMethod)
     {
         if ($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_transmode'] == 'LIVE') {
             return false;
@@ -318,6 +340,8 @@ abstract class heidelpay_standard extends ServerPaymentMethod
         if (empty($orderId)) {
             $orderId = baueBestellnummer();
         }
+        $_SESSION['hp_temp_orderId'] = $orderId;
+        Jtllog::writeLog('orderID'.$orderId);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {
@@ -447,6 +471,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     {
         $paymentMethodPrefix = $this->getCurrentPaymentMethodPrefix($this->oPlugin, $this->moduleID);
         switch ($paymentMethodPrefix) {
+            /** @noinspection Fallthrough */
             case 'HPCC':
             case 'HPDC':
             case 'HPDD':
@@ -461,6 +486,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
                     'is_PG',
                 ];
                 break;
+            /** @noinspection Fallthrough */
             case 'HPIDL':
             case 'HPEPS':
                 return ['account'];
@@ -635,7 +661,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
                 $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
             $logData = array(
-                'module' => 'Heidelpay Standard',
+                'module' => 'heidelpay Standard',
                 'order' => $order,
                 'error_msg' => $e
             );
@@ -656,7 +682,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
                 $e->getFile() . ' on line: ' . $e->getLine() . ' with message: ' . $e->getMessage();
             $logData = array(
-                'module' => 'Heidelpay Standard',
+                'module' => 'heidelpay Standard',
                 'order' => $order,
                 'error_msg' => $e
             );
@@ -694,6 +720,7 @@ abstract class heidelpay_standard extends ServerPaymentMethod
     public function checkHash($args, $heidelpayResponse)
     {
         if (array_key_exists('CRITERION_PAYMETHOD', $args)) {
+            //global $oPlugin;
             $oPlugin = $this->getPlugin($args['CRITERION_PAYMETHOD']);
             $secretPass = $oPlugin->oPluginEinstellungAssoc_arr ['secret'];
             $identificationTransactionId = $heidelpayResponse->getIdentification()->getTransactionId();
@@ -735,15 +762,20 @@ abstract class heidelpay_standard extends ServerPaymentMethod
             $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             return $order->BestellstatusURL;
         }
+
         return Shop::getURL() . '/bestellvorgang.php';
     }
 
     public function disableInvoiceSecured($response)
     {
-        if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
-            $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
-            return '&disableInvoice=true';
+        $payCode = explode('.', $response ['PAYMENT_CODE']);
+        if($payCode === 'IV') {
+            if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
+                $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
+                return '&disableInvoice=true';
+            }
         }
+
         return '';
     }
 
