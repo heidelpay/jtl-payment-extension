@@ -2,7 +2,7 @@
 <jtlshop3plugin>
     <Name>heidelpay Standard</Name>
     <Description>heidelpay Standard Modul.</Description>
-    <Author>Ronja Wann/Jens Richter</Author>
+    <Author>Ronja Wann/Jens Richter/David Owusu</Author>
     <URL>http://www.heidelpay.de</URL>
     <XMLVersion>101</XMLVersion>
     <ShopVersion>300</ShopVersion>
@@ -52,7 +52,7 @@
             <CreateDate>2017-11-08</CreateDate>
         </Version>
         <Version nr="114">
-            <CreateDate>2018-02-02</CreateDate>
+            <CreateDate>2018-06-06</CreateDate>
             <SQL>install.sql</SQL>
         </Version>
         <Hooks>
