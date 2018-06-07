@@ -5,7 +5,6 @@
     <Author>Ronja Wann/Jens Richter/David Owusu</Author>
     <URL>http://www.heidelpay.de</URL>
     <XMLVersion>101</XMLVersion>
-    <ShopVersion>300</ShopVersion>
     <Shop4Version>400</Shop4Version>
     <PluginID>heidelpay_standard</PluginID>
     <Install>
@@ -969,5 +968,36 @@
                 </VariableLocalized>
             </Variable>
         </Locales>
+
+        <Emailtemplate>
+            <Template>
+                <Name>heidelpay-dd-mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>dd-reminder</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungserinnerung</Subject>
+                    <ContentHtml>
+                        Der Betrag von {$AMOUNT} {$CURRENCY} wird in den nächsten Tagen von Ihrem Konto abgebucht.
+                        Die Abbuchung enthält die Mandatsreferenz-ID: {$ACC_IDENT}
+                        und die Gläubiger ID: {$IDENT_CREDITOR}
+                        Bitte sorgen Sie für ausreichende Deckung auf dem entsprechenden Konto.
+
+                        Mit freundlichem Gruß
+                        Ihr Team von {$Firma->cName}
+                    </ContentHtml>
+                    <ContentText>Hello</ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Reminder</Subject>
+                    <ContentHtml></ContentHtml>
+                    <ContentText></ContentText>
+                </TemplateLanguage>
+            </Template>
+        </Emailtemplate>
     </Install>
 </jtlshop3plugin>

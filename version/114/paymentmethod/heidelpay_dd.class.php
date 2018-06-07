@@ -46,11 +46,35 @@ class heidelpay_dd extends heidelpay_standard
         $subject = strtr(constant('DD_MAIL_SUBJECT'), $repl);
         $mail_text = strtr(constant('DD_MAIL_TEXT'), $repl);
 
-        mail(
+        $heidelpay = new stdClass();
+
+        $heidelpay->accIban = $args ['ACCOUNT_IBAN'];
+        $heidelpay->accBic = $args ['ACCOUNT_BIC'];
+        $heidelpay->accIdent = $args ['ACCOUNT_IDENTIFICATION'];
+        $heidelpay->amount = $args ['PRESENTATION_AMOUNT'];
+        $heidelpay->currency = $args ['PRESENTATION_CURRENCY'];
+        $heidelpay->holder = $args ['ACCOUNT_HOLDER'];
+
+        if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
+            $heidelpay->identCreditor  = $args ['IDENTIFICATION_CREDITOR_ID'];
+        } else {
+            $heidelpay->identCreditor  = '-';
+        }
+
+        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_dd-reminder';
+
+        $tkunde = new stdClass();
+        $tkunde->cMail = $order->oRechnungsadresse->cMail;
+
+
+        sendeMail( $template , $heidelpay);
+        Jtllog::writeLog('mail: ' . print_r($order, 1));
+
+        /*mail(
             $order->oRechnungsadresse->cMail,
             $subject,
             $mail_text,
             $this->getMailHeader()
-        );
+        );*/
     }
 }
