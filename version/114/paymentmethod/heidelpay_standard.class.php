@@ -11,10 +11,10 @@
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
-require_once __DIR__ . '/helper/HeidelpayBasketHelper.php';
-require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayBasketHelper.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayTemplateHelper.php';
 
 /*
  * heidelpay standard class
@@ -174,7 +174,11 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     protected function addBasketId($currentPaymentMethod, Bestellung $order) {
         $oPlugin = $this->getPlugin($currentPaymentMethod);
-        $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
+        $response = HeidelpayBasketHelper::sendBasketFromOrder(
+            $order,
+            $oPlugin->oPluginEinstellungAssoc_arr,
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
 
         if($response->isSuccess()) {
             $this->paymentObject->getRequest()->getBasket()->setId($response->getBasketId());
