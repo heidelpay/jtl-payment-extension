@@ -10,7 +10,7 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 
 use Heidelpay\PhpBasketApi\Object\Authentication;
@@ -30,9 +30,10 @@ class HeidelpayBasketHelper
      * Prepare the basket object from order and perform the request to transmit the basket to the heidelpay payment.
      * @param Bestellung $order
      * @param array $oPluginSettings
+     * @param boolean $isSandbox indicate whether the request is running in test mode or not .
      * @return Response If successful the response will contain a basket ID that can be added to the transaction request
      */
-    public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings)
+    public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings , bool $isSandbox)
     {
         $authentication = new Authentication(
             $oPluginSettings ['user'],
@@ -42,6 +43,7 @@ class HeidelpayBasketHelper
 
         $basket = new Basket();
         $request = new Request($authentication, $basket);
+        $request->setIsSandboxMode($isSandbox);
 
         $basket->setCurrencyCode($order->Waehrung->cISO);
         $basket->setBasketReferenceId($order->cBestellNr);
