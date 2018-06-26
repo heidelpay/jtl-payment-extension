@@ -2,13 +2,13 @@
 
 ##114
 
-###19.06.06
+###18.06.26
 
 ###Added
 - basket for secured invoice and secured direct debit to increase the acceptance rate of the insurance provider.
 - info about the used shop and plugin version are in the payment request.
 - support for asynchronously incoming payments via push notification.
-- send uniqueId to WAWI for an easier way to map the transactions.
+- send uniqueId to WAWI for an easier way to map the payment transactions.
 
 ###Changed
 - secured invoice is no longer available for the time of the actual session after user was denied by insurance provider.
