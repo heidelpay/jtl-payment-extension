@@ -2,49 +2,36 @@
 
 namespace Heidelpay\PhpPaymentApi\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\Brand;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\TransactionTypes\AuthorizeTransactionType;
+use Heidelpay\PhpPaymentApi\TransactionTypes\RefundTransactionType;
+
 /**
- * Giropay Payment Class
- *
  * Giropay is a payment method from giropay GmbH in Germany.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Ronja Wann
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\paymentmethods
  */
-class GiropayPaymentMethod extends AbstractPaymentMethod
+class GiropayPaymentMethod implements PaymentMethodInterface
 {
-    /**
-     * Payment code for this payment method
-     *
-     * @var string payment code
-     */
-    protected $_paymentCode = 'OT';
+    use BasicPaymentMethodTrait;
+    use AuthorizeTransactionType;
+    use RefundTransactionType;
 
     /**
-     * Weather this Payment method can authorise transactions or not
-     *
-     * @var boolean canAuthorise
+     * @var string Payment Code for this payment method
      */
-    protected $_canAuthorise = true;
+    protected $paymentCode = PaymentMethod::ONLINE_TRANSFER;
 
     /**
-     * Weather this Payment method can refund transactions or not
-     *
-     * @var boolean canRefund
+     * @var string Brand Code for this payment method
      */
-    protected $_canRefund = true;
-
-    /**
-     * Payment brand name for this payment method
-     *
-     * @var string brand name
-     */
-    protected $_brand = 'GIROPAY';
+    protected $brand = Brand::GIROPAY;
 }

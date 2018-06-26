@@ -2,6 +2,8 @@
 
 namespace Heidelpay\PhpPaymentApi\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\Brand;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
 use Heidelpay\PhpPaymentApi\TransactionTypes\AuthorizeTransactionType;
 use Heidelpay\PhpPaymentApi\TransactionTypes\ReversalTransactionType;
 use Heidelpay\PhpPaymentApi\TransactionTypes\RefundTransactionType;
@@ -13,17 +15,15 @@ use Heidelpay\PhpPaymentApi\TransactionTypes\FinalizeTransactionType;
  * This payment method is invoice from santander
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\paymentmethods
  */
-class SantanderInvoicePaymentMethod
+class SantanderInvoicePaymentMethod implements PaymentMethodInterface
 {
     use BasicPaymentMethodTrait;
     use AuthorizeTransactionType;
@@ -32,16 +32,12 @@ class SantanderInvoicePaymentMethod
     use FinalizeTransactionType;
 
     /**
-     * Payment code for this payment method
-     *
-     * @var string payment code
+     * @var string Payment Code for this payment method
      */
-    protected $_paymentCode = 'IV';
+    protected $paymentCode = PaymentMethod::INVOICE;
 
     /**
-     * Payment brand name for this payment method
-     *
-     * @var string brand name
+     * @var string Brand Code for this payment method
      */
-    protected $_brand = 'SANTANDER';
+    protected $brand = Brand::SANTANDER;
 }

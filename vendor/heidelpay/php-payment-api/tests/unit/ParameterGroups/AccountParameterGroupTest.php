@@ -9,13 +9,13 @@ use Heidelpay\PhpPaymentApi\ParameterGroups\AccountParameterGroup as Account;
  * Unit test for AccountParameterGroup
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
  * @link  http://dev.heidelpay.com/heidelpay-php-api/
  *
  * @author  Jens Richter
  *
- * @category unittest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class AccountParameterGroupTest extends Test
 {
@@ -136,7 +136,7 @@ class AccountParameterGroupTest extends Test
         $account = new Account();
 
         $value = '3516.0799.6864';
-        $account->set('identification', $value);
+        $account->setIdentification($value);
 
         $this->assertEquals($value, $account->getIdentification());
     }
@@ -151,7 +151,7 @@ class AccountParameterGroupTest extends Test
         $account = new Account();
 
         $value = '05';
-        $account->set('expiry_month', $value);
+        $account->setExpiryMonth($value);
 
         $this->assertEquals($value, $account->getExpiryMonth());
     }
@@ -166,7 +166,7 @@ class AccountParameterGroupTest extends Test
         $account = new Account();
 
         $value = '2080';
-        $account->set('expiry_year', $value);
+        $account->setExpiryYear($value);
 
         $this->assertEquals($value, $account->getExpiryYear());
     }
@@ -197,7 +197,7 @@ class AccountParameterGroupTest extends Test
         $account = new Account();
 
         $value = '***';
-        $account->set('verification', $value);
+        $account->setVerification($value);
 
         $this->assertEquals($value, $account->getVerification());
     }

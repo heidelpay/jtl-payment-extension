@@ -13,15 +13,13 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * This does not have to mean that your integration is broken. Please verify the given debug information
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
  * @link  http://dev.heidelpay.com/heidelpay-php-api/
  *
  * @author  Ronja Wann
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class EPSPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -80,7 +78,7 @@ class EPSPaymentMethodTest extends BasePaymentMethodTest
         $EPS = new EPS();
         $EPS->getRequest()->authentification(...$authentication);
         $EPS->getRequest()->customerAddress(...$customerDetails);
-        $EPS->_dryRun = true;
+        $EPS->dryRun = true;
 
         $this->paymentObject = $EPS;
     }
@@ -90,22 +88,27 @@ class EPSPaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the EPS authorize transaction
      * @group connectionTest
+     *
+     * @throws \Exception
      */
     public function testAuthorize()
     {
         $timestamp = $this->getMethod(__METHOD__) . ' ' . date('Y-m-d H:i:s');
         $this->paymentObject->getRequest()->basketData($timestamp, 23.12, $this->currency, $this->secret);
-        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.de');
+        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.com');
 
         $this->paymentObject->authorize();
 
         /* prepare request and send it to payment api */
-        $request = $this->paymentObject->getRequest()->convertToArray();
+        $request = $this->paymentObject->getRequest()->toArray();
         /** @var Response $response */
-        list(, $response) = $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
+        list($result, $response) =
+            $this->paymentObject->getRequest()->send($this->paymentObject->getPaymentUrl(), $request);
 
         $this->assertTrue($response->isSuccess(), 'Transaction failed : ' . print_r($response, 1));
         $this->assertFalse($response->isError(), 'authorize failed : ' . print_r($response->getError(), 1));
+
+        $this->logDataToDebug($result);
 
         return (string)$response->getPaymentReferenceId();
     }

@@ -9,13 +9,13 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * easyCredit Tests
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
  * @link http://dev.heidelpay.com/heidelpay-php-api/
  *
  * @author Stephano Vogel
  *
- * @package heidelpay/php-api/tests/unit/paymentmethods/easycredit
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
 {
@@ -58,6 +58,8 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
      * Set up function will create a invoice object for each test case
      *
      * @see PHPUnit_Framework_TestCase::setUp()
+     *
+     * @throws \Exception
      */
     // @codingStandardsIgnoreStart
     public function _before()
@@ -71,13 +73,12 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
             ->getAuthenticationArray();
         $customerDetails = $this->customerData->getCustomerDataArray();
 
-
         $easyCredit = new EasyCreditPaymentMethod();
 
         $easyCredit->getRequest()->authentification(...$authentication);
         $easyCredit->getRequest()->customerAddress(...$customerDetails);
         $easyCredit->getRequest()->b2cSecured('MR', '1970-01-01');
-        $easyCredit->getRequest()->async('DE', 'https://dev.heidelpay.de');
+        $easyCredit->getRequest()->async('DE', 'https://dev.heidelpay.com');
 
         $easyCredit->getRequest()->getRiskInformation()->set('guestcheckout', false);
         $easyCredit->getRequest()->getRiskInformation()->set('since', '2013-01-01');
@@ -95,6 +96,8 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
 
     /**
      * @test
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     public function initialRequest()
     {
@@ -107,5 +110,7 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
         // following fields are essential for easy credit, so they must not be null.
         $this->assertNotNull($response->getConfig()->optin_text, 'easyCredit Optin Text is null.');
         $this->assertNotNull($response->getFrontend()->getRedirectUrl(), 'RedirectUrl is null.');
+
+        $this->logDataToDebug();
     }
 }

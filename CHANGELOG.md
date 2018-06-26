@@ -1,5 +1,24 @@
 # Release Notes - heidelpay extension for JTL Shop
 
+##114
+
+###18.06.26
+
+###Added
+- basket for secured invoice and secured direct debit to increase the acceptance rate of the insurance provider.
+- info about the used shop and plugin version are in the payment request.
+- support for asynchronously incoming payments via push notification.
+- send uniqueId to WAWI for an easier way to map the payment transactions.
+
+###Changed
+- secured invoice is no longer available for the time of the actual session after user was denied by insurance provider.
+    That behaviour should avoid repetitive payment requests which will fail.
+- "sofortueberweisung" was renamed "Sofort". (Reconfiguration necessary)
+- Heidelberger Payment GmbH was renamed heidelpay GmbH.
+
+###Fixed
+- added Switch for secured direct debit to choose between booking modes authorize and debit(default).
+
 ## v113
 
 ###17.12.01
@@ -13,7 +32,7 @@
 ####Changed
 - disabled Santander invoice in info.xml
 - replaced heidelpay/php-api with heidelpay/php-payment-api 
-- replaced heidelpay/php-customer-messages with eidelpay/php-message-code-mapper
+- replaced heidelpay/php-customer-messages with heidelpay/php-message-code-mapper
 - changed namespaces according to new packages 
 - modified getIp() for proxy cases
 

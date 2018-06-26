@@ -2,42 +2,36 @@
 
 namespace Heidelpay\PhpPaymentApi\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\Brand;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\TransactionTypes\AuthorizeTransactionType;
+use Heidelpay\PhpPaymentApi\TransactionTypes\RefundTransactionType;
+
 /**
- * iDeal Payment Class
- *
  * iDeal is a online payment method in the netherlands.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\paymentmethods
  */
-class IDealPaymentMethod extends AbstractPaymentMethod
+class IDealPaymentMethod implements PaymentMethodInterface
 {
-    /**
-     * Payment code for this payment method
-     *
-     * @var string payment code
-     */
-    protected $_paymentCode = 'OT';
+    use BasicPaymentMethodTrait;
+    use AuthorizeTransactionType;
+    use RefundTransactionType;
 
     /**
-     * Weather this Payment method can authorise transactions or not
-     *
-     * @var boolean canAuthorise
+     * @var string Payment Code for this payment method
      */
-    protected $_canAuthorise = true;
+    protected $paymentCode = PaymentMethod::ONLINE_TRANSFER;
 
     /**
-     * Payment brand name for this payment method
-     *
-     * @var string brand name
+     * @var string Brand Code for this payment method
      */
-    protected $_brand = 'IDEAL';
+    protected $brand = Brand::IDEAL;
 }
