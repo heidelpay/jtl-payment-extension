@@ -12,6 +12,8 @@ Payment extension for JTL Shop
 To use this extension please create a folder named 'heidelpay_standard' in includes/plugins/ and 
 paste the downloaded files there.
 
+From version 113 to 114 "Sofortüberweisung" will be replaced "Sofort". Therefore "Sofort" has to be assigned to the affected shipping methods and has to be reconfigured.
+
 Documentation can be found at https://dev.heidelpay.de/jtl
 
 ## Currently supported payment methods:
@@ -31,7 +33,6 @@ Documentation can be found at https://dev.heidelpay.de/jtl
 * invoice
 * invoice secured b2c
 * direct debit secured b2c
-* Santander invoice
 
 ### SYSTEM REQUIREMENTS
 

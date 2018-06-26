@@ -3,19 +3,20 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit\ParameterGroup;
 
 use Codeception\TestCase\Test;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
 use Heidelpay\PhpPaymentApi\ParameterGroups\TransactionParameterGroup as Transaction;
 
 /**
  * Unit test for TransactionParameterGroup
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @category unittest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class TransactionParameterGroupTest extends Test
 {
@@ -43,7 +44,7 @@ class TransactionParameterGroupTest extends Test
     {
         $transaction = new Transaction();
 
-        $value = 'LIVE';
+        $value = TransactionMode::LIVE;
         $transaction->setMode($value);
 
         $this->assertEquals($value, $transaction->getMode());

@@ -1,0 +1,179 @@
+/* SUMMARY
+*
+* DESC
+*
+* @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
+* @copyright Copyright � 2016-present heidelpay GmbH. All rights reserved.
+* @link https://dev.heidelpay.de/JTL
+* @author Ronja Wann
+* @category JTL
+*/
+#defaultData {
+	
+}
+
+#frontendForm {
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+tr[id=notMandatoryRow] {
+	display: none;
+}
+
+tr[id=spacer1] {
+	display: none;
+}
+
+tr[id=spacer2] {
+	display: none;
+}
+
+tr[id=spacer3] {
+	display: none;
+}
+
+tr[id=spacer4] {
+	display: none;
+}
+
+tr[id=contactBlock] {
+	display: none;
+}
+
+tr[id=userInfoBlock] {
+	display: none;
+}
+
+tr[id=addressBlock] {
+	display: none;
+}
+
+tr#notMandatoryRow, tr#addressBlock, tr#userInfoBlock, tr#contactBlock,
+	tr#spacer1, tr#spacer2, tr#spacer3, tr#spacer4 {
+	display: none;
+}
+
+td {
+	color: #000000;
+}
+
+input, select {
+	color: #000000;
+	background-color: #ffffff;
+}
+
+a:link {
+	color: #000000;
+}
+
+a:visited {
+	color: #000000;
+}
+
+a:hover {
+	color: #000000;
+}
+
+a:active {
+	color: #000000;
+}
+
+a:focus {
+	color: #000000;
+}
+
+.bar {
+	display: none;
+}
+
+select#paymentMethod {
+	display: none;
+}
+
+#paymentSelection {
+	display: none;
+}
+
+#send {
+	margin-left: 130px;
+	background: #ffee66;
+	background-image: -webkit-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -moz-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -ms-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -o-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: linear-gradient(to bottom, #ffee66, #ffc43c);
+	border: 1px solid #FA2;
+	-webkit-border-radius: 5;
+	-moz-border-radius: 5;
+	border-radius: 5px;
+	font-family: Arial;
+	color: #333;
+	font: 1.1em "Trebuchet MS", sans-serif;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #FE6;
+	padding: 2px 20px 2px 20px;
+}
+
+#send:hover {
+	text-decoration: none;
+}
+
+#cancel {
+	background: #ffee66;
+	background-image: -webkit-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -moz-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -ms-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: -o-linear-gradient(top, #ffee66, #ffc43c);
+	background-image: linear-gradient(to bottom, #ffee66, #ffc43c);
+	border: 1px solid #FA2;
+	-webkit-border-radius: 5;
+	-moz-border-radius: 5;
+	border-radius: 5px;
+	font-family: Arial;
+	color: #333;
+	font: 1.1em "Trebuchet MS", sans-serif;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #FE6;
+	padding: 2px 20px 2px 20px;
+}
+
+#cancel:hover {
+	text-decoration: none;
+}
+
+html, body, .bar {
+	background: transparent;
+	font-family: Verdana, sans-serif;
+	color: #000 !important;
+	overflow: visible;
+}
+
+table {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+
+table td {
+	padding: 3px 0;
+}
+
+.frm_box {
+	background: transparent;
+	border: none;
+}
+
+#header_bar, #notMandatoryRow, #contactBlock, #userInfoBlock,
+	#addressBlock, .bar {
+	display: none;
+}
+
+form, tr, td {
+	border: none;
+	background: transparent;
+}

@@ -3,23 +3,22 @@
 namespace Heidelpay\PhpPaymentApi\PushMapping;
 
 /**
- * Summary
- *
- * Desc
+ * XML Push Mapping Class for the Contact Parameter Group
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link https://dev.heidelpay.de/php-api
+ * @link http://dev.heidelpay.com/php-payment-api
  *
  * @author Stephano Vogel
  *
- * @package heidelpay
- * @subpackage php-api
- * @category php-api
+ * @package heidelpay\php-payment-api\push-mapping
  */
 class Contact extends AbstractPushMapper
 {
+    /**
+     * @inheritdoc
+     */
     public $fields = [
         'Email' => 'email',
         'Ip' => 'ip',
@@ -27,9 +26,12 @@ class Contact extends AbstractPushMapper
         'Phone' => 'phone',
     ];
 
+    /**
+     * @inheritdoc
+     */
     public function getXmlObjectField(\SimpleXMLElement $xmlElement, $field)
     {
-        if (isset($xmlElement->Transaction->Customer->Contact->$field)) {
+        if (isset($xmlElement->Transaction, $xmlElement->Transaction->Customer->Contact->$field)) {
             return (string)$xmlElement->Transaction->Customer->Contact->$field;
         }
 

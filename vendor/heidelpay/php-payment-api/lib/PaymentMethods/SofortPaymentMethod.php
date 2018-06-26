@@ -2,6 +2,8 @@
 
 namespace Heidelpay\PhpPaymentApi\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\Brand;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
 use Heidelpay\PhpPaymentApi\TransactionTypes\AuthorizeTransactionType;
 use Heidelpay\PhpPaymentApi\TransactionTypes\RefundTransactionType;
 
@@ -11,33 +13,27 @@ use Heidelpay\PhpPaymentApi\TransactionTypes\RefundTransactionType;
  * Sofort is a payment method from SOFORT GmbH also known as sofortüberweisung in Germany.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\paymentmethods
  */
-class SofortPaymentMethod
+class SofortPaymentMethod implements PaymentMethodInterface
 {
     use BasicPaymentMethodTrait;
     use AuthorizeTransactionType;
     use RefundTransactionType;
 
     /**
-     * Payment code for this payment method
-     *
-     * @var string payment code
+     * @var string Payment Code for this payment method
      */
-    protected $_paymentCode = 'OT';
+    protected $paymentCode = PaymentMethod::ONLINE_TRANSFER;
 
     /**
-     * Payment brand name for this payment method
-     *
-     * @var string brand name
+     * @var string Brand Code for this payment method
      */
-    protected $_brand = 'SOFORT';
+    protected $brand = Brand::SOFORT;
 }

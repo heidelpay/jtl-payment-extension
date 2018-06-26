@@ -3,21 +3,22 @@
 namespace Heidelpay\PhpPaymentApi\PushMapping;
 
 /**
- * Summary
+ * XML Push Mapping Class for the Identification Parameter Group
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link https://dev.heidelpay.de/php-api
+ * @link http://dev.heidelpay.com/php-payment-api
  *
  * @author Stephano Vogel
  *
- * @package heidelpay
- * @subpackage php-api
- * @category php-api
+ * @package heidelpay\php-payment-api\push-mapping
  */
 class Identification extends AbstractPushMapper
 {
+    /**
+     * @inheritdoc
+     */
     public $fields = [
         'CreditorID' => 'creditor_id',
         'ReferenceID' => 'referenceid',
@@ -27,9 +28,12 @@ class Identification extends AbstractPushMapper
         'UniqueID' => 'uniqueid',
     ];
 
+    /**
+     * @inheritdoc
+     */
     public function getXmlObjectField(\SimpleXMLElement $xmlElement, $field)
     {
-        if (isset($xmlElement->Transaction->Identification->$field)) {
+        if (isset($xmlElement->Transaction, $xmlElement->Transaction->Identification->$field)) {
             return (string)$xmlElement->Transaction->Identification->$field;
         }
 

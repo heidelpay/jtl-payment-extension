@@ -8,15 +8,13 @@ namespace Heidelpay\PhpPaymentApi\ParameterGroups;
  * configuration will be returned from the api and can not be set.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\parameter-groups
  */
 class ConfigParameterGroup extends AbstractParameterGroup
 {
@@ -70,7 +68,7 @@ class ConfigParameterGroup extends AbstractParameterGroup
     {
         $result = json_decode($this->optin_text, true);
 
-        if (empty($result)) {
+        if ($result === null) {
             return $this->optin_text;
         }
 

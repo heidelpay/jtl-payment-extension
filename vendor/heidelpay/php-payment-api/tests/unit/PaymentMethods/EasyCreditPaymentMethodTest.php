@@ -3,9 +3,12 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit\PaymentMethods;
 
 use AspectMock\Test as test;
-use Heidelpay\PhpPaymentApi\ParameterGroups\CriterionParameterGroup;
+use Heidelpay\PhpPaymentApi\Constants\ApiConfig;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
 use Heidelpay\PhpPaymentApi\PaymentMethods\EasyCreditPaymentMethod;
 use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
 
 /**
  * This test class verifies the special functionality of the EasyCreditPaymentMethod not covered in
@@ -13,19 +16,17 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * There is no actual communication to the server since the curl adapter is being mocked.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Simon Gabriel
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
 {
-    const PAYMENT_METHOD_SHORT = 'HP';
+    const PAYMENT_METHOD_SHORT = PaymentMethod::HIRE_PURCHASE;
 
     //<editor-fold desc="Init">
 
@@ -112,7 +113,7 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
         $paymentObject = new EasyCreditPaymentMethod();
         $paymentObject->getRequest()->authentification(...$this->authentication->getAuthenticationArray());
         $paymentObject->getRequest()->customerAddress(...$this->customerData->getCustomerDataArray());
-        $paymentObject->_dryRun = false;
+        $paymentObject->dryRun = false;
 
         $this->paymentObject = $paymentObject;
 
@@ -167,25 +168,25 @@ class EasyCreditPaymentMethodTest extends BasePaymentMethodTest
             'CRITERION.SECRET' => '8263dc9e31b5754332aa23752b0044f4f6ab716ca9ec8d94a1b74ac19d2c5b822d3b' .
                 '1a0d8106c93cd02f2f5654d54c510444e310576e5559e3926fbdab0af02b',
             'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-            'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+            'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
             'FRONTEND.ENABLED' => 'TRUE',
             'FRONTEND.MODE' => 'WHITELABEL',
             'IDENTIFICATION.SHOPPERID' => $shopperId,
             'IDENTIFICATION.TRANSACTIONID' => $timestamp,
             'NAME.GIVEN' => $firstName,
             'NAME.FAMILY' => $lastName,
-            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.IN',
+            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.' . TransactionType::INITIALIZE,
             'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
             'PRESENTATION.CURRENCY' => $this->currency,
             'REQUEST.VERSION' => '1.0',
             'SECURITY.SENDER' => $securitySender,
             'TRANSACTION.CHANNEL' => $transactionChannel,
-            'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+            'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
             'USER.LOGIN' => $userLogin,
             'USER.PWD' => $userPassword,
         ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
     }
 
     //</editor-fold>

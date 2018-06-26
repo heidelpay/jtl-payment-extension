@@ -3,80 +3,62 @@
 namespace Heidelpay\PhpPaymentApi\PaymentMethods;
 
 use Heidelpay\PhpPaymentApi\Adapter\HttpAdapterInterface;
+use Heidelpay\PhpPaymentApi\Constants\ApiConfig;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
 use Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException;
 use Heidelpay\PhpPaymentApi\Request as HeidelpayRequest;
 
 /**
- * This classe is the basic payment method trait
+ * This class is the basic payment method trait
  *
  * It contains the main properties and functions for
  * every payment method
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\paymentmethods
  */
 trait BasicPaymentMethodTrait
 {
-    /**
-     * Payment Url of the live payment server
-     *
-     * Please do not change the url.
-     *
-     * @var string url for heidelpay api connection real or live system
-     */
-    protected $_liveUrl = 'https://heidelpay.hpcgw.net/ngw/post';
-
-    /**
-     * Payment Url of the sandbox payment server
-     *
-     * Please do not change the url.
-     *
-     * @var string url for heidelpay api connection sandbox system
-     */
-    protected $_sandboxUrl = 'https://test-heidelpay.hpcgw.net/ngw/post';
-
     /**
      * HTTP Adapter for payment connection
      *
      * @var HttpAdapterInterface
      */
-    protected $_adapter = null;
+    protected $adapter;
 
     /**
      * Heidelpay request object
      *
      * @var \Heidelpay\PhpPaymentApi\Request
      */
-    protected $_request = null;
+    protected $request;
 
     /**
      * Heidelpay request array
      *
      * @var array request
      */
-    protected $_requestArray = null;
+    protected $requestArray;
 
     /**
      * Heidelpay response object
      *
      * @var \Heidelpay\PhpPaymentApi\Response
      */
-    protected $_response = null;
+    protected $response;
 
     /**
      * Heidelpay response array
      *
      * @var array response
      */
-    protected $_responseArray = null;
+    protected $responseArray;
 
     /**
      * Dry run
@@ -86,7 +68,35 @@ trait BasicPaymentMethodTrait
      *
      * @var boolean dry run
      */
-    public $_dryRun = false;
+    public $dryRun = false;
+
+    /**
+     * Returns the payment code for the payment request.
+     *
+     * @return string
+     */
+    public function getPaymentCode()
+    {
+        if (!property_exists($this, 'paymentCode')) {
+            return null;
+        }
+
+        return $this->paymentCode;
+    }
+
+    /**
+     * Returns the brand for the payment method.
+     *
+     * @return string
+     */
+    public function getBrand()
+    {
+        if (!property_exists($this, 'brand')) {
+            return null;
+        }
+
+        return $this->brand;
+    }
 
     /**
      * Return the name of the used class
@@ -95,69 +105,65 @@ trait BasicPaymentMethodTrait
      */
     public static function getClassName()
     {
-        return substr(strrchr(get_called_class(), '\\'), 1);
+        return substr(strrchr(static::class, '\\'), 1);
     }
 
     /**
-     * Set a new payment request object
-     *
-     * @param \Heidelpay\PhpPaymentApi\Request $Request
+     * @inheritdoc
      */
-    public function setRequest(HeidelpayRequest $Request)
+    public function setRequest(HeidelpayRequest $heidelpayRequest)
     {
-        $this->_request = $Request;
+        $this->request = $heidelpayRequest;
     }
 
     /**
-     * Get payment request object
+     * Returns the Request instance.
      *
      * @return \Heidelpay\PhpPaymentApi\Request
      */
     public function getRequest()
     {
-        if ($this->_request === null) {
-            return $this->_request = new HeidelpayRequest();
+        if ($this->request === null) {
+            return $this->request = new HeidelpayRequest();
         }
 
-        return $this->_request;
+        return $this->request;
     }
 
     /**
-     * Get response object
+     * Returns the Response instance.
      *
      * @return \Heidelpay\PhpPaymentApi\Response
      */
     public function getResponse()
     {
-        return $this->_response;
+        return $this->response;
     }
 
     /**
      * Set a HTTP Adapter for payment communication
      *
-     * @param HttpAdapterInterface $adapter
+     * @param \Heidelpay\PhpPaymentApi\Adapter\HttpAdapterInterface $adapter
      */
     public function setAdapter($adapter)
     {
-        $this->_adapter = $adapter;
+        $this->adapter = $adapter;
     }
 
     /**
      * Get HTTP Adapter for payment communication
      *
-     * @return HttpAdapterInterface
+     * @return \Heidelpay\PhpPaymentApi\Adapter\HttpAdapterInterface
      */
     public function getAdapter()
     {
-        return $this->_adapter;
+        return $this->adapter;
     }
 
     /**
-     * Get url of the used payment api
+     * @inheritdoc
      *
-     * @throws \Exception mode not set
-     *
-     * @return boolean|string url of the payment api
+     * @throws UndefinedTransactionModeException
      */
     public function getPaymentUrl()
     {
@@ -165,11 +171,13 @@ trait BasicPaymentMethodTrait
 
         if ($mode === null) {
             throw new UndefinedTransactionModeException('Transaction mode is not set');
-        } elseif ($mode == 'LIVE') {
-            return $this->_liveUrl;
         }
 
-        return $this->_sandboxUrl;
+        if ($mode === TransactionMode::LIVE) {
+            return ApiConfig::LIVE_URL;
+        }
+
+        return ApiConfig::TEST_URL;
     }
 
     /**
@@ -177,20 +185,22 @@ trait BasicPaymentMethodTrait
      *
      * It will add the used payment method  and the brand to the request. If
      * dry run is set the request will only be convert to an array.
+     *
+     * @throws UndefinedTransactionModeException
      */
     public function prepareRequest()
     {
-        $this->getRequest()->getCriterion()->set('payment_method', $this->getClassName());
-        if ($this->_brand !== null) {
-            $this->getRequest()->getAccount()->setBrand($this->_brand);
+        $this->getRequest()->getCriterion()->set('payment_method', static::getClassName());
+        if ($this->getBrand() !== null) {
+            $this->getRequest()->getAccount()->setBrand($this->brand);
         }
 
         $uri = $this->getPaymentUrl();
-        $this->_requestArray = $this->getRequest()->convertToArray();
+        $this->requestArray = $this->getRequest()->toArray();
 
-        if ($this->_dryRun === false and $uri !== null and is_array($this->_requestArray)) {
-            list($this->_responseArray, $this->_response) =
-                $this->getRequest()->send($uri, $this->_requestArray, $this->getAdapter());
+        if ($this->dryRun === false && $uri !== null && is_array($this->requestArray)) {
+            list($this->responseArray, $this->response) =
+                $this->getRequest()->send($uri, $this->requestArray, $this->getAdapter());
         }
     }
 
@@ -215,5 +225,13 @@ trait BasicPaymentMethodTrait
     public function toJson($options = 0)
     {
         return json_encode($this->jsonSerialize(), $options);
+    }
+
+    /**
+     * @return array
+     */
+    public function getResponseArray()
+    {
+        return $this->responseArray;
     }
 }

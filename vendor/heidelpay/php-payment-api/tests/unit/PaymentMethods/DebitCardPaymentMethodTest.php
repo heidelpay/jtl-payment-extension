@@ -3,7 +3,10 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit\PaymentMethods;
 
 use AspectMock\Test as test;
-use Heidelpay\PhpPaymentApi\ParameterGroups\CriterionParameterGroup;
+use Heidelpay\PhpPaymentApi\Constants\ApiConfig;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
 use Heidelpay\PhpPaymentApi\PaymentMethods\DebitCardPaymentMethod;
 use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
 
@@ -13,19 +16,17 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * There is no actual communication to the server since the curl adapter is being mocked.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Simon Gabriel
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class DebitCardPaymentMethodTest extends BasePaymentMethodTest
 {
-    const PAYMENT_METHOD_SHORT = 'DC';
+    const PAYMENT_METHOD_SHORT = PaymentMethod::DEBIT_CARD;
 
     //<editor-fold desc="Init">
 
@@ -104,6 +105,8 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
 
     /**
      * Set up function will create a payment method object for each test case
+     *
+     * @throws \Exception
      */
     // @codingStandardsIgnoreStart
     public function _before()
@@ -115,7 +118,7 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
         $paymentObject = new DebitCardPaymentMethod();
         $paymentObject->getRequest()->authentification(...$authentication->getAuthenticationArray());
         $paymentObject->getRequest()->customerAddress(...$customerDetails->getCustomerDataArray());
-        $paymentObject->_dryRun = false;
+        $paymentObject->dryRun = false;
 
         $this->paymentObject = $paymentObject;
 
@@ -154,8 +157,8 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
             $this->secret
         );
 
-        $paymentFrameOrigin = 'http://www.heidelpay.de';
-        $cssPath = 'http://www.heidelpay.de';
+        $paymentFrameOrigin = 'http://www.heidelpay.com';
+        $cssPath = 'http://www.heidelpay.com';
         $preventAsyncRedirect = 'FALSE';
         $this->paymentObject->registration(
             $paymentFrameOrigin,
@@ -168,10 +171,10 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -200,7 +203,7 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
                 'CRITERION.SECRET' => '39fca69e5c569134ba2b34b43916692e7dfb2200adb9c85da67bb0fa4bb49faaa7' .
                     'a151930c2a08de1ad6f8a3d11edb00ab071889ac2505c02a898a8e3ba68987',
                 'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-                'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+                'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
                 'FRONTEND.CSS_PATH' => $cssPath,
                 'FRONTEND.ENABLED' => 'FALSE',
                 'FRONTEND.MODE' => 'WHITELABEL',
@@ -210,18 +213,101 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
                 'IDENTIFICATION.TRANSACTIONID' => $timestamp,
                 'NAME.GIVEN' => $firstName,
                 'NAME.FAMILY' => $lastName,
-                'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.RG',
+                'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.' . TransactionType::REGISTRATION,
                 'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
                 'PRESENTATION.CURRENCY' => $this->currency,
                 'REQUEST.VERSION' => '1.0',
                 'SECURITY.SENDER' => $securitySender,
                 'TRANSACTION.CHANNEL' => $transactionChannel,
-                'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+                'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
                 'USER.LOGIN' => $userLogin,
                 'USER.PWD' => $userPassword,
             ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
+    }
+
+    /**
+     * Verify registration parameters generated as expected
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function reregistrationParametersShouldBeSetUpAsExpected()
+    {
+        $timestamp = 'DebitCardPaymentMethodTest::reregistrationParametersShouldBeSetUpAsExpected 2017-10-26 15:41:12';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $referenceId = 987654321;
+        $this->paymentObject->reregistration(
+            $referenceId,
+            self::PAYMENT_FRAME_ORIGIN,
+            $preventAsyncRedirect,
+            self::CSS_PATH
+        );
+
+        /* disable frontend (iframe) and submit the card information directly (only for testing) */
+        $frontendEnabled = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
+        $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
+        $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
+
+        list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
+            $this->customerData->getCustomerDataArray();
+
+        list($securitySender, $userLogin, $userPassword, $transactionChannel, ) =
+            $this->authentication->getAuthenticationArray();
+
+        // this is done to avoid syntax warnings
+        $object = $this->paymentObject;
+
+        $expected =
+            [
+                'ACCOUNT.BRAND' => $this->cardBrand,
+                'ACCOUNT.EXPIRY_MONTH' => $this->cardExpiryMonth,
+                'ACCOUNT.EXPIRY_YEAR' => $this->cardExpiryYear,
+                'ACCOUNT.HOLDER' => $this->holder,
+                'ACCOUNT.NUMBER' => $this->cartNumber,
+                'ACCOUNT.VERIFICATION' => $this->cardVerification,
+                'ADDRESS.CITY' => $city,
+                'ADDRESS.COUNTRY' => $country,
+                'ADDRESS.STATE' => $state,
+                'ADDRESS.STREET' => $street,
+                'ADDRESS.ZIP' => $zip,
+                'CONTACT.EMAIL' => $email,
+                'CRITERION.PAYMENT_METHOD' => $object::getClassName(),
+                'CRITERION.SECRET' => 'd0b4585746164f19fbbea1c55ea88a1776f79b72b0ca4aee770413dbd1c79123f8d15aed7' .
+                    '5e4642b03b4dc604c6c41d1bc8b5f55212022f012ec4c3d57c6172d',
+                'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
+                'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
+                'FRONTEND.CSS_PATH' => self::CSS_PATH,
+                'FRONTEND.ENABLED' => 'FALSE',
+                'FRONTEND.MODE' => 'WHITELABEL',
+                'FRONTEND.PAYMENT_FRAME_ORIGIN' => self::PAYMENT_FRAME_ORIGIN,
+                'FRONTEND.PREVENT_ASYNC_REDIRECT' => $preventAsyncRedirect,
+                'IDENTIFICATION.SHOPPERID' => $shopperId,
+                'IDENTIFICATION.TRANSACTIONID' => $timestamp,
+                'IDENTIFICATION.REFERENCEID' => $referenceId,
+                'NAME.GIVEN' => $firstName,
+                'NAME.FAMILY' => $lastName,
+                'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.' . TransactionType::REREGISTRATION,
+                'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
+                'PRESENTATION.CURRENCY' => $this->currency,
+                'REQUEST.VERSION' => '1.0',
+                'SECURITY.SENDER' => $securitySender,
+                'TRANSACTION.CHANNEL' => $transactionChannel,
+                'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
+                'USER.LOGIN' => $userLogin,
+                'USER.PWD' => $userPassword,
+            ];
+
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
     }
 
     /**
@@ -233,7 +319,7 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
      */
     public function authorizeParametersShouldBeSetUpAsExpected()
     {
-        $timestamp = 'DebitCardPaymentMethodTest::authorize 2017-10-27 13:10:40';
+        $timestamp = 'DebitCardPaymentMethodTest::authorizeParametersShouldBeSetUpAsExpected 2017-10-27 13:10:40';
         $this->paymentObject->getRequest()->basketData(
             $timestamp,
             self::TEST_AMOUNT,
@@ -253,10 +339,10 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -281,10 +367,10 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
             'ADDRESS.ZIP' => $zip,
             'CONTACT.EMAIL' => $email,
             'CRITERION.PAYMENT_METHOD' => $object::getClassName(),
-            'CRITERION.SECRET' => '6f9d4135538597a082ed393edc4fc6bdc535118b1f01be319e3ae3eeaf09d17dcefc1' .
-                '7a9c01bb1031ceaf68eea615ac971cc9de06f166335e40795d874dde889',
+            'CRITERION.SECRET' => '5350067cbc3a27a5772bd5a193788a832ff5bbab9dfe44f18539ec512a700d04748bb43b546f1' .
+                'fe8c3b8f1b99a28a376c2119d04fe51ef06b4f8456c69ce6d92',
             'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-            'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+            'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
             'FRONTEND.CSS_PATH' => self::CSS_PATH,
             'FRONTEND.ENABLED' => $frontendEnabled,
             'FRONTEND.MODE' => 'WHITELABEL',
@@ -294,18 +380,42 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
             'IDENTIFICATION.TRANSACTIONID' => $timestamp,
             'NAME.GIVEN' => $firstName,
             'NAME.FAMILY' => $lastName,
-            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.PA',
+            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.' . TransactionType::RESERVATION,
             'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
             'PRESENTATION.CURRENCY' => $this->currency,
             'REQUEST.VERSION' => '1.0',
             'SECURITY.SENDER' => $securitySender,
             'TRANSACTION.CHANNEL' => $transactionChannel,
-            'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+            'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
             'USER.LOGIN' => $userLogin,
             'USER.PWD' => $userPassword,
         ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
+    }
+
+    /**
+     * Verify that authorize does not overwrite parameters when it is called without any arguments
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function authorizeShouldNotOverwriteParametersWhenCalledWithNoArguments()
+    {
+        $timestamp = 'DebitCardPaymentMethodTest::authorize 2017-10-27 13:37:00';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setPaymentFrameOrigin(self::PAYMENT_FRAME_ORIGIN);
+        $this->paymentObject->getRequest()->getFrontend()->setPreventAsyncRedirect($preventAsyncRedirect);
+        $this->paymentObject->getRequest()->getFrontend()->setCssPath(self::CSS_PATH);
+
+        $this->paymentObject->authorize();
+
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPaymentFrameOrigin(), self::PAYMENT_FRAME_ORIGIN);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPreventAsyncRedirect(), $preventAsyncRedirect);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getCssPath(), self::CSS_PATH);
     }
 
     /**
@@ -317,7 +427,7 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
      */
     public function debitParametersShouldBeSetUpAsExpected()
     {
-        $timestamp = 'DebitCardPaymentMethodTest::debit 2017-10-27 13:24:08';
+        $timestamp = 'DebitCardPaymentMethodTest::debitParametersShouldBeSetUpAsExpected 2017-10-27 13:24:08';
         $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
 
         $preventAsyncRedirect = 'FALSE';
@@ -332,10 +442,10 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->getFrontend()->setEnabled($frontendEnabled);
         $this->paymentObject->getRequest()->getAccount()->setHolder($this->holder);
         $this->paymentObject->getRequest()->getAccount()->setNumber($this->cartNumber);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_month', $this->cardExpiryMonth);
-        $this->paymentObject->getRequest()->getAccount()->set('expiry_year', $this->cardExpiryYear);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryMonth($this->cardExpiryMonth);
+        $this->paymentObject->getRequest()->getAccount()->setExpiryYear($this->cardExpiryYear);
         $this->paymentObject->getRequest()->getAccount()->setBrand($this->cardBrand);
-        $this->paymentObject->getRequest()->getAccount()->set('verification', $this->cardVerification);
+        $this->paymentObject->getRequest()->getAccount()->setVerification($this->cardVerification);
 
         list($firstName, $lastName, , $shopperId, $street, $state, $zip, $city, $country, $email) =
             $this->customerData->getCustomerDataArray();
@@ -360,10 +470,10 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
             'ADDRESS.ZIP' => $zip,
             'CONTACT.EMAIL' => $email,
             'CRITERION.PAYMENT_METHOD' => $object::getClassName(),
-            'CRITERION.SECRET' => '6867a929d7c41dcd2b425eaf10f1e8229cf630d3a6a5658d4ce72ce0f8f9e6' .
-                'ae3e13ba64ec41e448724e2a13f683bb5eb29a31517db61dc46426ff0694bc7d15',
+            'CRITERION.SECRET' => '58c2799a16d7deedc91193ae728898ff9051d9fe618b888e770f34c240771edfadf999583f60' .
+                '725dba2f00292c2a4b6d8b358112154032d97ded97757a0425b1',
             'CRITERION.SDK_NAME' => 'Heidelpay\\PhpPaymentApi',
-            'CRITERION.SDK_VERSION' => CriterionParameterGroup::SDK_VERSION,
+            'CRITERION.SDK_VERSION' => ApiConfig::SDK_VERSION,
             'FRONTEND.CSS_PATH' => self::CSS_PATH,
             'FRONTEND.ENABLED' => $frontendEnabled,
             'FRONTEND.MODE' => 'WHITELABEL',
@@ -373,18 +483,92 @@ class DebitCardPaymentMethodTest extends BasePaymentMethodTest
             'IDENTIFICATION.TRANSACTIONID' => $timestamp,
             'NAME.GIVEN' => $firstName,
             'NAME.FAMILY' => $lastName,
-            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.DB',
+            'PAYMENT.CODE' => self::PAYMENT_METHOD_SHORT . '.' . TransactionType::DEBIT,
             'PRESENTATION.AMOUNT' => self::TEST_AMOUNT,
             'PRESENTATION.CURRENCY' => $this->currency,
             'REQUEST.VERSION' => '1.0',
             'SECURITY.SENDER' => $securitySender,
             'TRANSACTION.CHANNEL' => $transactionChannel,
-            'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+            'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
             'USER.LOGIN' => $userLogin,
             'USER.PWD' => $userPassword,
         ];
 
-        $this->assertThat($this->paymentObject->getRequest()->convertToArray(), $this->arraysMatchExactly($expected));
+        $this->assertThat($this->paymentObject->getRequest()->toArray(), $this->arraysMatchExactly($expected));
+    }
+
+    /**
+     * Verify that debit does not overwrite parameters when it is called without any arguments
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function debitShouldNotOverwriteParametersWhenCalledWithNoArguments()
+    {
+        $timestamp = 'DebitCardPaymentMethodTest::debit 2017-10-27 13:37:00';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setPaymentFrameOrigin(self::PAYMENT_FRAME_ORIGIN);
+        $this->paymentObject->getRequest()->getFrontend()->setPreventAsyncRedirect($preventAsyncRedirect);
+        $this->paymentObject->getRequest()->getFrontend()->setCssPath(self::CSS_PATH);
+
+        $this->paymentObject->debit();
+
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPaymentFrameOrigin(), self::PAYMENT_FRAME_ORIGIN);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPreventAsyncRedirect(), $preventAsyncRedirect);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getCssPath(), self::CSS_PATH);
+    }
+
+    /**
+     * Verify that registration does not overwrite parameters when it is called without any arguments
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function registrationShouldNotOverwriteParametersWhenCalledWithNoArguments()
+    {
+        $timestamp = 'DebitCardPaymentMethodTest::registration 2017-10-27 13:37:00';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setPaymentFrameOrigin(self::PAYMENT_FRAME_ORIGIN);
+        $this->paymentObject->getRequest()->getFrontend()->setPreventAsyncRedirect($preventAsyncRedirect);
+        $this->paymentObject->getRequest()->getFrontend()->setCssPath(self::CSS_PATH);
+
+        $this->paymentObject->registration();
+
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPaymentFrameOrigin(), self::PAYMENT_FRAME_ORIGIN);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPreventAsyncRedirect(), $preventAsyncRedirect);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getCssPath(), self::CSS_PATH);
+    }
+
+    /**
+     * Verify that reregistration does not overwrite parameters when it is called without any arguments
+     *
+     * @test
+     *
+     * @throws \Exception
+     */
+    public function reregistrationShouldNotOverwriteParametersWhenCalledWithNoArguments()
+    {
+        $timestamp = 'DebitCardPaymentMethodTest::reregistration 2017-10-27 13:37:00';
+        $this->paymentObject->getRequest()->basketData($timestamp, self::TEST_AMOUNT, $this->currency, $this->secret);
+
+        $preventAsyncRedirect = 'FALSE';
+        $this->paymentObject->getRequest()->getFrontend()->setPaymentFrameOrigin(self::PAYMENT_FRAME_ORIGIN);
+        $this->paymentObject->getRequest()->getFrontend()->setPreventAsyncRedirect($preventAsyncRedirect);
+        $this->paymentObject->getRequest()->getFrontend()->setCssPath(self::CSS_PATH);
+
+        $referenceId = '123';
+        $this->paymentObject->reregistration($referenceId);
+
+        $this->assertEquals($this->paymentObject->getRequest()->getIdentification()->getReferenceId(), $referenceId);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPaymentFrameOrigin(), self::PAYMENT_FRAME_ORIGIN);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getPreventAsyncRedirect(), $preventAsyncRedirect);
+        $this->assertEquals($this->paymentObject->getRequest()->getFrontend()->getCssPath(), self::CSS_PATH);
     }
 
     //</editor-fold>
