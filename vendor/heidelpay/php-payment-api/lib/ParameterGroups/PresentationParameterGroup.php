@@ -6,15 +6,13 @@ namespace Heidelpay\PhpPaymentApi\ParameterGroups;
  * This class provides the api parameter for amount and currency.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\parameter-groups
  */
 class PresentationParameterGroup extends AbstractParameterGroup
 {
@@ -82,7 +80,7 @@ class PresentationParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the basket amount
      *
-     * @param float $amount f.e. 20.12
+     * @param float $amount, e.g. 20.12
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\PresentationParameterGroup
      */
@@ -95,7 +93,7 @@ class PresentationParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the currency in iso code 3 letters
      *
-     * @param string $currency f.e USD
+     * @param string $currency, e.g. USD
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\PresentationParameterGroup
      */
@@ -110,7 +108,7 @@ class PresentationParameterGroup extends AbstractParameterGroup
      *
      * The usage text on the customers account can be set for some payment methods
      *
-     * @param string $usage f.e. "Order 1232. Thank you for choosing Heidelpay"
+     * @param string $usage, e.g. "Order 1232. Thank you for choosing Heidelpay"
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\PresentationParameterGroup
      */

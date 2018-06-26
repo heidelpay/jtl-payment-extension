@@ -3,24 +3,27 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit;
 
 use Codeception\TestCase\Test;
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
+use Heidelpay\PhpPaymentApi\Exceptions\JsonParserException;
 use Heidelpay\PhpPaymentApi\Response;
 use Heidelpay\PhpPaymentApi\Exceptions\PaymentFormUrlException;
 use Heidelpay\PhpPaymentApi\Exceptions\HashVerificationException;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
+use Heidelpay\PhpPaymentApi\Constants\ProcessingResult;
 
 /**
  *
  *  This unit test will cover the response object.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class ResponseTest extends Test
 {
@@ -28,6 +31,11 @@ class ResponseTest extends Test
      * @var \Heidelpay\PhpPaymentApi\Response
      */
     protected $responseObject;
+
+    /**
+     * @var array
+     */
+    protected $responseArray;
 
     /**
      * Secret
@@ -49,23 +57,23 @@ class ResponseTest extends Test
     public function _before()
     {
         // @codingStandardsIgnoreEnd
-        $responseSample = array(
+        $this->responseArray = array(
             'NAME_FAMILY' => 'Berger-Payment',
             'IDENTIFICATION_TRANSACTIONID' => '2843294932',
             'ADDRESS_COUNTRY' => 'DE',
             'ADDRESS_STREET' => 'Vagerowstr. 18',
             'FRONTEND_ENABLED' => true,
             'PRESENTATION_AMOUNT' => 23.12,
-            'TRANSACTION_MODE' => 'CONNECTOR_TEST',
+            'TRANSACTION_MODE' => TransactionMode::CONNECTOR_TEST,
             'ACCOUNT_EXPIRY_MONTH' => '05',
             'PROCESSING_TIMESTAMP' => '2016-09-16 12:14:31',
-            'CONTACT_EMAIL' => 'development@heidelpay.de',
-            'FRONTEND_RESPONSE_URL' => 'http://dev.heidelpay.de/response.php',
+            'CONTACT_EMAIL' => 'development@heidelpay.com',
+            'FRONTEND_RESPONSE_URL' => 'http://dev.heidelpay.com/response.php',
             'REQUEST_VERSION' => 1.0,
             'ACCOUNT_BRAND' => 'MASTER',
             'PROCESSING_STATUS_CODE' => '90',
             'NAME_GIVEN' => 'Heidel',
-            'FRONTEND_PAYMENT_FRAME_ORIGIN' => 'http://dev.heidelpay.de/',
+            'FRONTEND_PAYMENT_FRAME_ORIGIN' => 'http://dev.heidelpay.com/',
             'IDENTIFICATION_SHORTID' => '3379.5447.1520',
             'ADDRESS_CITY' => 'Heidelberg',
             'ACCOUNT_HOLDER' => 'Heidel Berger-Payment',
@@ -77,7 +85,7 @@ class ResponseTest extends Test
             'USER_PWD' => '93167DE7',
             'IDENTIFICATION_SHOPPERID' => '12344',
             'PROCESSING_RETURN_CODE' => '000.100.112',
-            'PROCESSING_RESULT' => 'ACK',
+            'PROCESSING_RESULT' => ProcessingResult::ACK,
             'FRONTEND_MODE' => 'WHITELABEL',
             'IDENTIFICATION_UNIQUEID' => '31HA07BC8108A9126F199F2784552637',
             'CRITERION_SECRET' => '209022666cd4706e5f451067592b6be1aff4a913d5bb7f8249f7418ee25c91b3' .
@@ -94,16 +102,18 @@ class ResponseTest extends Test
             'PROCESSING_RETURN' => "Request successfully processed in 'Merchant in Connector Test Mode'",
             'TRANSACTION_CHANNEL' => '31HA07BC8142C5A171744F3D6D155865',
             'FRONTEND_LANGUAGE' => 'DE',
-            'PAYMENT_CODE' => 'CC.RG',
+            'PAYMENT_CODE' => PaymentMethod::CREDIT_CARD . '.' . TransactionType::REGISTRATION,
             'BASKET_ID' => '31HA07BC8129FBB819367B2205CD6FB4',
             'RISKINFORMATION_SINCE' => '2017-01-01',
             'RISKINFORMATION_ORDERCOUNT' => '5',
             'RISKINFORMATION_GUESTCHECKOUT' => 'FALSE',
             'CONNECTOR_ACCOUNT_HOLDER' => 'Test Account Holder',
             'CRITERION_TEST_VALUE' => 'Test Value',
+            'INVALID_PROP' => 'Invalid',
+            'lang' => 'de'
         );
 
-        $this->responseObject = new Response($responseSample);
+        $this->responseObject = new Response($this->responseArray);
     }
 
     /**
@@ -114,7 +124,7 @@ class ResponseTest extends Test
     public function isSuccess()
     {
         $this->assertTrue($this->responseObject->isSuccess(), 'isSuccess should be true');
-        $this->responseObject->getProcessing()->set('result', 'NOK');
+        $this->responseObject->getProcessing()->set('result', ProcessingResult::NOK);
         $this->assertFalse($this->responseObject->isSuccess(), 'isSuccess should be false.');
     }
 
@@ -140,7 +150,7 @@ class ResponseTest extends Test
     public function isError()
     {
         $this->assertFalse($this->responseObject->isError(), 'isError should be false');
-        $this->responseObject->getProcessing()->set('result', 'NOK');
+        $this->responseObject->getProcessing()->set('result', ProcessingResult::NOK);
         $this->assertTrue($this->responseObject->isError(), 'isError should be true');
     }
 
@@ -180,12 +190,12 @@ class ResponseTest extends Test
     public function getPaymentFormUrl()
     {
         /** iframe url for credit and debit card*/
-        $expectedUrl = 'http://dev.heidelpay.de';
+        $expectedUrl = 'http://dev.heidelpay.com';
         $this->responseObject->getFrontend()->set('payment_frame_url', $expectedUrl);
         $this->assertEquals($expectedUrl, $this->responseObject->getPaymentFormUrl());
 
-        $expectedUrl = 'http://www.heidelpay.de';
-        $this->responseObject->getFrontend()->set('redirect_url', $expectedUrl);
+        $expectedUrl = 'http://www.heidelpay.com';
+        $this->responseObject->getFrontend()->setRedirectUrl($expectedUrl);
 
         /** url in case of credit and debit card reference Transaction */
         $this->responseObject->getIdentification()->set('referenceid', '31HA07BC8108A9126F199F2784552637');
@@ -195,8 +205,8 @@ class ResponseTest extends Test
         $this->responseObject->getIdentification()->set('referenceid', null);
 
         /** url for non credit or debit card transactions */
-        $this->responseObject->getPayment()->set('code', 'OT.PA');
-        $this->responseObject->getFrontend()->set('redirect_url', $expectedUrl);
+        $this->responseObject->getPayment()->setCode('OT.PA');
+        $this->responseObject->getFrontend()->setRedirectUrl($expectedUrl);
         $this->assertEquals($expectedUrl, $this->responseObject->getPaymentFormUrl());
     }
 
@@ -210,7 +220,7 @@ class ResponseTest extends Test
     {
         $response = new Response();
 
-        $response->getFrontend()->set('redirect_url', null);
+        $response->getFrontend()->setRedirectUrl(null);
         $this->expectException(PaymentFormUrlException::class);
         $response->getPaymentFormUrl();
     }
@@ -225,8 +235,8 @@ class ResponseTest extends Test
     {
         $response = new Response();
 
-        $response->getPayment()->set('code', 'OT.PA');
-        $response->getFrontend()->set('redirect_url', null);
+        $response->getPayment()->setCode('OT.PA');
+        $response->getFrontend()->setRedirectUrl(null);
         $this->expectException(PaymentFormUrlException::class);
         $response->getPaymentFormUrl();
     }
@@ -266,7 +276,7 @@ class ResponseTest extends Test
     public function verifySecurityHashEmpty()
     {
         $response = new Response();
-        $response->getProcessing()->set('result', 'ACK');
+        $response->getProcessing()->set('result', ProcessingResult::ACK);
         $this->expectException(HashVerificationException::class);
         $response->verifySecurityHash($this->secret, 'Order 12345');
     }
@@ -280,7 +290,7 @@ class ResponseTest extends Test
     public function verifySecurityHashValid()
     {
         $response = new Response();
-        $response->getProcessing()->set('result', 'ACK');
+        $response->getProcessing()->set('result', ProcessingResult::ACK);
         $response->getCriterion()->set(
             'secret',
             '3c02e798e22f278ccc8652a37da2c84c0a5b32021da2e1558956c55d422a8e585be4e774245a49afc939b0' .
@@ -303,7 +313,7 @@ class ResponseTest extends Test
     public function verifySecurityHashInvalid()
     {
         $response = new Response();
-        $response->getProcessing()->set('result', 'ACK');
+        $response->getProcessing()->set('result', ProcessingResult::ACK);
         $this->expectException(HashVerificationException::class);
         $response->getCriterion()->set(
             'secret',
@@ -371,5 +381,67 @@ class ResponseTest extends Test
     {
         $this->assertSame('Test Value', $this->responseObject->getCriterion()->get('test_value'));
         $this->assertSame('Test Value', $this->responseObject->getCriterion()->get('Test_Value'));
+    }
+
+    /**
+     * Test that checks if the static fromJson metod returns an instance
+     * of Response even when an empty JSON object is provided.
+     *
+     * @test
+     */
+    public function staticFromJsonMethodShouldReturnANewResponseInstanceOnEmptyJsonObject()
+    {
+        $response = Response::fromJson('{}');
+        $this->assertEquals(Response::class, get_class($response));
+    }
+
+    /**
+     * Test that checks if the static fromJson method returns an instance of Response.
+     *
+     * @test
+     */
+    public function staticFromJsonMethodShouldReturnNewResponseInstanceOnValidJsonObject()
+    {
+        $response = Response::fromJson($this->responseObject->toJson());
+        $this->assertEquals(Response::class, get_class($response));
+    }
+
+    /**
+     * Test that checks if an existing Response instance and an instance
+     * created by the fromJson mapper are matching ParameterGroup
+     * instances and their respective properies and values.
+     *
+     * @test
+     */
+    public function mappedJsonResponseAndToJsonRepresentationOfResponseObjectMustBeEqual()
+    {
+        $response = Response::fromJson($this->responseObject->toJson());
+        $this->assertEquals($this->responseObject, $response);
+    }
+
+    /**
+     * Test that checks if a JsonParserException will be thrown when an
+     * invalid JSON string is being provided to the fromJson method.
+     *
+     * @test
+     */
+    public function fromJsonMapperShouldThrowExceptionOnInvalidJsonString()
+    {
+        $invalidJson = '{"test: 0}';
+
+        $this->expectException(JsonParserException::class);
+        $response = Response::fromJson($invalidJson);
+        $response->getError();
+    }
+
+    /**
+     * Test that checks if the static fromPost method returns an instance of Response.
+     *
+     * @test
+     */
+    public function staticFromPostMethodShouldReturnNewResponseInstanceOnEmptyArray()
+    {
+        $reponse = Response::fromPost([]);
+        $this->assertEquals(Response::class, get_class($reponse));
     }
 }

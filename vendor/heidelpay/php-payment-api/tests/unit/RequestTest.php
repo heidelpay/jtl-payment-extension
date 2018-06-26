@@ -3,8 +3,11 @@
 namespace Heidelpay\Tests\PhpPaymentApi\Unit;
 
 use Codeception\TestCase\Test;
+use Heidelpay\PhpPaymentApi\Constants\TransactionMode;
+use Heidelpay\PhpPaymentApi\Exceptions\JsonParserException;
 use Heidelpay\PhpPaymentApi\Request;
 use Heidelpay\PhpPaymentApi\ParameterGroups\CriterionParameterGroup;
+use AspectMock\Test as aspectMockTest;
 
 /**
  *
@@ -12,15 +15,13 @@ use Heidelpay\PhpPaymentApi\ParameterGroups\CriterionParameterGroup;
  *  Please note that connection test can fail due to network issues and scheduled downtime.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\unit
  */
 class RequestTest extends Test
 {
@@ -47,7 +48,7 @@ class RequestTest extends Test
         $this->assertEquals($UserLogin, $Request->getUser()->getLogin());
         $this->assertEquals($UserPassword, $Request->getUser()->getPassword());
         $this->assertEquals($TransactionChannel, $Request->getTransaction()->getChannel());
-        $this->assertEquals('CONNECTOR_TEST', $Request->getTransaction()->getMode());
+        $this->assertEquals(TransactionMode::CONNECTOR_TEST, $Request->getTransaction()->getMode());
     }
 
     /**
@@ -62,7 +63,7 @@ class RequestTest extends Test
         $Request = new Request();
 
         $LanguageCode = 'DE';
-        $ResponseUrl = 'https://dev.heidelpay.de/';
+        $ResponseUrl = 'https://dev.heidelpay.com/';
 
         $Request->async($LanguageCode, $ResponseUrl);
 
@@ -91,7 +92,7 @@ class RequestTest extends Test
         $addressZip = '69115';
         $addressCity = 'Heidelberg';
         $addressCountry = 'DE';
-        $contactMail = 'development@heidelpay.de';
+        $contactMail = 'development@heidelpay.com';
 
         $Request->customerAddress(
             $nameGiven,
@@ -148,7 +149,7 @@ class RequestTest extends Test
      * @group integrationTest
      * @test
      */
-    public function convertToArray()
+    public function compareToArrayWithInputArray()
     {
         $request = new Request();
         $criterion = new CriterionParameterGroup();
@@ -168,12 +169,12 @@ class RequestTest extends Test
             'PRESENTATION.AMOUNT' => 23.12,
             'PRESENTATION.CURRENCY' => 'EUR',
             'REQUEST.VERSION' => '1.0',
-            'TRANSACTION.MODE' => 'CONNECTOR_TEST',
+            'TRANSACTION.MODE' => TransactionMode::CONNECTOR_TEST,
             'CRITERION.SDK_NAME' => $criterion->getSdkName(),
             'CRITERION.SDK_VERSION' => $criterion->getSdkVersion()
         );
 
-        $this->assertEquals($referenceVars, $request->convertToArray());
+        $this->assertEquals($referenceVars, $request->toArray());
     }
 
     /**
@@ -222,5 +223,78 @@ class RequestTest extends Test
         $request->getCriterion()->set($fieldName, $value);
 
         $this->assertEquals($value, $request->getCriterion()->get($fieldName));
+    }
+
+    /**
+     * Test that checks if the static fromJson method returns an instance of Request.
+     *
+     * @test
+     */
+    public function staticFromJsonMethodShouldReturnNewRequestInstanceOnEmptyJsonObject()
+    {
+        $request = Request::fromJson('{}');
+        $this->assertEquals(Request::class, get_class($request));
+    }
+
+    /**
+     * Test that checks if an existing Request instance and an instance
+     * created by the fromJson mapper are matching ParameterGroup
+     * instances and their respective properies and values.
+     *
+     * @test
+     */
+    public function mappedJsonRequestAndToJsonRepresentationOfRequestObjectMustBeEqual()
+    {
+        $request = new Request();
+
+        $mappedRequest = Request::fromJson($request->toJson());
+        $this->assertEquals($request, $mappedRequest);
+    }
+
+    /**
+     * Test that checks if a JsonParserException will be thrown when an
+     * invalid JSON string is being provided to the fromJson method.
+     *
+     * @test
+     */
+    public function fromJsonMapperShouldThrowExceptionOnInvalidJson()
+    {
+        $invalidJson = '{"test: 0}';
+
+        $this->expectException(JsonParserException::class);
+        $request = Request::fromJson($invalidJson);
+        $request->getBasket();
+    }
+
+    /**
+     * Test that checks if the static fromPost method returns an instance of Request.
+     *
+     * @test
+     */
+    public function staticFromPostMethodShouldReturnNewRequestInstanceOnEmptyArray()
+    {
+        $request = Request::fromPost([]);
+        $this->assertEquals(Request::class, get_class($request));
+    }
+
+    /**
+     * @test
+     */
+    public function sendShouldCreateCurlAdapterIfNoneExists()
+    {
+        aspectMockTest::func(
+            'Heidelpay\PhpPaymentApi\Adapter',
+            'extension_loaded',
+            false
+        );
+
+        $request = new Request();
+        $request->send();
+
+        aspectMockTest::func(
+            'Heidelpay\PhpPaymentApi\Adapter',
+            'extension_loaded',
+            false
+        )->verifyInvokedOnce();
     }
 }

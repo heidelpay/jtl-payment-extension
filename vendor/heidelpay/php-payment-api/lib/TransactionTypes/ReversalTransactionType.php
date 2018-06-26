@@ -2,6 +2,8 @@
 
 namespace Heidelpay\PhpPaymentApi\TransactionTypes;
 
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
+
 /**
  * Transaction type reversal
  *
@@ -10,15 +12,13 @@ namespace Heidelpay\PhpPaymentApi\TransactionTypes;
  * invoice for example.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\transaction-types
  */
 trait ReversalTransactionType
 {
@@ -29,15 +29,17 @@ trait ReversalTransactionType
      * it back to the given account. This can be used to lower an amount on an
      * invoice for example.
      *
-     * @param mixed $PaymentReferenceId payment reference id ( unique id of the authorisation)
+     * @param mixed $paymentReferenceId payment reference id (unique id of the authorisation)
      *
-     * @return \Heidelpay\PhpPaymentApi\PaymentMethods\AbstractPaymentMethod
+     * @return $this
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
-    public function reversal($PaymentReferenceId)
+    public function reversal($paymentReferenceId)
     {
-        $this->getRequest()->getPayment()->set('code', $this->_paymentCode . ".RV");
-        $this->getRequest()->getFrontend()->set('enabled', 'FALSE');
-        $this->getRequest()->getIdentification()->set('referenceId', $PaymentReferenceId);
+        $this->getRequest()->getPayment()->setCode($this->getPaymentCode() . '.' . TransactionType::REVERSAL);
+        $this->getRequest()->getFrontend()->setEnabled('FALSE');
+        $this->getRequest()->getIdentification()->setReferenceId($paymentReferenceId);
         $this->prepareRequest();
 
         return $this;

@@ -39,8 +39,8 @@ use PHPUnit\Framework\Constraint\Constraint;
  */
 class BasePaymentMethodTest extends Unit
 {
-    const REFERENCE_ID = 'http://www.heidelpay.de';
-    const REDIRECT_URL = 'https://dev.heidelpay.de';
+    const REFERENCE_ID = 'http://www.heidelpay.com';
+    const REDIRECT_URL = 'http://dev.heidelpay.com';
     const RESPONSE_URL = self::REDIRECT_URL . '/response';
     const PAYMENT_FRAME_ORIGIN = self::REFERENCE_ID;
     const CSS_PATH = self::REFERENCE_ID;
@@ -187,6 +187,21 @@ class BasePaymentMethodTest extends Unit
     {
         $output = $this->getLogger();
         $output->writeln('<ok> success</ok>');
+    }
+
+    /**
+     * Print debug data to codecept console (codecept run integration --debug)
+     * Pass result data if send has been called manually.
+     *
+     * @param mixed $result
+     */
+    protected function logDataToDebug($result = null)
+    {
+        $result = $result ?: $this->paymentObject->getResponseArray();
+        codecept_debug("\nrequest: " . print_r($this->paymentObject->getRequest()->toArray(), 1));
+        if (!empty($result)) {
+            codecept_debug('response: ' . print_r($result, 1));
+        }
     }
 
     //</editor-fold>

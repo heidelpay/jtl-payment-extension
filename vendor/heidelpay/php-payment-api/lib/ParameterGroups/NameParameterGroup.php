@@ -8,15 +8,13 @@ namespace Heidelpay\PhpPaymentApi\ParameterGroups;
  * It will be used for parameters like given name, but also for salutation etc.
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link  http://dev.heidelpay.com/heidelpay-php-api/
+ * @link  http://dev.heidelpay.com/heidelpay-php-payment-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category PhpPaymentApi
+ * @package heidelpay\php-payment-api\parameter-groups
  */
 class NameParameterGroup extends AbstractParameterGroup
 {
@@ -152,7 +150,7 @@ class NameParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the company name
      *
-     * @param string $company f.e. Heidelberger Payment GmbH
+     * @param string $company, e.g. heidelpay GmbH
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\NameParameterGroup
      */
@@ -165,7 +163,7 @@ class NameParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the given name of the customer
      *
-     * @param string $given f.e. John
+     * @param string $given, e.g. John
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\NameParameterGroup
      */
@@ -178,7 +176,7 @@ class NameParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the family name of the customer
      *
-     * @param string $family f.e. Doe
+     * @param string $family, e.g. Doe
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\NameParameterGroup
      */
@@ -191,7 +189,7 @@ class NameParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the salutation of the customer
      *
-     * @param string $salutation f.e. MR
+     * @param string $salutation, e.g. MR
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\NameParameterGroup
      */
@@ -204,7 +202,7 @@ class NameParameterGroup extends AbstractParameterGroup
     /**
      * Setter for the title of the customer
      *
-     * @param string $title f.e. Doc.
+     * @param string $title, e.g. Doc.
      *
      * @return \Heidelpay\PhpPaymentApi\ParameterGroups\NameParameterGroup
      */

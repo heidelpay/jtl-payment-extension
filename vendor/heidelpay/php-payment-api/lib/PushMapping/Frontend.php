@@ -3,21 +3,22 @@
 namespace Heidelpay\PhpPaymentApi\PushMapping;
 
 /**
- * Summary
+ * XML Push Mapping Class for the Frontend Parameter Group
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link https://dev.heidelpay.de/php-api
+ * @link http://dev.heidelpay.com/php-payment-api
  *
  * @author Stephano Vogel
  *
- * @package heidelpay
- * @subpackage php-api
- * @category php-api
+ * @package heidelpay\php-payment-api\push-mapping
  */
 class Frontend extends AbstractPushMapper
 {
+    /**
+     * @inheritdoc
+     */
     public $fields = [
         'CssPath' => 'css_path',
         'Enabled' => 'enabled',
@@ -29,9 +30,12 @@ class Frontend extends AbstractPushMapper
         'ResponseUrl' => 'response_url',
     ];
 
+    /**
+     * @inheritdoc
+     */
     public function getXmlObjectField(\SimpleXMLElement $xmlElement, $field)
     {
-        if (isset($xmlElement->Transaction->Frontend->$field)) {
+        if (isset($xmlElement->Transaction, $xmlElement->Transaction->Frontend->$field)) {
             return (string)$xmlElement->Transaction->Frontend->$field;
         }
 

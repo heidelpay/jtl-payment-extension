@@ -8,15 +8,13 @@ use SimpleXMLElement;
  * Interface for Push Mapping classes
  *
  * @license Use of this software requires acceptance of the License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
- * @link https://dev.heidelpay.de/php-api
+ * @link http://dev.heidelpay.com/php-payment-api
  *
  * @author Stephano Vogel
  *
- * @package heidelpay
- * @subpackage php-api
- * @category php-api
+ * @package heidelpay\php-payment-api\push-mapping
  */
 interface PushMappingInterface
 {

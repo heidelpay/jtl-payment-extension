@@ -2,6 +2,8 @@
 
 namespace Heidelpay\Tests\PhpPaymentApi\Integration\PaymentMethods;
 
+use Heidelpay\PhpPaymentApi\Constants\PaymentMethod;
+use Heidelpay\PhpPaymentApi\Constants\TransactionType;
 use Heidelpay\PhpPaymentApi\PaymentMethods\SantanderInvoicePaymentMethod;
 use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
 
@@ -12,15 +14,13 @@ use Heidelpay\Tests\PhpPaymentApi\Helper\BasePaymentMethodTest;
  * This does not have to mean that your integration is broken. Please verify the given debug information
  *
  * @license Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
- * @copyright Copyright © 2016-present Heidelberger Payment GmbH. All rights reserved.
+ * @copyright Copyright © 2016-present heidelpay GmbH. All rights reserved.
  *
  * @link  http://dev.heidelpay.com/heidelpay-php-api/
  *
  * @author  Jens Richter
  *
- * @package  Heidelpay
- * @subpackage PhpPaymentApi
- * @category UnitTest
+ * @package heidelpay\php-payment-api\tests\integration
  */
 class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
 {
@@ -88,6 +88,7 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
      *
      * @return string payment reference id for the invoice authorize transaction
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -98,8 +99,8 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->basketData($timestamp, 123.12, $this->currency, $this->secret);
 
         $this->paymentObject->getRequest()->b2cSecured('MRS', '1982-07-12');
-        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.de');
-        $this->paymentObject->getRequest()->getFrontend()->set('enabled', 'FALSE');
+        $this->paymentObject->getRequest()->async('DE', 'https://dev.heidelpay.com');
+        $this->paymentObject->getRequest()->getFrontend()->setEnabled('FALSE');
 
         $this->paymentObject->authorize();
 
@@ -117,6 +118,8 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
             'authorize failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return $this->authorizeReference = (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -128,6 +131,7 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id for the prepayment reversal transaction
      * @depends authorize
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -153,6 +157,8 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
             'reversal failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -163,6 +169,7 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
      * @return string payment reference id for the prepayment reversal transaction
      * @depends finalize
      * @group connectionTest
+     *
      * @test
      *
      * @throws \Exception
@@ -191,6 +198,8 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
             'reversal failed : ' . print_r($this->paymentObject->getResponse()->getError(), 1)
         );
 
+        $this->logDataToDebug();
+
         return (string)$this->paymentObject->getResponse()->getPaymentReferenceId();
     }
 
@@ -199,10 +208,12 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
      *
      * @param string $referenceId reference id of the invoice to refund
      *
-     * @return string payment reference id of the invoice refund transaction
      * @depends authorize
      * @test
+     *
      * @group connectionTest
+     *
+     * @throws \Heidelpay\PhpPaymentApi\Exceptions\UndefinedTransactionModeException
      */
     public function refund($referenceId = null)
     {
@@ -210,11 +221,12 @@ class SantanderInvoicePaymentMethodTest extends BasePaymentMethodTest
         $this->paymentObject->getRequest()->basketData($timestamp, 23.54, $this->currency, $this->secret);
 
         /* the refund can not be processed because there will be no receipt automatically on the sandbox */
-        $this->paymentObject->_dryRun = true;
+        $this->paymentObject->dryRun = true;
 
         $this->paymentObject->refund((string)$referenceId);
 
-        $this->assertEquals('IV.RF', $this->paymentObject->getRequest()->getPayment()->getCode());
-        return true;
+        $this->assertEquals(PaymentMethod::INVOICE . '.' . TransactionType::REFUND, $this->paymentObject->getRequest()->getPayment()->getCode());
+
+        $this->logDataToDebug();
     }
 }

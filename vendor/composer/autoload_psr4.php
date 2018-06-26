@@ -16,5 +16,6 @@ return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
     'Heidelpay\\PhpPaymentApi\\' => array($vendorDir . '/heidelpay/php-payment-api/lib'),
+    'Heidelpay\\PhpBasketApi\\' => array($vendorDir . '/heidelpay/php-basket-api/lib'),
     'Heidelpay\\MessageCodeMapper\\' => array($vendorDir . '/heidelpay/php-message-code-mapper/lib'),
 );
