@@ -138,10 +138,10 @@ class heidelpay_standard extends ServerPaymentMethod
         $notifyURL = $this->getNotificationURL($hash);
 
         $this->paymentObject->getRequest()->authentification(
-            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['pass']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel']),
             $this->isSandboxMode($oPlugin, $currentPaymentMethod)
         );
 
@@ -345,7 +345,6 @@ class heidelpay_standard extends ServerPaymentMethod
             $orderId = baueBestellnummer();
         }
         $_SESSION['hp_temp_orderId'] = $orderId;
-        Jtllog::writeLog('orderID'.$orderId);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {
@@ -744,15 +743,14 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment information as comment in database. Default is to write no payInfo
      *
-     * @param $post response form payment
-     * @param $orderId
+     * @param $post array response form payment
+     * @param $orderId String
      */
     protected function setPayInfo($post, $orderId)
     {
         /*if(!empty($post['IDENTIFICATION_SHORTID'])) {
             $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);
         }*/
-        return false;
     }
 
     /**
@@ -773,7 +771,7 @@ class heidelpay_standard extends ServerPaymentMethod
     public function disableInvoiceSecured($response)
     {
         $payCode = explode('.', $response ['PAYMENT_CODE']);
-        if($payCode === 'IV') {
+        if($payCode[0] === 'IV') {
             if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
                 $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
                 return '&disableInvoice=true';

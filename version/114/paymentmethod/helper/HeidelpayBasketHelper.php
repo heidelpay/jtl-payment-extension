@@ -35,11 +35,17 @@ class HeidelpayBasketHelper
      */
     public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings , bool $isSandbox)
     {
-        $authentication = new Authentication(
-            $oPluginSettings ['user'],
-            $oPluginSettings ['pass'],
-            $oPluginSettings ['sender']
-        );
+        try {
+            $authentication = new Authentication(
+                trim($oPluginSettings ['user']),
+                trim($oPluginSettings ['pass']),
+                trim($oPluginSettings ['sender'])
+            );
+        } catch (\Exception $exception) {
+            Jtllog::writeLog('heidelpay error: basked could not be added. Message: '
+                . $exception->getMessage(), JTLLOG_LEVEL_ERROR, false);
+            return new Response();
+        }
 
         $basket = new Basket();
         $request = new Request($authentication, $basket);

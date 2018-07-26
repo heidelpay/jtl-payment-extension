@@ -60,9 +60,9 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
 
         $config = array(
             'sandbox' => $sandboxMode,
-            'security_sender' => $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            'user_login' => $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            'user_password' => $oPlugin->oPluginEinstellungAssoc_arr ['pass']
+            'security_sender' => trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+            'user_login' => trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+            'user_password' => trim($oPlugin->oPluginEinstellungAssoc_arr ['pass'])
         );
 
         $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result[0]);
@@ -81,10 +81,10 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             $paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
 
             $paymentObject->getRequest()->authentification(
-                $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-                $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-                $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-                (string)$resXMLObject->Result->Transaction['channel'],
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['pass']),
+                trim((string)$resXMLObject->Result->Transaction['channel']),
                 $sandboxMode
             );
 
@@ -96,21 +96,28 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
             $paymentObject->finalize($resUniquieId);
 
-            if ($paymentObject->getResponse()->isError()) {
-                $errorCode = $paymentObject->getResponse()->getError();
+            if ($paymentObject->getResponse()->isError()
+                && $paymentObject->getResponse()->getError()['code'] !== '700.400.800'
+            ) {
+                $error = $paymentObject->getResponse()->getError();
                 mail(
                     $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'],
                     'heidelpay: Order ID ' . $args_arr['oBestellung']->kBestellung . ' report shipment failed',
-                    'Report shipment for order' . $args_arr['oBestellung']->kBestellung . ' in Shop ' .
+                    'Report shipment for order ' . $args_arr['oBestellung']->kBestellung . ' in Shop ' .
                     Shop::getURL() . ' failed.
-			Error messsage: ' . print_r($errorCode['message'], 1)
+                    Error messsage: ' . print_r($error['message'], 1)
                 );
             } else {
-                Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
-                    'cshort_id' => $result[0],
-                    'kBestellung' => $bestellNr
-                ]);
+                saveFinalize($result[0], $bestellNr);
             }
         }
     }
+}
+
+function saveFinalize($shortId, $bestellNr)
+{
+    Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
+        'cshort_id' => $shortId,
+        'kBestellung' => $bestellNr
+    ]);
 }
