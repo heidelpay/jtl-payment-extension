@@ -11,7 +11,7 @@
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis .DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayBasketHelper.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayTemplateHelper.php';
@@ -106,6 +106,23 @@ class heidelpay_standard extends ServerPaymentMethod
             $this->setPaymentTemplate();
         }
 
+    }
+
+    /**
+     * Load the localized Notifications
+     * @param $language
+     */
+    public function includeNotifications($language)
+    {
+        $languageFile = PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
+            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
+
+        if (file_exists($languageFile)) {
+            include_once $languageFile;
+        } else {
+            include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
+                $this->oPlugin->nVersion . '/paymentmethod/lang/en/notifications.php';
+        }
     }
 
     /**
@@ -365,7 +382,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getLanguageCode()
     {
-        $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
+        $language = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         return $language;
     }
 
@@ -599,8 +616,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
         // load language file
         $language = strtolower($this->getLanguageCode());
-        include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
-            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
+        $this->includeNotifications($language);
 
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
