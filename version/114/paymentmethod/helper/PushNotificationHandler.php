@@ -51,7 +51,7 @@ class PushNotificationHandler
             $shopPaymethod = Shop::DB()->select('tpluginzahlungsartklasse', 'cModulId', $moduleID);
 
             try {
-                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/114/paymentmethod/'
+                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/' . $oPlugin->nVersion . '/paymentmethod/'
                     .$shopPaymethod->cClassPfad;
                 $classname = $shopPaymethod->cClassName;
                 $this->paymentModule = new $classname($moduleID);

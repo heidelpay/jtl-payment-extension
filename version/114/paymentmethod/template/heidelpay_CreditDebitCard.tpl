@@ -14,6 +14,6 @@
 		<iframe id="paymentIframe" src="{$action_url}" style="height:250px;" frameborder="0"></iframe><br />
 		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button>
 	</form>
-	<script type="text/javascript" src="./includes/plugins/heidelpay_standard/version/114/paymentmethod/template/js/creditCardFrame.js"></script>
+	<script type="text/javascript" src="./includes/plugins/{$oPlugin->cVerzeichnis}/version/{$oPlugin->nVersion}/paymentmethod/template/js/creditCardFrame.js"></script>
 
 </div>
