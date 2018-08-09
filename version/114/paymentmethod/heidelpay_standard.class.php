@@ -11,7 +11,7 @@
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis .DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayBasketHelper.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayTemplateHelper.php';
@@ -109,6 +109,23 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
+     * Load the localized Notifications
+     * @param $language
+     */
+    public function includeNotifications($language)
+    {
+        $languageFile = PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
+            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
+
+        if (file_exists($languageFile)) {
+            include_once $languageFile;
+        } else {
+            include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
+                $this->oPlugin->nVersion . '/paymentmethod/lang/en/notifications.php';
+        }
+    }
+
+    /**
      * Check whether order has same address for billing and shipping and
      * whether it ist b2c.
      *
@@ -138,10 +155,10 @@ class heidelpay_standard extends ServerPaymentMethod
         $notifyURL = $this->getNotificationURL($hash);
 
         $this->paymentObject->getRequest()->authentification(
-            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['pass']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel']),
             $this->isSandboxMode($oPlugin, $currentPaymentMethod)
         );
 
@@ -153,7 +170,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
         $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('push-gw'));
         $this->paymentObject->getRequest()->getCriterion()->set('SHOP.TYPE', 'JTL '.Shop::getVersion());
-        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->getCurrentVersion());
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->nVersion);
     }
 
     /**
@@ -345,7 +362,6 @@ class heidelpay_standard extends ServerPaymentMethod
             $orderId = baueBestellnummer();
         }
         $_SESSION['hp_temp_orderId'] = $orderId;
-        Jtllog::writeLog('orderID'.$orderId);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {
@@ -366,7 +382,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getLanguageCode()
     {
-        $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
+        $language = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         return $language;
     }
 
@@ -600,8 +616,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
         // load language file
         $language = strtolower($this->getLanguageCode());
-        include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
-            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
+        $this->includeNotifications($language);
 
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
@@ -744,15 +759,14 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment information as comment in database. Default is to write no payInfo
      *
-     * @param $post response form payment
-     * @param $orderId
+     * @param $post array response form payment
+     * @param $orderId String
      */
     protected function setPayInfo($post, $orderId)
     {
         /*if(!empty($post['IDENTIFICATION_SHORTID'])) {
             $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);
         }*/
-        return false;
     }
 
     /**
@@ -773,7 +787,7 @@ class heidelpay_standard extends ServerPaymentMethod
     public function disableInvoiceSecured($response)
     {
         $payCode = explode('.', $response ['PAYMENT_CODE']);
-        if($payCode === 'IV') {
+        if($payCode[0] === 'IV') {
             if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
                 $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
                 return '&disableInvoice=true';

@@ -8,9 +8,7 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-/*require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
-    . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';*/
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/vendor/autoload.php';
 
 use Heidelpay\PhpPaymentApi\Push;
 
@@ -53,7 +51,7 @@ class PushNotificationHandler
             $shopPaymethod = Shop::DB()->select('tpluginzahlungsartklasse', 'cModulId', $moduleID);
 
             try {
-                require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/114/paymentmethod/'
+                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/version/114/paymentmethod/'
                     .$shopPaymethod->cClassPfad;
                 $classname = $shopPaymethod->cClassName;
                 $this->paymentModule = new $classname($moduleID);
