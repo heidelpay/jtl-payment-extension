@@ -9,8 +9,8 @@
  * @category JTL
 */
 
-define('DD_MAIL_SUBJECT','Additional information about your order at '.$firma->cName);
-define('DD_MAIL_TEXT','
+defined('DD_MAIL_SUBJECT') or define('DD_MAIL_SUBJECT','Additional information about your order at {COMPANY_NAME}');
+defined('DD_MAIL_TEXT') or define('DD_MAIL_TEXT','
 <html><body><font face="helvetica">
     The amount of <strong>{AMOUNT} {CURRENCY}</strong> will be debited from this account within the next days:<br/><br/>
     Holder: {HOLDER}<br/>
@@ -25,7 +25,7 @@ define('DD_MAIL_TEXT','
 </font></body></html>
 ');
 
-defined('PP_MAIL_SUBJECT') or define('PP_MAIL_SUBJECT','Payment information for your order at '.$firma->cName);
+defined('PP_MAIL_SUBJECT') or define('PP_MAIL_SUBJECT','Payment information for your order at {COMPANY_NAME}');
 defined('PP_MAIL_TEXT') or define('PP_MAIL_TEXT','
 <html><body><font face="helvetica">
     Please transfer the amount of <strong>{AMOUNT} {CURRENCY}</strong> to the following account:<br/><br/>
