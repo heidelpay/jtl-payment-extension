@@ -93,9 +93,8 @@ function receiveMessage(e) {
 	if (e.origin !== targetOrigin) {
 		return; 
 	}
-	
-	var antwort = JSON.parse(e.data);
-	console.log(antwort);
+
+	JSON.parse(e.data);
 }
 
 
