@@ -33,7 +33,7 @@ class HeidelpayBasketHelper
      * @param boolean $isSandbox indicate whether the request is running in test mode or not .
      * @return Response If successful the response will contain a basket ID that can be added to the transaction request
      */
-    public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings , bool $isSandbox)
+    public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings , $isSandbox)
     {
         $authentication = new Authentication(
             $oPluginSettings ['user'],

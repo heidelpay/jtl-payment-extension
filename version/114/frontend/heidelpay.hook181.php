@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Hook 181: Perform automatic finalize for secured invoice when JTL WAWI synchronize with the online shop.
  * Reservation gets finalized if not happened yet and the order was send.
  *
@@ -20,29 +20,29 @@ use Heidelpay\XmlQuery;
 #ini_set('display_startup_errors', 1);
 #error_reporting(E_ALL);
 
-$bestellNr = (int)$args_arr['oBestellung']->kBestellung;
+$oBestellung = $args_arr['oBestellung'];
 $query = "SELECT tbestellung.kBestellung, tzahlungsart.cModulId
             FROM tbestellung
             LEFT JOIN tzahlungsart ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
             WHERE tbestellung.kBestellung = :kBestellung";
 
-$oBestellung = Shop::DB()->executeQueryPrepared($query, ['kBestellung' => $bestellNr], 1);
+$orderRef = Shop::DB()->executeQueryPrepared($query, ['kBestellung' => (int)$oBestellung->kBestellung], 1);
 
 $_query_live_url = 'https://heidelpay.hpcgw.net/TransactionCore/xml';
 $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
 
 $url = $_query_sandbox_url;
-if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'] == 'LIVE') {
+$modulId = $orderRef->cModulId;
+if ($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') {
     $url = $_query_live_url;
 }
 
+$payMethod = explode('_', $modulId);
+
 // if Versand oder Teilversand - Status s. defines_inc.php
-
-$payMethod = explode('_', $oBestellung->cModulId);
-
 if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
     $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
-    preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $args_arr['oBestellung']->cKommentar, $result);
+    preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $oBestellung->cKommentar, $result);
 
     if (!empty($result[0])) {
         $xml_params = array(
@@ -89,28 +89,46 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
 
             $paymentObject->getRequest()->basketData(
-                $args_arr['oBestellung']->kBestellung,
-                $args_arr['oBestellung']->fGesamtsumme,
+                $oBestellung->cBestellNr,
+                $oBestellung->fGesamtsumme,
                 (string)$resXMLObject->Result->Transaction->Payment->Presentation->Currency,
-                $args_arr['oBestellung']->cSession
+                $oBestellung->cSession
             );
             $paymentObject->finalize($resUniquieId);
 
             if ($paymentObject->getResponse()->isError()) {
+                $errorMail = $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'];
                 $errorCode = $paymentObject->getResponse()->getError();
-                mail(
-                    $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'],
-                    'heidelpay: Order ID ' . $args_arr['oBestellung']->kBestellung . ' report shipment failed',
-                    'Report shipment for order' . $args_arr['oBestellung']->kBestellung . ' in Shop ' .
-                    Shop::getURL() . ' failed.
-			Error messsage: ' . print_r($errorCode['message'], 1)
-                );
+                reportFailedShipping($errorMail, $oBestellung, $errorCode['message']);
             } else {
                 Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
                     'cshort_id' => $result[0],
-                    'kBestellung' => $bestellNr
+                    'kBestellung' => $oBestellung->kBestellung
                 ]);
             }
         }
+    }
+}
+
+/**
+ * Sending an error mail that shipping failed. If that's not possible write the message into log.
+ * @param $errorMail String email address
+ * @param $oBestellung stdClass
+ * @param $errorMsg String
+ */
+function reportFailedShipping($errorMail, $oBestellung, $errorMsg)
+{
+    $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';
+    $errorText = 'Report shipment for order' . $oBestellung->kBestellung . ' in Shop ' .
+        Shop::getURL() . ' failed.
+			Error messsage: ' . print_r($errorMsg, 1);
+    if(!empty($errorMail) && filter_var($errorMail, FILTER_VALIDATE_EMAIL)) {
+        mail(
+            $errorMail,
+            $subject,
+            $errorText
+        );
+    } else {
+        Jtllog::writeLog($subject . ': ' . $errorText, JTLLOG_LEVEL_ERROR);
     }
 }
