@@ -22,10 +22,14 @@ class heidelpay_dc extends heidelpay_standard
 
     public function sendPaymentRequest()
     {
+        global $oPlugin;
+        $cssPath = Shop::getURL() . '/' . PFAD_PLUGIN . '/' . $oPlugin->cVerzeichnis .'/version/'
+            . $oPlugin->nVersion . '/paymentmethod/template/css/hppaymentframe.css';
+
         if ($this->getBookingMode($this->oPlugin, $this->moduleID) === 'DB') {
-            $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
+            $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE', $cssPath);
         } else {
-            $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
+            $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE', $cssPath);
         }
     }
 }
