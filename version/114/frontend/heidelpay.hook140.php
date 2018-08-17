@@ -12,7 +12,7 @@
  *
  *
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis. '/vendor/autoload.php';
 
 use \Heidelpay\MessageCodeMapper\MessageCodeMapper;
 
