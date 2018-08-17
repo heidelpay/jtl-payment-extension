@@ -230,7 +230,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_su.class.php</ClassFile>
                 <ClassName>heidelpay_su</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Sofort</Name>
                     <ChargeName>Sofort</ChargeName>
@@ -275,7 +274,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_gp.class.php</ClassFile>
                 <ClassName>heidelpay_gp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Giropay</Name>
                     <ChargeName>Giropay</ChargeName>
@@ -365,7 +363,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_eps.class.php</ClassFile>
                 <ClassName>heidelpay_eps</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>EPS</Name>
                     <ChargeName>EPS</ChargeName>
@@ -410,7 +407,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_p24.class.php</ClassFile>
                 <ClassName>heidelpay_p24</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Przelewy24</Name>
                     <ChargeName>Przelewy24</ChargeName>
@@ -455,7 +451,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfc.class.php</ClassFile>
                 <ClassName>heidelpay_pfc</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceCard</Name>
                     <ChargeName>PostFinanceCard</ChargeName>
@@ -500,7 +495,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfe.class.php</ClassFile>
                 <ClassName>heidelpay_pfe</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceEFinance</Name>
                     <ChargeName>PostFinanceEFinance</ChargeName>
@@ -545,7 +539,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_va.class.php</ClassFile>
                 <ClassName>heidelpay_va</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PayPal</Name>
                     <ChargeName>PayPal</ChargeName>
@@ -600,7 +593,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_iv.class.php</ClassFile>
                 <ClassName>heidelpay_iv</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Rechnungskauf</Name>
                     <ChargeName>Rechnung</ChargeName>
@@ -645,7 +637,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pp.class.php</ClassFile>
                 <ClassName>heidelpay_pp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Vorkasse</Name>
                     <ChargeName>Vorkasse</ChargeName>
@@ -849,6 +840,20 @@
         </FrontendLink>
 
         <Locales>
+            <Variable>
+                <Name>hp_bankname_label</Name>
+                <Description>Label Bankname</Description>
+                <VariableLocalized iso="GER">Bankname</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank name</VariableLocalized>
+            </Variable>
+
+            <Variable>
+                <Name>hp_bank_country_label</Name>
+                <Description>Label Bankland</Description>
+                <VariableLocalized iso="GER">Bankland</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank country</VariableLocalized>
+            </Variable>
+
             <Variable>
                 <Name>hp_paybutton</Name>
                 <Description>Beschriftung des heidelpay Zahlungsbuttons</Description>
