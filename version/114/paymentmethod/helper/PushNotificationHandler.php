@@ -53,8 +53,7 @@ class PushNotificationHandler
             $shopPaymethod = Shop::DB()->select('tpluginzahlungsartklasse', 'cModulId', $moduleID);
 
             try {
-                require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/114/paymentmethod/'
-                    .$shopPaymethod->cClassPfad;
+                require_once $oPlugin->cPluginPfad . 'paymentmethod/' . $shopPaymethod->cClassPfad;
                 $classname = $shopPaymethod->cClassName;
                 $this->paymentModule = new $classname($moduleID);
             } catch (\Exception $exception) {

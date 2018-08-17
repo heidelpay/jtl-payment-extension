@@ -11,7 +11,7 @@
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis .DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayBasketHelper.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayTemplateHelper.php';

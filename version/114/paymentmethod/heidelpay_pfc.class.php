@@ -8,7 +8,7 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
+require_once $oPlugin->cPluginPfad . 'paymentmethod/heidelpay_standard.class.php';
 
 use Heidelpay\PhpPaymentApi\PaymentMethods\PostFinanceCardPaymentMethod;
 
