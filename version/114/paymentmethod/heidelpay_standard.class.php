@@ -493,7 +493,10 @@ class heidelpay_standard extends ServerPaymentMethod
             /** @noinspection Fallthrough */
             case 'HPIDL':
             case 'HPEPS':
-                return ['account'];
+                return [
+                    'account',
+                    'bank'
+                ];
                 break;
             case 'HPSA':
                 return [
@@ -546,6 +549,22 @@ class heidelpay_standard extends ServerPaymentMethod
     public function getBirthdateLabel()
     {
         return utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_birthdatelabel']);
+    }
+
+    public function getLocalizedString($localizeKey)
+    {
+        $localizedText = $this->oPlugin->oPluginSprachvariableAssoc_arr[$localizeKey];
+
+        if(!empty($localizedText)) {
+            return utf8_encode($localizedText);
+        } else {
+            $callers = debug_backtrace();
+            Jtllog::writeLog(
+                $callers[1] . 'heidelpay_standard: No translation could be found for: ' . $localizeKey . '.',
+                JTLLOG_LEVEL_NOTICE
+            );
+            return '';
+        }
     }
 
     /**

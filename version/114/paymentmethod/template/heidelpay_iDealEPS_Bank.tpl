@@ -11,18 +11,18 @@
 
 <div id="otform">
 <form method="post" class="formular" action="{$action_url}" id="paymentFrameForm">
-	Bankland:<select name="ACCOUNT.COUNTRY">
+	{$hp_bank_country_label}: <select name="ACCOUNT.COUNTRY">
 		{foreach from=$account_country key=iso item=land }
 		<option value="{$iso}">{$land}</option>
 		{/foreach}
 	</select><br/>
-	Bankname<select name="ACCOUNT.BANKNAME">
+	{$hp_bankname_label}; <select name="ACCOUNT.BANKNAME">
 		{foreach from=$account_bankname key=short item=brand}
 			<option value="{$short}">{$brand}</option>
         {/foreach}
 	</select><br/>
 
-	<button type="submit">Submit data</button>
+	<button type="submit">{$pay_button_label}</button>
 </form>
 
 </div>
