@@ -345,7 +345,7 @@ class heidelpay_standard extends ServerPaymentMethod
             $orderId = baueBestellnummer();
         }
         $_SESSION['hp_temp_orderId'] = $orderId;
-        Jtllog::writeLog('orderID'.$orderId);
+        Jtllog::writeLog('orderID: '.$orderId, JTLLOG_LEVEL_DEBUG);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {

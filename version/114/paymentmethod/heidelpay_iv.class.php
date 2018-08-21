@@ -37,6 +37,6 @@ class heidelpay_iv extends heidelpay_standard
         $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
 
         Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($orderId), $updateOrder);
-        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), 4);
+        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), JTLLOG_LEVEL_DEBUG);
     }
 }
