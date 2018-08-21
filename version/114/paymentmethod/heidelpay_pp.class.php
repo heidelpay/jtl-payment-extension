@@ -32,11 +32,18 @@ class heidelpay_pp extends heidelpay_standard
             '{USAGE}' => $args ['IDENTIFICATION_SHORTID'],
             '{COMPANY_NAME}' => $firma->cName
         );
-        mail(
-            $order->oRechnungsadresse->cMail,
-            strtr(constant('PP_MAIL_SUBJECT'), $repl),
-            strtr(constant('PP_MAIL_TEXT'), $repl),
-            $this->getMailHeader()
-        );
+        $mailer = new SimpleMail();
+        $address = [
+            [
+                'cMail' => $order->oRechnungsadresse->cMail,
+                'cName' => $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname
+            ]
+        ];
+        $subject = strtr(constant('PP_MAIL_SUBJECT'), $repl);
+        $mail_text = strtr(constant('PP_MAIL_TEXT'), $repl);
+
+        $mailer->setBetreff($subject);
+        $mailer->setBodyHTML($mail_text);
+        $mailer->send($address);
     }
 }

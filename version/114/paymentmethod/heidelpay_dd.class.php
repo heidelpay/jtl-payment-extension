@@ -45,12 +45,15 @@ class heidelpay_dd extends heidelpay_standard
 
         $subject = strtr(constant('DD_MAIL_SUBJECT'), $repl);
         $mail_text = strtr(constant('DD_MAIL_TEXT'), $repl);
-
-        mail(
-            $order->oRechnungsadresse->cMail,
-            $subject,
-            $mail_text,
-            $this->getMailHeader()
-        );
+        $mailer = new SimpleMail();
+        $address = [
+            [
+                'cMail' => $order->oRechnungsadresse->cMail,
+                'cName' => $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname
+            ]
+        ];
+        $mailer->setBetreff($subject);
+        $mailer->setBodyHTML('simple mailer: ' . $mail_text);
+        $mailer->send($address);
     }
 }

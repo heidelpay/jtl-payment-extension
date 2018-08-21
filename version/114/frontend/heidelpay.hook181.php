@@ -99,7 +99,25 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             if ($paymentObject->getResponse()->isError()) {
                 $errorMail = $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'];
                 $errorCode = $paymentObject->getResponse()->getError();
-                reportFailedShipping($errorMail, $oBestellung, $errorCode['message']);
+                $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';
+                $errorText = 'Report shipment for order' . $oBestellung->kBestellung . ' in Shop ' .
+                    Shop::getURL() . ' failed.
+                    Error messsage: ' . print_r($errorCode['message'], 1);
+                if (!empty($errorMail) && filter_var($errorMail, FILTER_VALIDATE_EMAIL)) {
+                    $address = [
+                        [
+                            'cName' => $errorMail,
+                            'cMail'=> $errorMail
+                        ]
+                    ];
+                    $mailer = new SimpleMail();
+                    $mailer->setBetreff($subject);
+                    $mailer->setBodyHTML($errorText);
+                    $sendResult = $mailer->send($address);
+                } else {
+                    Jtllog::writeLog($subject . ': ' . $errorText, JTLLOG_LEVEL_ERROR);
+                }
+
             } else {
                 Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
                     'cshort_id' => $result[0],
@@ -107,28 +125,5 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
                 ]);
             }
         }
-    }
-}
-
-/**
- * Sending an error mail that shipping failed. If that's not possible write the message into log.
- * @param $errorMail String email address
- * @param $oBestellung stdClass
- * @param $errorMsg String
- */
-function reportFailedShipping($errorMail, $oBestellung, $errorMsg)
-{
-    $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';
-    $errorText = 'Report shipment for order' . $oBestellung->kBestellung . ' in Shop ' .
-        Shop::getURL() . ' failed.
-			Error messsage: ' . print_r($errorMsg, 1);
-    if(!empty($errorMail) && filter_var($errorMail, FILTER_VALIDATE_EMAIL)) {
-        mail(
-            $errorMail,
-            $subject,
-            $errorText
-        );
-    } else {
-        Jtllog::writeLog($subject . ': ' . $errorText, JTLLOG_LEVEL_ERROR);
     }
 }
