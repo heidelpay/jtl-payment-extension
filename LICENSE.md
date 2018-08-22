@@ -3,7 +3,7 @@
 
 Lizenzvereinbarung Plug-in
 
-I. Pr�ambel
+I. Präambel
 
     Diese Lizenzvereinbarung Plug-in (nachfolgend � �Vereinbarung�) bildet einen Vertrag zwischen dem Nutzer des Plug-ins und der heidelpay GmbH (nachfolgend �heidelpay�).
 
@@ -19,11 +19,11 @@ II. Begriffsbestimmungen
 
 	Plug-in	Das  unter dieser Lizenzvereinbarung angebotene Programm, das von heidelpay nach den Bestim-mungen dieser Lizenzvereinbarung verbreitet oder �ffentlich zug�nglich gemacht hat.
 
-	Source Code	Die f�r Menschen lesbare, in Programmiersprache dargestellte Form des Plug-in.
+	Source Code	Die für Menschen lesbare, in Programmiersprache dargestellte Form des Plug-in.
 
-	Ver�ndern	Jede Erweiterung, K�rzung und Bearbeitung des Plug-ins, insbesondere Weiterentwicklungen
+	Ver�ndern	Jede Erweiterung, Kürzung und Bearbeitung des Plug-ins, insbesondere Weiterentwicklungen
 
-	Verbreiten	Die �ffentliche Weitergabe des Plug-ins, biespielsweise das Bereitstellen zum Download auf �ffent-lich zug�nglichen Internetseiten.
+	Verbreiten	Die öffentliche Weitergabe des Plug-ins, biespielsweise das Bereitstellen zum Download auf �ffent-lich zug�nglichen Internetseiten.
 
 III. Geltenden Bestimmungen
 

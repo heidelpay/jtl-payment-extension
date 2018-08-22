@@ -980,7 +980,7 @@
                 <AGB>0</AGB>
                 <WRB>0</WRB>
                 <TemplateLanguage iso="GER">
-                    <Subject>Zahlungserinnerung</Subject>
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung bei {$firma->cName}</Subject>
                     <ContentHtml>
                         Der Betrag von {$AMOUNT} {$CURRENCY} wird in den nächsten Tagen von Ihrem Konto abgebucht.
                         Die Abbuchung enthält die Mandatsreferenz-ID: {$ACC_IDENT}

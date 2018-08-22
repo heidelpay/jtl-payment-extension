@@ -46,29 +46,33 @@ class heidelpay_dd extends heidelpay_standard
         $subject = strtr(constant('DD_MAIL_SUBJECT'), $repl);
         $mail_text = strtr(constant('DD_MAIL_TEXT'), $repl);
 
-        $heidelpay = new stdClass();
+        $mailingObject = new stdClass();
 
-        $heidelpay->accIban = $args ['ACCOUNT_IBAN'];
-        $heidelpay->accBic = $args ['ACCOUNT_BIC'];
-        $heidelpay->accIdent = $args ['ACCOUNT_IDENTIFICATION'];
-        $heidelpay->amount = $args ['PRESENTATION_AMOUNT'];
-        $heidelpay->currency = $args ['PRESENTATION_CURRENCY'];
-        $heidelpay->holder = $args ['ACCOUNT_HOLDER'];
+        $mailingObject->accIban = $args ['ACCOUNT_IBAN'];
+        $mailingObject->accBic = $args ['ACCOUNT_BIC'];
+        $mailingObject->accIdent = $args ['ACCOUNT_IDENTIFICATION'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+        $mailingObject->holder = $args ['ACCOUNT_HOLDER'];
 
         if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
-            $heidelpay->identCreditor  = $args ['IDENTIFICATION_CREDITOR_ID'];
+            $mailingObject->identCreditor  = $args ['IDENTIFICATION_CREDITOR_ID'];
         } else {
-            $heidelpay->identCreditor  = '-';
+            $mailingObject->identCreditor  = '-';
         }
 
         $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_dd-reminder';
 
         $tkunde = new stdClass();
         $tkunde->cMail = $order->oRechnungsadresse->cMail;
+        $tkunde->kSprache = $order->kSprache;
+
+        $mailingObject->tkunde = $tkunde;
 
 
-        sendeMail( $template , $heidelpay);
-        Jtllog::writeLog('mail: ' . print_r($order, 1));
+        $mail = sendeMail( $template , $mailingObject);
+        Jtllog::writeLog('templateId: ' . print_r($template, 1));
+        Jtllog::writeLog('mail: ' . print_r($mail, 1));
 
         /*mail(
             $order->oRechnungsadresse->cMail,
