@@ -41,7 +41,7 @@ latest stable PHP version whenever possible.
 
 ## LICENSE
 
-You can find a copy of this license in [LICENSE.txt](LICENSE.txt).
+You can find a copy of this license in [LICENSE.md](LICENSE.md).
 
 
 
