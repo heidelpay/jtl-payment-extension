@@ -155,18 +155,6 @@ class PushNotificationHandler
             if ($statusChange == BESTELLUNG_STATUS_BEZAHLT) {
                 $this->addIncomingPayment($order, $incomingPayment);
             }
-            
-            /*if ($statusChange == BESTELLUNG_STATUS_STORNO) {
-                if($order->fGesamtsumme == $this->response->getPresentation()->getAmount()) {
-                    //$this->setOrderStatus($order, $orderUpdate);
-                    $this->paymentModule->cancelOrder($order->kBestellung);
-                    Jtllog::writeLog('storno case:'.$order->fGesamtsumme.
-                        ' response amount: '.$this->response->getPresentation()->getAmount());
-                }
-
-                if($order->fGesamtsumme > $this->response->getPresentation()->getAmount()) {
-                }
-            }*/
         }
     }
 
