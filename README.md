@@ -5,6 +5,48 @@
 
 ![Logo](https://dev.heidelpay.de/devHeidelpay_400_180.jpg)
 
+==== ENGLISH VERSION BELOW ====
+# JTL Zahlungs-Erweiterung
+Payment extension for JTL Shop
+
+## NOTICE
+Um diese Erweiterung zu verwenden, erstelle einen Ordner mit dem Namen "heidelpay_standard" und kopiere dort die 
+runtergeladenen Datein hinein.
+
+Von Version 113 auf 114 wird "Sofortüberweisung" durch "Sofort" ersetzt. Daher muss "Sofort" erneut den Betroffenen Versandarten 
+zugeordnet und konfiguriert werden.
+
+Link zur Dokumentation: https://dev.heidelpay.de/jt
+
+## Derzeit unterstützte Zahlarten:
+
+* Kreditkarte
+* Debitkarte
+* Vorkasse
+* Sofort
+* PayPal
+* Lastschrift
+* iDeal
+* Giropay
+* Przelewy24
+* PostFinance Card
+* PostFinance EFinance
+* EPS
+* Rechnung
+* Gesicherte Rechnung B2C
+* Gesicherte Lastschrift B2C
+
+### SYSTEM REQUIREMENTS
+
+Unser JTL Plugin benötigt PHP 5.6 oder höher. 
+Wir empfehlen, sofern möglich, die aktuellste PHP Version zu verwenden.
+
+## Lizenz
+
+Ein Kopie der Lizenz ist hier zu finden [LICENSE.md](LICENSE.md).
+
+==== ENGLISH VERSION ====
+
 # jtl-payment-extension
 Payment extension for JTL Shop
 
@@ -12,7 +54,7 @@ Payment extension for JTL Shop
 To use this extension please create a folder named 'heidelpay_standard' in includes/plugins/ and 
 paste the downloaded files there.
 
-From version 113 to 114 "Sofortüberweisung" will be replaced "Sofort". Therefore "Sofort" has to be assigned to the affected shipping methods and has to be reconfigured.
+From version 113 to 114 "Sofortüberweisung" will be replaced by "Sofort". Therefore "Sofort" has to be assigned to the affected shipping methods and has to be reconfigured.
 
 Documentation can be found at https://dev.heidelpay.de/jtl
 
@@ -41,7 +83,7 @@ latest stable PHP version whenever possible.
 
 ## LICENSE
 
-You can find a copy of this license in [LICENSE.txt](LICENSE.txt).
+You can find a copy of this license in [LICENSE.md](LICENSE.md).
 
 
 
