@@ -16,7 +16,7 @@ runtergeladenen Datein hinein.
 Von Version 113 auf 114 wird "Sofortüberweisung" durch "Sofort" ersetzt. Daher muss "Sofort" erneut den Betroffenen Versandarten 
 zugeordnet und konfiguriert werden.
 
-Link zur Dokumentation: https://dev.heidelpay.de/jt
+Link zur Dokumentation: https://dev.heidelpay.de/jtl
 
 ## Derzeit unterstützte Zahlarten:
 
