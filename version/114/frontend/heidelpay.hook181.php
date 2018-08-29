@@ -10,8 +10,7 @@
  * @category JTL
 */
 
-
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/vendor/autoload.php';
 require_once __DIR__ . '/xmlQuery.php';
 
 use Heidelpay\XmlQuery;
@@ -19,7 +18,6 @@ use Heidelpay\XmlQuery;
 #ini_set('display_errors', 1);
 #ini_set('display_startup_errors', 1);
 #error_reporting(E_ALL);
-
 $bestellNr = (int)$args_arr['oBestellung']->kBestellung;
 $query = "SELECT tbestellung.kBestellung, tzahlungsart.cModulId
             FROM tbestellung
@@ -32,8 +30,10 @@ $_query_live_url = 'https://heidelpay.hpcgw.net/TransactionCore/xml';
 $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
 
 $url = $_query_sandbox_url;
+$sandboxMode = 1;
 if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'] == 'LIVE') {
     $url = $_query_live_url;
+    $sandboxMode = 0;
 }
 
 // if Versand oder Teilversand - Status s. defines_inc.php
@@ -54,19 +54,16 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'transType' => 'PAYMENT'
         );
 
-        $sandboxMode = 1;
-
         $xmlQueryClass = new XmlQuery();
 
         $config = array(
             'sandbox' => $sandboxMode,
-            'security_sender' => $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            'user_login' => $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            'user_password' => $oPlugin->oPluginEinstellungAssoc_arr ['pass']
+            'security_sender' => trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+            'user_login' => trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+            'user_password' => trim($oPlugin->oPluginEinstellungAssoc_arr ['pass'])
         );
 
         $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result[0]);
-
         //if finalize wasn't found in the database, do finalize
         if ($finalizedOrder === null) {
             $res = $xmlQueryClass->doRequest(
@@ -81,10 +78,10 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             $paymentObject = new Heidelpay\PhpPaymentApi\PaymentMethods\InvoiceB2CSecuredPaymentMethod();
 
             $paymentObject->getRequest()->authentification(
-                $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-                $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-                $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-                (string)$resXMLObject->Result->Transaction['channel'],
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+                trim($oPlugin->oPluginEinstellungAssoc_arr ['pass']),
+                trim((string)$resXMLObject->Result->Transaction['channel']),
                 $sandboxMode
             );
 
@@ -96,21 +93,28 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
             $paymentObject->finalize($resUniquieId);
 
-            if ($paymentObject->getResponse()->isError()) {
-                $errorCode = $paymentObject->getResponse()->getError();
+            if ($paymentObject->getResponse()->isError()
+                && $paymentObject->getResponse()->getError()['code'] !== '700.400.800'
+            ) {
+                $error = $paymentObject->getResponse()->getError();
                 mail(
                     $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'],
                     'heidelpay: Order ID ' . $args_arr['oBestellung']->kBestellung . ' report shipment failed',
-                    'Report shipment for order' . $args_arr['oBestellung']->kBestellung . ' in Shop ' .
+                    'Report shipment for order ' . $args_arr['oBestellung']->kBestellung . ' in Shop ' .
                     Shop::getURL() . ' failed.
-			Error messsage: ' . print_r($errorCode['message'], 1)
+                    Error messsage: ' . print_r($error['message'], 1)
                 );
             } else {
-                Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
-                    'cshort_id' => $result[0],
-                    'kBestellung' => $bestellNr
-                ]);
+                saveFinalize($result[0], $bestellNr);
             }
         }
     }
+}
+
+function saveFinalize($shortId, $bestellNr)
+{
+    Shop::DB()->insert('xplugin_heidelpay_standard_finalize', (object)[
+        'cshort_id' => $shortId,
+        'kBestellung' => $bestellNr
+    ]);
 }
