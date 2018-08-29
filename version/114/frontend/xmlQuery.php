@@ -2,7 +2,7 @@
 
 namespace Heidelpay;
 
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/vendor/autoload.php';
 require_once __DIR__.'/arrayFilter.php';
   
   use \SimpleXMLElement;
@@ -15,7 +15,6 @@ class XmlQuery{
 	
     public function getXMLRequest($config, $xml_params)
     {
-		
 		$arrFilClass = new ArrayFilter();
         // filter empty key/value pairs to prevent problems while creating the XML
         $xml_params = $arrFilClass->array_filter_recursive($xml_params);
