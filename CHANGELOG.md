@@ -2,7 +2,7 @@
 
 ##114
 
-### 18.08.01
+### 18.08.29
 #### Fixed
 - spaces in front or after payment credentials, caused the transaction to fail.
 - Secured invoice was not disabled after customer was denied by insurance provider.

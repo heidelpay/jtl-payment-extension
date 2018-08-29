@@ -30,8 +30,10 @@ $_query_live_url = 'https://heidelpay.hpcgw.net/TransactionCore/xml';
 $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
 
 $url = $_query_sandbox_url;
+$sandboxMode = 1;
 if ($oPlugin->oPluginEinstellungAssoc_arr [$oBestellung->cModulId . '_transmode'] == 'LIVE') {
     $url = $_query_live_url;
+    $sandboxMode = 0;
 }
 
 // if Versand oder Teilversand - Status s. defines_inc.php
@@ -52,8 +54,6 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'transType' => 'PAYMENT'
         );
 
-        $sandboxMode = 1;
-
         $xmlQueryClass = new XmlQuery();
 
         $config = array(
@@ -66,8 +66,6 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
         $finalizedOrder = Shop::DB()->select('xplugin_heidelpay_standard_finalize', 'cshort_id', $result[0]);
         //if finalize wasn't found in the database, do finalize
         if ($finalizedOrder === null) {
-
-
             $res = $xmlQueryClass->doRequest(
                 array(
                     'load' => urlencode($xmlQueryClass->getXMLRequest($config, $xml_params))
