@@ -8,7 +8,7 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' . $oPlugin->nVersion . '/paymentmethod/helper/PushNotificationHandler.php';
+require_once $oPlugin->cPluginPfad . 'paymentmethod/helper/PushNotificationHandler.php';
 
 $xml = file_get_contents("php://input");
 $pushHandler = new PushNotificationHandler($xml);

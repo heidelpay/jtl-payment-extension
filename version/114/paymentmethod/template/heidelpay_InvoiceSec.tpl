@@ -13,7 +13,7 @@
 <div id="ivform">
 	<div class="alert alert-info">{$paytext}</div>
 	<form method="post" class="formular" action="{$action_url}" id="paymentFrameForm">
-		<script type="text/javascript" src="./includes/plugins/heidelpay_standard/version/113/paymentmethod/template/js/birthDateAction.js"></script>
+		<script type="text/javascript" src="{$oPlugin->cFrontendPfadURL}js/birthDateAction.js"></script>
         {html_options name='NAME.SALUTATION' options=$salutation selected=$salutation_pre} <label class="control-label">&nbsp;{$holder}</label><br/>
 
 		<br/>

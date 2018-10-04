@@ -21,7 +21,6 @@ var targetOrigin = getDomainFromUrl($('#paymentIframe').attr('src'));
 /**
  * Get the form element
  */
-
 paymentFrameForm = document.getElementById('paymentFrameForm');
 
 
@@ -42,18 +41,10 @@ else if (paymentFrameForm.attachEvent) { // IE DOM
  */
 
 function sendMessage(e) {
-	
 	if(e.preventDefault) { e.preventDefault(); } 
 	else { e.returnValue = false; }
 	
-	var data = {}; 
-	
-	/**
-	 * Collection form input fields
-	 */
-
-
-
+	var data = {};
 
 	/**
 	 * Send html postmessage to payment frame
@@ -61,42 +52,14 @@ function sendMessage(e) {
 	paymentFrameIframe.contentWindow.postMessage(JSON.stringify(data), targetOrigin);
 }
 
-
 /**
  * Function to get the domain from a given url 
  */
-function getDomainFromUrl(url) { 
-	var arr = url.split("/"); 
-	return arr[0] + "//" + arr[2]; 
-	}
-
-
-/**
- * Add an listener to your webpage, which will recieve the response message
- * from payment server.
- */
-if (window.addEventListener) { // W3C DOM
-	window.addEventListener('message', receiveMessage);
-		
-	} 
-else if (window.attachEvent) { // IE DOM 
-	window.attachEvent('onmessage', receiveMessage); 
-	}
-
-/**
- * Define receiveMessage function
- *
- * This function will recieve the response message form the payment server.
- */
-function receiveMessage(e) { 
-	
-	if (e.origin !== targetOrigin) {
-		return; 
-	}
-	
-	var antwort = JSON.parse(e.data);
-	console.log(antwort);
+function getDomainFromUrl(url) {
+    var arr = url.split("/");
+    return arr[0] + "//" + arr[2];
 }
+
 
 
 

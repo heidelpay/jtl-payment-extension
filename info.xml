@@ -51,13 +51,12 @@
             <CreateDate>2017-11-08</CreateDate>
         </Version>
         <Version nr="114">
-            <CreateDate>2018-06-06</CreateDate>
+            <CreateDate>2018-06-26</CreateDate>
             <SQL>install.sql</SQL>
         </Version>
         <Hooks>
             <Hook id="008">heidelpay.hook008.php</Hook>
             <Hook id="140">heidelpay.hook140.php</Hook>
-            <Hook id="153">heidelpay.hook153.php</Hook>
             <Hook id="181">heidelpay.hook181.php</Hook>
             <Hook id="207">heidelpay.hook207.php</Hook>
         </Hooks>
@@ -230,7 +229,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_su.class.php</ClassFile>
                 <ClassName>heidelpay_su</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Sofort</Name>
                     <ChargeName>Sofort</ChargeName>
@@ -275,7 +273,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_gp.class.php</ClassFile>
                 <ClassName>heidelpay_gp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Giropay</Name>
                     <ChargeName>Giropay</ChargeName>
@@ -365,7 +362,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_eps.class.php</ClassFile>
                 <ClassName>heidelpay_eps</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>EPS</Name>
                     <ChargeName>EPS</ChargeName>
@@ -410,7 +406,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_p24.class.php</ClassFile>
                 <ClassName>heidelpay_p24</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Przelewy24</Name>
                     <ChargeName>Przelewy24</ChargeName>
@@ -455,7 +450,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfc.class.php</ClassFile>
                 <ClassName>heidelpay_pfc</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceCard</Name>
                     <ChargeName>PostFinanceCard</ChargeName>
@@ -500,7 +494,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfe.class.php</ClassFile>
                 <ClassName>heidelpay_pfe</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceEFinance</Name>
                     <ChargeName>PostFinanceEFinance</ChargeName>
@@ -545,7 +538,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_va.class.php</ClassFile>
                 <ClassName>heidelpay_va</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PayPal</Name>
                     <ChargeName>PayPal</ChargeName>
@@ -600,7 +592,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_iv.class.php</ClassFile>
                 <ClassName>heidelpay_iv</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Rechnungskauf</Name>
                     <ChargeName>Rechnung</ChargeName>
@@ -645,7 +636,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pp.class.php</ClassFile>
                 <ClassName>heidelpay_pp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Vorkasse</Name>
                     <ChargeName>Vorkasse</ChargeName>
@@ -677,51 +667,6 @@
                 </Setting>
             </Method>
 
-            <!--   <Method>
-                 <Name>heidelpay Santander Plugin</Name>
-                 <PictureURL>template/heidelpay.png</PictureURL>
-                 <Sort>3</Sort>
-                 <SendMail>1</SendMail>
-                 <Provider>heidelpay</Provider>
-                 <TSCode>INVOICE</TSCode>
-                 <PreOrder>1</PreOrder>
-                 <Soap>0</Soap>
-                 <Curl>1</Curl>
-                 <Sockets>0</Sockets>
-                 <ClassFile>heidelpay_sa.class.php</ClassFile>
-                 <ClassName>heidelpay_sa</ClassName>
-                 <TemplateFile>template/heidelpay_Santander.tpl</TemplateFile>
-                 <MethodLanguage iso="GER">
-                   <Name>Santander</Name>
-                   <ChargeName>Santander</ChargeName>
-                   <InfoText>Sicher zahlen per Santander Rechnungskauf</InfoText>
-                 </MethodLanguage>
-                 <MethodLanguage iso="ENG">
-                   <Name>Santander</Name>
-                   <ChargeName>Santander</ChargeName>
-                   <InfoText>pay safely with Santander Invoice</InfoText>
-                 </MethodLanguage>
-                 <Setting type="text" initialValue="31HA07BC81856CAD6D8E07858ACD6CFB" sort="3" conf="Y">
-                   <Name>Channel</Name>
-                   <Description>Transaction Channel ID:</Description>
-                   <ValueName>channel</ValueName>
-                 </Setting>
-                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
-                   <Name>Transaktionsmodus</Name>
-                   <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
-                   <ValueName>transmode</ValueName>
-                   <SelectboxOptions>
-                     <Option value="LIVE" sort="1">LIVE</Option>
-                     <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
-                   </SelectboxOptions>
-                 </Setting>
-                 <Setting type="text" initialValue="SA" sort="3" conf="Y">
-                   <Name>Payment Code</Name>
-                   <Description>Code ID der Paymentmethode</Description>
-                   <ValueName>paycode</ValueName>
-                 </Setting>
-               </Method>
-          -->
             <Method>
                 <Name>heidelpay Gesicherte Rechnung Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
@@ -894,6 +839,20 @@
         </FrontendLink>
 
         <Locales>
+            <Variable>
+                <Name>hp_bankname_label</Name>
+                <Description>Label Bankname</Description>
+                <VariableLocalized iso="GER">Bankname</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank name</VariableLocalized>
+            </Variable>
+
+            <Variable>
+                <Name>hp_bank_country_label</Name>
+                <Description>Label Bankland</Description>
+                <VariableLocalized iso="GER">Bankland</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank country</VariableLocalized>
+            </Variable>
+
             <Variable>
                 <Name>hp_paybutton</Name>
                 <Description>Beschriftung des heidelpay Zahlungsbuttons</Description>

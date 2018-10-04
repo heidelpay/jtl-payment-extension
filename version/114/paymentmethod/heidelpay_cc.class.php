@@ -8,7 +8,7 @@
  * @author David Owusu
  * @category JTL
  */
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/' .$oPlugin->nVersion. '/paymentmethod/heidelpay_standard.class.php';
+require_once $oPlugin->cPluginPfad . 'paymentmethod/heidelpay_standard.class.php';
 
 use Heidelpay\PhpPaymentApi\PaymentMethods\CreditCardPaymentMethod;
 
@@ -21,10 +21,13 @@ class heidelpay_cc extends heidelpay_standard
 
     public function sendPaymentRequest()
     {
+        global $oPlugin;
+        $cssPath = $oPlugin->cFrontendPfadURL . 'css/hppaymentframe.css';
+
         if ($this->getBookingMode($this->oPlugin, $this->moduleID) === 'DB') {
-            $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE');
+            $this->paymentObject->debit($this->getPaymentFrameOrigin(), 'FALSE', $cssPath);
         } else {
-            $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE');
+            $this->paymentObject->authorize($this->getPaymentFrameOrigin(), 'FALSE', $cssPath);
         }
     }
 }

@@ -14,7 +14,7 @@
 
 	<div class="alert alert-info">{$paytext}</div>
 	<form method="post" class="formular" action="{$action_url}" id="paymentFrameForm">
-		<script type="text/javascript" src="./includes/plugins/heidelpay_standard/version/113/paymentmethod/template/js/birthDateAction.js"></script>
+		<script type="text/javascript" src="{$oPlugin->cFrontendPfadURL}js/birthDateAction.js"></script>
 		<label class="control-label">{$holder_label}</label><br/>
         {if $is_PG == TRUE}{html_options name='NAME.SALUTATION' options=$salutation selected=$salutation_pre}{/if}
 		<input type="text" maxlength="32" size="20" required="" name="ACCOUNT.HOLDER" value="{$holder}" />

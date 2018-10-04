@@ -11,10 +11,10 @@
  * @category JTL
  */
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ServerPaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis .DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 require_once PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Jtllog.php";
-require_once __DIR__ . '/helper/HeidelpayBasketHelper.php';
-require_once __DIR__ . '/helper/HeidelpayTemplateHelper.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayBasketHelper.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR .'helper'.DIRECTORY_SEPARATOR .'HeidelpayTemplateHelper.php';
 
 /*
  * heidelpay standard class
@@ -174,7 +174,11 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     protected function addBasketId($currentPaymentMethod, Bestellung $order) {
         $oPlugin = $this->getPlugin($currentPaymentMethod);
-        $response = HeidelpayBasketHelper::sendBasketFromOrder($order, $oPlugin->oPluginEinstellungAssoc_arr);
+        $response = HeidelpayBasketHelper::sendBasketFromOrder(
+            $order,
+            $oPlugin->oPluginEinstellungAssoc_arr,
+            $this->isSandboxMode($oPlugin, $currentPaymentMethod)
+        );
 
         if($response->isSuccess()) {
             $this->paymentObject->getRequest()->getBasket()->setId($response->getBasketId());
@@ -341,7 +345,7 @@ class heidelpay_standard extends ServerPaymentMethod
             $orderId = baueBestellnummer();
         }
         $_SESSION['hp_temp_orderId'] = $orderId;
-        Jtllog::writeLog('orderID'.$orderId);
+        Jtllog::writeLog('orderID: '.$orderId, JTLLOG_LEVEL_DEBUG);
 
         $amount = $order->fGesamtsummeKundenwaehrung; // In Kunden Währung
         if (empty($amount)) {
@@ -489,7 +493,10 @@ class heidelpay_standard extends ServerPaymentMethod
             /** @noinspection Fallthrough */
             case 'HPIDL':
             case 'HPEPS':
-                return ['account'];
+                return [
+                    'account',
+                    'bank'
+                ];
                 break;
             case 'HPSA':
                 return [
@@ -542,6 +549,22 @@ class heidelpay_standard extends ServerPaymentMethod
     public function getBirthdateLabel()
     {
         return utf8_encode($this->oPlugin->oPluginSprachvariableAssoc_arr['hp_birthdatelabel']);
+    }
+
+    public function getLocalizedString($localizeKey)
+    {
+        $localizedText = $this->oPlugin->oPluginSprachvariableAssoc_arr[$localizeKey];
+
+        if(!empty($localizedText)) {
+            return utf8_encode($localizedText);
+        } else {
+            $callers = debug_backtrace();
+            Jtllog::writeLog(
+                $callers[1] . 'heidelpay_standard: No translation could be found for: ' . $localizeKey . '.',
+                JTLLOG_LEVEL_NOTICE
+            );
+            return '';
+        }
     }
 
     /**

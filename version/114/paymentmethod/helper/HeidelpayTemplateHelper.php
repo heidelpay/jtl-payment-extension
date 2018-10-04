@@ -71,6 +71,10 @@ class HeidelpayTemplateHelper
                     $smarty->assign('optin', utf8_decode($optinText['optin']));
                     $smarty->assign('privacy_policy', utf8_decode($optinText['privacy_policy']));
                     break;
+                case 'bank':
+                    $smarty->assign('hp_bank_country_label', $this->paymentMethod->getLocalizedString('hp_bank_country_label'));
+                    $smarty->assign('hp_bankname_label', $this->paymentMethod->getLocalizedString('hp_bankname_label'));
+                    break;
                 default:
             }
         }
