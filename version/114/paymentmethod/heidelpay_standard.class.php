@@ -610,7 +610,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 // Send mail with payment information i.e. direct debit and pre payment
                 if(!isset($args ['TRANSACTION_SOURCE'])) {
                     $this->sendPaymentMail($order, $args);
-                    $this->setPayInfo($args, $order->cBestellNr);
+                    $this->setPayInfo($args, $order);
                 }
 
                 // Nur wenn nicht Vorkasse od. Rechnung
@@ -740,10 +740,10 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment information as comment in database. Default is to write no payInfo
      *
-     * @param $post response form payment
-     * @param $orderId
+     * @param $args response form payment
+     * @param $order
      */
-    protected function setPayInfo($post, $orderId)
+    protected function setPayInfo($args, $order)
     {
         /*if(!empty($post['IDENTIFICATION_SHORTID'])) {
             $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);

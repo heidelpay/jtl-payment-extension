@@ -971,7 +971,7 @@
 
         <Emailtemplate>
             <Template>
-                <Name>heidelpay-dd-mail</Name>
+                <Name>heidelpay Lastschrift mail</Name>
                 <Description></Description>
                 <Type>text/html</Type>
                 <ModulId>dd-reminder</ModulId>
@@ -980,22 +980,154 @@
                 <AGB>0</AGB>
                 <WRB>0</WRB>
                 <TemplateLanguage iso="GER">
-                    <Subject>Zahlungsinformation zu Ihrer Bestellung bei {$firma->cName}</Subject>
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
                     <ContentHtml>
-                        Der Betrag von {$AMOUNT} {$CURRENCY} wird in den nächsten Tagen von Ihrem Konto abgebucht.
-                        Die Abbuchung enthält die Mandatsreferenz-ID: {$ACC_IDENT}
-                        und die Gläubiger ID: {$IDENT_CREDITOR}
-                        Bitte sorgen Sie für ausreichende Deckung auf dem entsprechenden Konto.
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        Der Betrag von {$oPluginMail->amount} {$oPluginMail->currency} wird in den nächsten Tagen von Ihrem Konto abgebucht.<br/><br/>
+                        Die Abbuchung enthält die Mandatsreferenz-ID: {$oPluginMail->accIdent}<br/>
+                        und die Gläubiger ID: {$oPluginMail->identCreditor}<br/>
+                        Bitte sorgen Sie für ausreichende Deckung auf dem entsprechenden Konto.<br/>
 
-                        Mit freundlichem Gruß
-                        Ihr Team von {$Firma->cName}
+                        Mit freundlichem Gruß<br/>
+                        Ihr Team von {fFirma->cName}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
                     </ContentHtml>
-                    <ContentText>Hello</ContentText>
+                    <ContentText>
+                    </ContentText>
                 </TemplateLanguage>
                 <TemplateLanguage iso="ENG">
-                    <Subject>Reminder</Subject>
-                    <ContentHtml></ContentHtml>
+                    <Subject>Subject</Subject>
+                    <ContentHtml>
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        The amount of <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> will be debited from your account within the next days.<br/><br/>
+                        The booking contains the mandate reference ID: {$oPluginMail->accIdent}<br/>
+                        and the creditor identifier: {$oPluginMail->identCreditor}<br/>
+                        <br/>Please ensure that there will be sufficient funds on the corresponding account.
+                        <br/><br/>
+                        Kind regards,<br />
+                        your team from {$firma->cName}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
+                    </ContentHtml>
                     <ContentText></ContentText>
+                </TemplateLanguage>
+            </Template>
+            <Template>
+                <Name>heidelpay Vorkasse mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>pp-reminder</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
+                    <ContentHtml>
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        Bitte überweisen Sie uns den Betrag von <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> auf folgendes Konto:<br/><br/>
+
+                        Kontoinhaber: 	{$oPluginMail->accOwner}<br/>
+                        IBAN: 			{$oPluginMail->accIban}<br/>
+                        BIC: 				{$oPluginMail->accBic}<br/><br/>
+                        <i>Geben Sie als Verwendungszweck bitte ausschließlich diese Identifikationsnummer an:</i><br/>
+                        <strong>{$oPluginMail->usage}</strong><br/><br/>
+                        <br/><br/>
+                        Mit freundlichen Grüßen,<br />
+                        Ihr Team von {$firma->cName}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
+                    </ContentHtml>
+                    <ContentText></ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment information for your order</Subject>
+                    <ContentHtml>
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        Please transfer the amount of <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> to the following account:<br/><br/>
+
+                        Holder: 	{$oPluginMail->accOwner}<br/>
+                        IBAN: 			{$oPluginMail->accIban}<br/>
+                        BIC: 				{$oPluginMail->accBic}<br/><br/>
+                        <i>Please use only the following identification number as descriptor:</i><br/>
+                        <strong>{$oPluginMail->usage}</strong><br/><br/>
+                        <br/><br/>
+                        With kind regards,<br />
+                        your team from {$firma->cName}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
+                    </ContentHtml>
+                    <ContentText></ContentText>
+                </TemplateLanguage>
+            </Template>
+            <Template>
+                <Name>heidelpay Rechnungskauf mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>iv-reminder</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
+                    <ContentHtml>
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} nach Erhalt der Ware auf folgendes Konto:<br/>
+
+                        Kontoinhaber: {$oPluginMail->accHolder}<br/>
+                        IBAN: {$oPluginMail->accIban}<br/>
+                        BIC: {$oPluginMail->accBic}<br/>
+
+                        Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:<br/>
+                        {$oPluginMail->usage}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
+                    </ContentHtml>
+                    <ContentText>
+                        Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} nach Erhalt der Ware auf folgendes Konto:
+
+                        Kontoinhaber: {$oPluginMail->accHolder}
+                        IBAN: {$oPluginMail->accIban}
+                        BIC: {$oPluginMail->accBic}
+
+                        Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
+                        {$oPluginMail->usage}
+                    </ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment information for your order</Subject>
+                    <ContentHtml>
+                        <![CDATA[
+                        {includeMailTemplate template=header type=html}
+                        Please transfere the ammount of {$oPluginMail->amount}
+                        {$oPluginMail->currency} after receive of the goods:<br/>
+
+                        Account holder: {$oPluginMail->accountHolder}<br/>
+                        IBAN: {$oPluginMail->accountIban}<br/>
+                        BIC: {$oPluginMail->accountBic}<br/>
+
+                        Only use the following identification number as reference please:<br/>
+                        {$oPluginMail->usage}
+                        {includeMailTemplate template=footer type=html}
+                        ]]>
+                    </ContentHtml>
+                    <ContentText>
+                        Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} nach Erhalt der Ware auf folgendes Konto:
+
+                        Kontoinhaber: {$oPluginMail->accHolder}
+                        IBAN: {$oPluginMail->accIban}
+                        BIC: {$oPluginMail->accBic}
+
+                        Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
+                        {$oPluginMail->usage}
+                    </ContentText>
                 </TemplateLanguage>
             </Template>
         </Emailtemplate>

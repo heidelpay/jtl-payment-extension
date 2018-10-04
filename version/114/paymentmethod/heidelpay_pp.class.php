@@ -22,21 +22,23 @@ class heidelpay_pp extends heidelpay_standard
 
     public function sendPaymentMail(Bestellung $order, $args)
     {
-        $firma = Shop::DB()->query("SELECT * FROM tfirma", 1);
-        $repl = array(
-            '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
-            '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
-            '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
-            '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-            '{USAGE}' => $args ['IDENTIFICATION_SHORTID'],
-            '{COMPANY_NAME}' => $firma->cName
-        );
-        mail(
-            $order->oRechnungsadresse->cMail,
-            strtr(constant('PP_MAIL_SUBJECT'), $repl),
-            strtr(constant('PP_MAIL_TEXT'), $repl),
-            $this->getMailHeader()
-        );
+        //prepare customer object for mailobject
+        $tkunde = new stdClass();
+        $tkunde->cMail = $order->oRechnungsadresse->cMail;
+        $tkunde->kSprache = $order->kSprache;
+
+        $mailingObject = new stdclass();
+        $mailingObject->tkunde = $tkunde;
+        $mailingObject->acciban = $args ['connector_account_iban'];
+        $mailingObject->accbic = $args ['connector_account_bic'];
+        $mailingObject->owner = $args ['connector_account_holder'];
+        $mailingObject->amount = $args ['presentation_amount'];
+        $mailingObject->currency = $args ['presentation_currency'];
+        $mailingObject->usage = $args ['identification_shortid'];
+
+        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_pp-reminder';
+        $mail = sendeMail( $template , $mailingObject);
+        Jtllog::writeLog('templateId: ' . print_r($template, 1));
+        Jtllog::writeLog('mail: ' . print_r($mail, 1));
     }
 }

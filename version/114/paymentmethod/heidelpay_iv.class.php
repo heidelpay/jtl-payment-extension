@@ -20,23 +20,31 @@ class heidelpay_iv extends heidelpay_standard
         $this->paymentObject = new InvoicePaymentMethod();
     }
 
-    public function setPayInfo($post, $orderId)
+    public function setPayInfo($args, $order)
     {
-        $repl = [
-            '{PRESENTATION_AMOUNT}' => $post['PRESENTATION_AMOUNT'],
-            '{PRESENTATION_CURRENCY}' => $post['PRESENTATION_CURRENCY'],
-            '{ACCOUNT_HOLDER}' => $post['CONNECTOR_ACCOUNT_HOLDER'],
-            '{ACCOUNT_IBAN}' => $post['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACCOUNT_BIC}' => $post['CONNECTOR_ACCOUNT_BIC'],
-            '{SHORTID}' => $post['IDENTIFICATION_SHORTID'],
-        ];
+        //Prepare customer object for mailObject
+        $tkunde = new stdClass();
+        $tkunde->cMail = $order->oRechnungsadresse->cMail;
+        $tkunde->kSprache = $order->kSprache;
 
-        $bookingtext = strtr(IV_PAY_INFO, $repl);
+        $mailingObject = new stdClass();
+        $mailingObject->tkunde = $tkunde;
+        $mailingObject->accIban = $args ['CONNECTOR_ACCOUNT_IBAN'];
+        $mailingObject->accBic = $args ['CONNECTOR_ACCOUNT_BIC'];
+        $mailingObject->accHolder = $args ['CONNECTOR_ACCOUNT_HOLDER'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+        $mailingObject->usage = $args ['IDENTIFICATION_SHORTID'];
+
+        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_iv-reminder';
+        $mail= sendeMail( $template , $mailingObject);
+
+        $bookingtext = $mail->bodyText;
 
         $updateOrder = new stdClass();
         $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
 
-        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($orderId), $updateOrder);
-        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), 4);
+        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($order->cBestellNr), $updateOrder);
+        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($order)),1), 4);
     }
 }
