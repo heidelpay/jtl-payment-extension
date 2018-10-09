@@ -20,25 +20,24 @@ class heidelpay_pp extends heidelpay_standard
         $this->paymentObject = new PrepaymentPaymentMethod();
     }
 
-    public function sendPaymentMail(Bestellung $order, $args)
+    public function setInfoContent($args)
     {
-        //prepare customer object for mailobject
-        $tkunde = new stdClass();
-        $tkunde->cMail = $order->oRechnungsadresse->cMail;
-        $tkunde->kSprache = $order->kSprache;
-
         $mailingObject = new stdclass();
-        $mailingObject->tkunde = $tkunde;
-        $mailingObject->acciban = $args ['connector_account_iban'];
-        $mailingObject->accbic = $args ['connector_account_bic'];
-        $mailingObject->owner = $args ['connector_account_holder'];
-        $mailingObject->amount = $args ['presentation_amount'];
-        $mailingObject->currency = $args ['presentation_currency'];
-        $mailingObject->usage = $args ['identification_shortid'];
+        $mailingObject->accIban = $args ['CONNECTOR_ACCOUNT_IBAN'];
+        $mailingObject->accBic = $args ['CONNECTOR_ACCOUNT_BIC'];
+        $mailingObject->accHolder = $args ['CONNECTOR_ACCOUNT_HOLDER'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+        $mailingObject->usage = $args ['IDENTIFICATION_SHORTID'];
 
-        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_pp-reminder';
-        $mail = sendeMail( $template , $mailingObject);
-        Jtllog::writeLog('templateId: ' . print_r($template, 1));
-        Jtllog::writeLog('mail: ' . print_r($mail, 1));
+        return $mailingObject;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfoTemplateId()
+    {
+        return 'hp-pp-reminder';
     }
 }

@@ -20,31 +20,27 @@ class heidelpay_iv extends heidelpay_standard
         $this->paymentObject = new InvoicePaymentMethod();
     }
 
-    public function setPayInfo($args, $order)
+    /**
+     * @param $args
+     * @return stdClass
+     */
+    public function setInfoContent($args)
     {
-        //Prepare customer object for mailObject
-        $tkunde = new stdClass();
-        $tkunde->cMail = $order->oRechnungsadresse->cMail;
-        $tkunde->kSprache = $order->kSprache;
-
         $mailingObject = new stdClass();
-        $mailingObject->tkunde = $tkunde;
         $mailingObject->accIban = $args ['CONNECTOR_ACCOUNT_IBAN'];
         $mailingObject->accBic = $args ['CONNECTOR_ACCOUNT_BIC'];
         $mailingObject->accHolder = $args ['CONNECTOR_ACCOUNT_HOLDER'];
         $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
         $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
         $mailingObject->usage = $args ['IDENTIFICATION_SHORTID'];
+        return $mailingObject;
+    }
 
-        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_iv-reminder';
-        $mail= sendeMail( $template , $mailingObject);
-
-        $bookingtext = $mail->bodyText;
-
-        $updateOrder = new stdClass();
-        $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
-
-        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($order->cBestellNr), $updateOrder);
-        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($order)),1), 4);
+    /**
+     * @return string
+     */
+    public function getInfoTemplateId()
+    {
+        return 'hp-iv-reminder';
     }
 }

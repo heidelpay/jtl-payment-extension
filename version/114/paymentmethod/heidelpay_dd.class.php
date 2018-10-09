@@ -25,19 +25,12 @@ class heidelpay_dd extends heidelpay_standard
         $this->paymentObject->debit();
     }
 
-    public function sendPaymentMail(Bestellung $order, $args)
+    public function setInfoContent($args)
     {
-        //Prepare customer object for mailObject
-        $tkunde = new stdClass();
-        $tkunde->cMail = $order->oRechnungsadresse->cMail;
-        $tkunde->kSprache = $order->kSprache;
-
         $mailingObject = new stdClass();
-        $mailingObject->tkunde = $tkunde;
         $mailingObject->accIdent = $args ['ACCOUNT_IDENTIFICATION'];
         $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
         $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
-        $mailingObject->holder = $args ['ACCOUNT_HOLDER'];
 
         if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
             $mailingObject->identCreditor  = $args ['IDENTIFICATION_CREDITOR_ID'];
@@ -45,7 +38,11 @@ class heidelpay_dd extends heidelpay_standard
             $mailingObject->identCreditor  = '-';
         }
 
-        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_dd-reminder';
-        $mail = sendeMail( $template , $mailingObject);
+        return $mailingObject;
+    }
+
+    public function getInfoTemplateId()
+    {
+        return 'hp-dd-reminder';
     }
 }
