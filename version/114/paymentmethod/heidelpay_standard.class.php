@@ -94,10 +94,10 @@ class heidelpay_standard extends ServerPaymentMethod
 
             $logData = array(
                 'module' => 'heidelpay Standard',
-                'error_msg' => $error['message']
+                'response' => $this->paymentObject->getResponse()
             );
 
-            Jtllog::writeLog(print_r($logData, 1), JTLLOG_LEVEL_NOTICE);
+            Jtllog::writeLog('Transaction error: ' . print_r($logData, true), JTLLOG_LEVEL_NOTICE);
             $errorPage = $this->getErrorReturnURL($order);
             $parameterConnector = preg_match('/.php$/', $errorPage) ? '?' : '&';
 
@@ -367,7 +367,6 @@ class heidelpay_standard extends ServerPaymentMethod
     public function getLanguageCode()
     {
         $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
-        Jtllog::writeLog('Session: ' . print_r($_SESSION, 1));
         return $language;
     }
 
@@ -704,7 +703,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,true), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -725,7 +724,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,true), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -805,7 +804,7 @@ class heidelpay_standard extends ServerPaymentMethod
         Jtllog::writeLog('updated payinfo: ' . print_r(shop::DB()->select(
                 'tbestellung',
                 'cBestellNr', htmlspecialchars($order->cBestellNr)),
-                1
+                true
             ),
             JTLLOG_LEVEL_NOTICE
         );
