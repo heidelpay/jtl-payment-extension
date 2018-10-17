@@ -13,7 +13,7 @@
 ###Changed
 - secured invoice is no longer available for the time of the actual session after user was denied by insurance provider.
     That behaviour should avoid repetitive payment requests which will fail.
-- "sofortueberweisung" was renamed "Sofort". (Reconfiguration necessary)
+- "sofortüberweisung" was renamed "Sofort". (Reconfiguration necessary)
 - Heidelberger Payment GmbH was renamed heidelpay GmbH.
 
 ###Fixed

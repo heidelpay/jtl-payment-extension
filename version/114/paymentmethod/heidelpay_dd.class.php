@@ -25,35 +25,24 @@ class heidelpay_dd extends heidelpay_standard
         $this->paymentObject->debit();
     }
 
-    public function sendPaymentMail(Bestellung $order, $args)
+    public function setInfoContent($args)
     {
-        $firma = Shop::DB()->query("SELECT * FROM tfirma", 1);
-        $repl = array(
-            '{ACC_IBAN}' => $args ['ACCOUNT_IBAN'],
-            '{ACC_BIC}' => $args ['ACCOUNT_BIC'],
-            '{ACC_IDENT}' => $args ['ACCOUNT_IDENTIFICATION'],
-            '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
-            '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-            '{HOLDER}' => $args ['ACCOUNT_HOLDER'],
-            '{COMPANY_NAME}' => $firma->cName
-        );
+        $mailingObject = new stdClass();
+        $mailingObject->accIdent = $args ['ACCOUNT_IDENTIFICATION'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+
         if (isset($args ['IDENTIFICATION_CREDITOR_ID']) && ($args ['IDENTIFICATION_CREDITOR_ID'] != '')) {
-            $repl ['{IDENT_CREDITOR}'] = $args ['IDENTIFICATION_CREDITOR_ID'];
+            $mailingObject->identCreditor  = $args ['IDENTIFICATION_CREDITOR_ID'];
         } else {
-            $repl ['{IDENT_CREDITOR}'] = '-';
+            $mailingObject->identCreditor  = '-';
         }
 
-        $subject = strtr(constant('DD_MAIL_SUBJECT'), $repl);
-        $mail_text = strtr(constant('DD_MAIL_TEXT'), $repl);
-        $mailer = new SimpleMail();
-        $address = [
-            [
-                'cMail' => $order->oRechnungsadresse->cMail,
-                'cName' => $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname
-            ]
-        ];
-        $mailer->setBetreff($subject);
-        $mailer->setBodyHTML('simple mailer: ' . $mail_text);
-        $mailer->send($address);
+        return $mailingObject;
+    }
+
+    public function getInfoTemplateId()
+    {
+        return 'hp-dd-reminder';
     }
 }

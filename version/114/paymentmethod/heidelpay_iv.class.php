@@ -20,23 +20,27 @@ class heidelpay_iv extends heidelpay_standard
         $this->paymentObject = new InvoicePaymentMethod();
     }
 
-    public function setPayInfo($post, $orderId)
+    /**
+     * @param $args
+     * @return stdClass
+     */
+    public function setInfoContent($args)
     {
-        $repl = [
-            '{PRESENTATION_AMOUNT}' => $post['PRESENTATION_AMOUNT'],
-            '{PRESENTATION_CURRENCY}' => $post['PRESENTATION_CURRENCY'],
-            '{ACCOUNT_HOLDER}' => $post['CONNECTOR_ACCOUNT_HOLDER'],
-            '{ACCOUNT_IBAN}' => $post['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACCOUNT_BIC}' => $post['CONNECTOR_ACCOUNT_BIC'],
-            '{SHORTID}' => $post['IDENTIFICATION_SHORTID'],
-        ];
+        $mailingObject = new stdClass();
+        $mailingObject->accIban = $args ['CONNECTOR_ACCOUNT_IBAN'];
+        $mailingObject->accBic = $args ['CONNECTOR_ACCOUNT_BIC'];
+        $mailingObject->accHolder = $args ['CONNECTOR_ACCOUNT_HOLDER'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+        $mailingObject->usage = $args ['IDENTIFICATION_SHORTID'];
+        return $mailingObject;
+    }
 
-        $bookingtext = strtr(IV_PAY_INFO, $repl);
-
-        $updateOrder = new stdClass();
-        $updateOrder->cKommentar = htmlspecialchars(utf8_decode($bookingtext));
-
-        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($orderId), $updateOrder);
-        Jtllog::writeLog('updated payinfo: '.print_r(shop::DB()->select('tbestellung', 'cBestellNr', htmlspecialchars($orderId)),1), JTLLOG_LEVEL_DEBUG);
+    /**
+     * @return string
+     */
+    public function getInfoTemplateId()
+    {
+        return 'hp-iv-reminder';
     }
 }

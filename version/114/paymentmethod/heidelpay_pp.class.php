@@ -20,30 +20,24 @@ class heidelpay_pp extends heidelpay_standard
         $this->paymentObject = new PrepaymentPaymentMethod();
     }
 
-    public function sendPaymentMail(Bestellung $order, $args)
+    public function setInfoContent($args)
     {
-        $firma = Shop::DB()->query("SELECT * FROM tfirma", 1);
-        $repl = array(
-            '{ACC_IBAN}' => $args ['CONNECTOR_ACCOUNT_IBAN'],
-            '{ACC_BIC}' => $args ['CONNECTOR_ACCOUNT_BIC'],
-            '{ACC_OWNER}' => $args ['CONNECTOR_ACCOUNT_HOLDER'],
-            '{AMOUNT}' => $args ['PRESENTATION_AMOUNT'],
-            '{CURRENCY}' => $args ['PRESENTATION_CURRENCY'],
-            '{USAGE}' => $args ['IDENTIFICATION_SHORTID'],
-            '{COMPANY_NAME}' => $firma->cName
-        );
-        $mailer = new SimpleMail();
-        $address = [
-            [
-                'cMail' => $order->oRechnungsadresse->cMail,
-                'cName' => $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname
-            ]
-        ];
-        $subject = strtr(constant('PP_MAIL_SUBJECT'), $repl);
-        $mail_text = strtr(constant('PP_MAIL_TEXT'), $repl);
+        $mailingObject = new stdclass();
+        $mailingObject->accIban = $args ['CONNECTOR_ACCOUNT_IBAN'];
+        $mailingObject->accBic = $args ['CONNECTOR_ACCOUNT_BIC'];
+        $mailingObject->accHolder = $args ['CONNECTOR_ACCOUNT_HOLDER'];
+        $mailingObject->amount = $args ['PRESENTATION_AMOUNT'];
+        $mailingObject->currency = $args ['PRESENTATION_CURRENCY'];
+        $mailingObject->usage = $args ['IDENTIFICATION_SHORTID'];
 
-        $mailer->setBetreff($subject);
-        $mailer->setBodyHTML($mail_text);
-        $mailer->send($address);
+        return $mailingObject;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfoTemplateId()
+    {
+        return 'hp-pp-reminder';
     }
 }

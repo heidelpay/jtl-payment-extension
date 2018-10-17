@@ -94,10 +94,10 @@ class heidelpay_standard extends ServerPaymentMethod
 
             $logData = array(
                 'module' => 'heidelpay Standard',
-                'error_msg' => $error['message']
+                'response' => $this->paymentObject->getResponse()
             );
 
-            Jtllog::writeLog(print_r($logData, 1), JTLLOG_LEVEL_NOTICE);
+            Jtllog::writeLog('Transaction error: ' . print_r($logData, true), JTLLOG_LEVEL_NOTICE);
             $errorPage = $this->getErrorReturnURL($order);
             $parameterConnector = preg_match('/.php$/', $errorPage) ? '?' : '&';
 
@@ -633,7 +633,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 // Send mail with payment information i.e. direct debit and pre payment
                 if(!isset($args ['TRANSACTION_SOURCE'])) {
                     $this->sendPaymentMail($order, $args);
-                    $this->setPayInfo($args, $order->cBestellNr);
+                    $this->setPayInfo($args, $order);
                 }
 
                 // Nur wenn nicht Vorkasse od. Rechnung
@@ -673,7 +673,22 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function sendPaymentMail(Bestellung $order, $args)
     {
-        return false;
+        $templateId = $this->getInfoTemplateId();
+        $mailingObject = $this->setInfoContent($args);
+
+        if(empty($templateId) || empty($mailingObject)) {
+            return;
+        }
+
+        //Prepare customer object for mailObject
+        $tkunde = new stdClass();
+        $tkunde->cMail = $order->oRechnungsadresse->cMail;
+        $tkunde->kSprache = $order->kSprache;
+
+        $mailingObject->tkunde = $tkunde;
+
+        $template = 'kPlugin_' . $this->oPlugin->kPlugin . '_' . $templateId . '';
+        sendeMail( $template , $mailingObject);
     }
 
     public function setOrderStatusToPaid($order)
@@ -688,7 +703,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,true), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -709,7 +724,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 'order' => $order,
                 'error_msg' => $e
             );
-            Jtllog::writeLog(print_r($logData,1), JTLLOG_LEVEL_ERROR, false);
+            Jtllog::writeLog(print_r($logData,true), JTLLOG_LEVEL_ERROR, false);
         }
     }
 
@@ -763,15 +778,36 @@ class heidelpay_standard extends ServerPaymentMethod
     /**
      * Sets payment information as comment in database. Default is to write no payInfo
      *
-     * @param $post response form payment
-     * @param $orderId
+     * @param $args response form payment
+     * @param $order
      */
-    protected function setPayInfo($post, $orderId)
+    protected function setPayInfo($args, $order)
     {
-        /*if(!empty($post['IDENTIFICATION_SHORTID'])) {
-            $this->setShortId($post['IDENTIFICATION_SHORTID'], $orderId);
-        }*/
-        return false;
+        $templateId = $this->getInfoTemplateId();
+        $infoContent = $this->setInfoContent($args);
+
+        if(empty($templateId) || empty($infoContent)) {
+            return;
+        }
+
+        $infoTemplate = $this->loadInfoTemplate($templateId, $order);
+        $infoText = $this->prepareInfoText($infoContent, $infoTemplate);
+
+        if (empty($infoTemplate) || empty($infoText)) {
+            return;
+        }
+
+        $updateOrder = new stdClass();
+        $updateOrder->cKommentar = $infoText;
+
+        Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($order->cBestellNr), $updateOrder);
+        Jtllog::writeLog('updated payinfo: ' . print_r(shop::DB()->select(
+                'tbestellung',
+                'cBestellNr', htmlspecialchars($order->cBestellNr)),
+                true
+            ),
+            JTLLOG_LEVEL_NOTICE
+        );
     }
 
     /**
@@ -821,19 +857,73 @@ class heidelpay_standard extends ServerPaymentMethod
     }
 
     /**
-     * Provide a mail-header for html utf-8 mails
+     * @param $templateId
+     * @param $tkunde
+     * @return null|object
+     */
+    public function loadInfoTemplate($templateId, $order)
+    {
+        if(empty($templateId)) {
+            return null;
+        }
+        $Emailvorlage = Shop::DB()->select(
+            'tpluginemailvorlage',
+            'kPlugin', $this->oPlugin->kPlugin,
+            'cModulId', $templateId
+        );
+
+        if (!empty($Emailvorlage->kEmailvorlage)) {
+            return Shop::DB()->select(
+                'tpluginemailvorlagesprache',
+                'kEmailvorlage', $Emailvorlage->kEmailvorlage,
+                'kSprache', $order->kSprache
+            );
+        }
+
+        Jtllog::writeLog('heidelpay - infoTemplate: could not be loaded', JTLLOG_LEVEL_NOTICE);
+        return null;
+    }
+
+    /**
+     * @param $infoContent
+     * @param $templateText
      * @return string
      */
-    protected function getMailHeader()
+    public function prepareInfoText(stdClass $infoContent, $templateText)
     {
-        $settings = Shop::getSettings([
-            CONF_EMAILS,
-        ]);
-        $headers = 'From: '.$settings['emails']['email_master_absender_name'].' <'.$settings['emails']['email_master_absender'].'>'. "\r\n";
-        $headers .= 'Reply-To: '.$settings['emails']['email_master_absender']. "\r\n";
-        $headers .= 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+        $templateArray = [];
 
-        return $headers;
+        // Make the array keys fit those of the email template.
+        foreach (get_object_vars($infoContent) as $key => $value) {
+            $key = '{$oPluginMail->' . $key . '}';
+            $templateArray[$key] = $value;
+        }
+        if(!empty($templateText->cContentText)) {
+            return strtr($templateText->cContentText, $templateArray);
+        }
+        Jtllog::writeLog('heidelpay - infoText: No conten text was set for', JTLLOG_LEVEL_NOTICE);
+        return null;
     }
+
+    /**
+     * Provides the Id of the used Template. Can be overwritten by childclass
+     * @return string|null
+     */
+    public function getInfoTemplateId()
+    {
+        return null;
+    }
+
+    /**
+     * Provide the mailingObject which will be used for payment info mail.
+     *
+     * @param $args
+     * @return @return stdClass|null
+     */
+    public function setInfoContent($args)
+    {
+        return null;
+    }
+
+
 }

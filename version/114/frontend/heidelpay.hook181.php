@@ -102,7 +102,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
                 $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';
                 $errorText = 'Report shipment for order' . $oBestellung->kBestellung . ' in Shop ' .
                     Shop::getURL() . ' failed.
-                    Error messsage: ' . print_r($errorCode['message'], 1);
+                    Error messsage: ' . print_r($errorCode['message'], true);
                 if (!empty($errorMail) && filter_var($errorMail, FILTER_VALIDATE_EMAIL)) {
                     $address = [
                         [
