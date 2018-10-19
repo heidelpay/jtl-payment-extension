@@ -117,11 +117,11 @@ class heidelpay_standard extends ServerPaymentMethod
     protected function b2cSecuredCheck($order)
     {
         if ($this->isEqualAddress($order) == false) {
-            $this->redirect('warenkorb.php?hperroradd=1');
+            $this->redirect(Shop::getURL() . '/warenkorb.php?hperroradd=1');
         }
 
         if ($_SESSION['Kunde']->cFirma != null) {
-            $this->redirect('warenkorb.php?hperrorcom=1');
+            $this->redirect(Shop::getURL() . '/warenkorb.php?hperrorcom=1');
         }
     }
 
@@ -617,11 +617,6 @@ class heidelpay_standard extends ServerPaymentMethod
     {
         $this->init();
 
-        // load language file
-        $language = strtolower($this->getLanguageCode());
-        include_once PFAD_ROOT . PFAD_PLUGIN . $this->oPlugin->cVerzeichnis . '/version/' .
-            $this->oPlugin->nVersion . '/paymentmethod/lang/' . $language . '/notifications.php';
-
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
 
@@ -771,7 +766,7 @@ class heidelpay_standard extends ServerPaymentMethod
                 exit();
             }
         } else {
-            $this->redirect('bestellvorgang.php');
+            $this->redirect(Shop::getURL() . '/bestellvorgang.php');
         }
     }
 
