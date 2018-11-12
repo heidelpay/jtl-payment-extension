@@ -2,21 +2,35 @@
 
 ##114
 
-###18.06.26
+### 18.08.29
+#### Fixed
+- spaces in front or after payment credentials, caused the transaction to fail.
+- Secured invoice was not disabled after customer was denied by insurance provider.
+- Error mail was sent when automatic finalize failed because Reservation was already
+finalized.
+- function getCurrentVersion used to set the SHOPMODULE.VERSION can
+cause an exception
 
-###Added
+#### Changed
+- iFrame language can now be different from "EN" and "DE" and therefore also allows 
+other languages for the iFrame.
+- allow installation in directory name other than "heidelpay_standard"
+
+### 18.06.26
+
+#### Added
 - basket for secured invoice and secured direct debit to increase the acceptance rate of the insurance provider.
 - info about the used shop and plugin version are in the payment request.
 - support for asynchronously incoming payments via push notification.
 - send uniqueId to WAWI for an easier way to map the payment transactions.
 
-###Changed
+#### Changed
 - secured invoice is no longer available for the time of the actual session after user was denied by insurance provider.
     That behaviour should avoid repetitive payment requests which will fail.
 - "sofortüberweisung" was renamed "Sofort". (Reconfiguration necessary)
 - Heidelberger Payment GmbH was renamed heidelpay GmbH.
 
-###Fixed
+####Fixed
 - added Switch for secured direct debit to choose between booking modes authorize and debit(default).
 
 ## v113
