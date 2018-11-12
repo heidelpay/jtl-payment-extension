@@ -929,6 +929,16 @@
                     Billing- and shipping address have to be equal
                 </VariableLocalized>
             </Variable>
+            <Variable>
+                <Name>hp_minimum_age</Name>
+                <Description>Meldung wenn ein Mindestalter von 18 Jahren vorausgestzt wird</Description>
+                <VariableLocalized iso="GER">
+                    Das Mindestalter für diese Zahlart ist 18 Jahre.
+                </VariableLocalized>
+                <VariableLocalized iso="ENG">
+                    The minimum age is 18 years for this payment method.
+                </VariableLocalized>
+            </Variable>
         </Locales>
 
         <Emailtemplate>

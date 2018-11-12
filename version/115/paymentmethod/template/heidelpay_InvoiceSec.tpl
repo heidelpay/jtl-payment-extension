@@ -24,7 +24,7 @@
             {else}
                 {html_select_date|utf8_encode day_id='Date_Day' month_id='Date_Month' year_id='Date_Year' start_year='-18' end_year='-100' reverse_years='true' day_value_format='%02d' month_format='%m' field_order='DMY'}
             {/if}
-
+		<div id="hp_minimum_age" class="hidden-initial">{$oPlugin->oPluginSprachvariableAssoc_arr['hp_minimum_age']}</div>
 		<input type="hidden" name="NAME.BIRTHDATE" id="birthdate_papg" value=""><br/>
 		<br/>
 		<br/>
