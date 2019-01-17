@@ -365,6 +365,7 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_eps.class.php</ClassFile>
                 <ClassName>heidelpay_eps</ClassName>
+                <TemplateFile>template/heidelpay_iDealEPS_Bank.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>EPS</Name>
                     <ChargeName>EPS</ChargeName>
