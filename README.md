@@ -85,5 +85,17 @@ latest stable PHP version whenever possible.
 
 You can find a copy of this license in [LICENSE.md](LICENSE.md).
 
+## Support
+For any issues or questions please get in touch with our support.
 
+#### Web page
+https://dev.heidelpay.com/
+ 
+#### Email
+support@heidelpay.com
+ 
+#### Phone
++49 (0)6221/6471-100
 
+#### Twitter
+@devHeidelpay
