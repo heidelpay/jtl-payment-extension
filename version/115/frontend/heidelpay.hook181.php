@@ -33,8 +33,11 @@ $_query_sandbox_url = 'https://test-heidelpay.hpcgw.net/TransactionCore/xml';
 
 $url = $_query_sandbox_url;
 $modulId = $orderRef->cModulId;
+
+$sandboxMode = 1;
 if ($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') {
     $url = $_query_live_url;
+    $sandboxMode = 0;
 }
 
 $payMethod = explode('_', $modulId);
@@ -54,7 +57,6 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             'transType' => 'PAYMENT'
         );
 
-        $sandboxMode = 1;
 
         $xmlQueryClass = new XmlQuery();
 
@@ -96,7 +98,9 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
             );
             $paymentObject->finalize($resUniquieId);
 
-            if ($paymentObject->getResponse()->isError()) {
+            if ($paymentObject->getResponse()->isError()
+                && $paymentObject->getResponse()->getError()['code'] !== '700.400.800'
+            ) {
                 $errorMail = $oPlugin->oPluginEinstellungAssoc_arr ['reportErrorMail'];
                 $errorCode = $paymentObject->getResponse()->getError();
                 $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';

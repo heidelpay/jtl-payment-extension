@@ -1,5 +1,15 @@
 # Release Notes - heidelpay extension for JTL Shop
 
+##115
+### 19.01.21
+#### Changed
+- Compatibility changes in order to the Jtl certification process.
+- Email templates editable in shop backend.
+- css file can be used to adjust style of iFrame.
+- Licence file is saved in file format md will be shown before installation.
+- It will be checked beforehand whether customer is 18 years old allready.
+
+
 ##114
 
 ### 18.08.29
@@ -27,7 +37,7 @@ other languages for the iFrame.
 #### Changed
 - secured invoice is no longer available for the time of the actual session after user was denied by insurance provider.
     That behaviour should avoid repetitive payment requests which will fail.
-- "sofortueberweisung" was renamed "Sofort". (Reconfiguration necessary)
+- "sofortüberweisung" was renamed "Sofort". (Reconfiguration necessary)
 - Heidelberger Payment GmbH was renamed heidelpay GmbH.
 
 ####Fixed

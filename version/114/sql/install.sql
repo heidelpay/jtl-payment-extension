@@ -17,7 +17,7 @@ CREATE TABLE `xplugin_heidelpay_standard_order_reference` (
 CREATE TABLE `xplugin_heidelpay_standard_finalize` (
   `kfinalize` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   `cshort_id` CHAR( 14 ) NOT NULL,
-  `kBestellung` VARCHAR( 20 ) NOT NULL
+  `kBestellung` BIGINT NOT NULL
 ) ENGINE = INNODB ;
 
 

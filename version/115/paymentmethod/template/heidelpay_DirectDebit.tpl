@@ -38,6 +38,7 @@
 
 		{/if}
 		<br/>
+		<div id="hp_minimum_age" class="hidden-initial">{$oPlugin->oPluginSprachvariableAssoc_arr['hp_minimum_age']}</div>
 		<input type="hidden" name="NAME.BIRTHDATE" id="birthdate_papg" value="">
 		<br/>
 		<button class="submit btn btn-primary" type="submit">{$pay_button_label}</button>
