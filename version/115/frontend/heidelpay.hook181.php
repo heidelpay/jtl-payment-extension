@@ -35,7 +35,8 @@ $url = $_query_sandbox_url;
 $modulId = $orderRef->cModulId;
 
 $sandboxMode = 1;
-if ($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') {
+if (!empty($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'])
+    && $oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') {
     $url = $_query_live_url;
     $sandboxMode = 0;
 }
