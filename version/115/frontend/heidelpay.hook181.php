@@ -93,7 +93,6 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)
                 $sandboxMode
             );
 
-            Jtllog::writeLog('heidelpay - finalize order: ' . print_r($oBestellung, 1));
             $paymentObject->getRequest()->basketData(
                 $oBestellung->cBestellNr,
                 round($oBestellung->fGesamtsumme, 2),
@@ -110,7 +109,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)
                 $subject = 'heidelpay: Order ID ' . $oBestellung->kBestellung . ' report shipment failed';
                 $errorText = 'Report shipment for order' . $oBestellung->kBestellung . ' in Shop ' .
                     Shop::getURL() . ' failed.
-                    Error messsage: ' . print_r($paymentObject->getResponse(), true);
+                    Error messsage: ' . print_r($errorCode['message'], true);
                 if (!empty($errorMail) && filter_var($errorMail, FILTER_VALIDATE_EMAIL)) {
                     $address = [
                         [
