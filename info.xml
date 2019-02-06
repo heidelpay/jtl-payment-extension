@@ -2,7 +2,7 @@
 <jtlshop3plugin>
     <Name>heidelpay Standard</Name>
     <Description>heidelpay Standard Modul.</Description>
-    <Author>Ronja Wann/Jens Richter/David Owusu</Author>
+    <Author>Janosch Wann/Jens Richter/David Owusu</Author>
     <URL>http://www.heidelpay.de</URL>
     <XMLVersion>101</XMLVersion>
     <Shop4Version>400</Shop4Version>
@@ -202,6 +202,16 @@
                     <Name>Channel</Name>
                     <Description>Transaction Channel ID:</Description>
                     <ValueName>channel</ValueName>
+                </Setting>
+                <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">
+                    <Name>Buchungsmodus</Name>
+                    <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.
+                    </Description>
+                    <ValueName>bookingmode</ValueName>
+                    <SelectboxOptions>
+                        <Option value="DB" sort="1">Sofortbuchung</Option>
+                        <Option value="PA" sort="2">Reservierung</Option>
+                    </SelectboxOptions>
                 </Setting>
                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
                     <Name>Transaktionsmodus</Name>
@@ -735,11 +745,13 @@
                     <Name>Gesicherte Lastschrift</Name>
                     <ChargeName>Gesicherte Lastschrift</ChargeName>
                     <InfoText>Sicher zahlen per gesicherte Lastschrift</InfoText>
+                    <InfoTextShop>Sicher zahlen per gesicherte Lastschrift</InfoTextShop>
                 </MethodLanguage>
                 <MethodLanguage iso="ENG">
                     <Name>SecuredDirectDebit</Name>
                     <ChargeName>SecuredDirectDebit</ChargeName>
                     <InfoText>pay safely with SecuredDirectDebit</InfoText>
+                    <InfoTextShop>pay safely with SecuredDirectDebit</InfoTextShop>
                 </MethodLanguage>
                 <Setting type="text" initialValue="31HA07BC81856CAD6D8E0B3A3100FBA3" sort="3" conf="Y">
                     <Name>Channel</Name>
