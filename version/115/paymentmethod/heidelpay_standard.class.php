@@ -710,6 +710,12 @@ class heidelpay_standard extends ServerPaymentMethod
     public function sendConfirmationMail($order)
     {
         try {
+            /** If value is set the function sendConfirmationMail will use the session language instead the order
+             * language. Therefore we unset the session language value.
+             */
+            if (isset($_SESSION['currentLanguage'])) {
+                unset($_SESSION['currentLanguage']);
+            }
             parent::sendConfirmationMail($order);
         } catch (Exception $e) {
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
