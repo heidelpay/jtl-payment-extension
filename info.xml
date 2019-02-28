@@ -56,6 +56,7 @@
         </Version>
         <Version nr="115">
             <CreateDate>2018-10-23</CreateDate>
+            <SQL>install.sql</SQL>
         </Version>
         <Hooks>
             <Hook id="008">heidelpay.hook008.php</Hook>
