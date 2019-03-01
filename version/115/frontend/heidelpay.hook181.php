@@ -35,7 +35,9 @@ $url = $_query_sandbox_url;
 $modulId = $orderRef->cModulId;
 
 $sandboxMode = 1;
-if ($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') {
+$isLiveMode = !empty($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'])
+    && $oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE';
+if ($isLiveMode) {
     $url = $_query_live_url;
     $sandboxMode = 0;
 }
@@ -43,8 +45,9 @@ if ($oPlugin->oPluginEinstellungAssoc_arr [$modulId . '_transmode'] === 'LIVE') 
 $payMethod = explode('_', $modulId);
 
 // if Versand oder Teilversand - Status s. defines_inc.php
-if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
-    $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
+if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)
+    && !empty($payMethod['2'])
+    && $payMethod['2'] === 'heidelpaygesicherterechnungplugin') {
     preg_match('/[0-9]{4}\.[0-9]{4}\.[0-9]{4}/', $oBestellung->cKommentar, $result);
 
     if (!empty($result[0])) {
@@ -92,7 +95,7 @@ if (($args_arr['status'] === 4 OR $args_arr['status'] === 5)AND
 
             $paymentObject->getRequest()->basketData(
                 $oBestellung->cBestellNr,
-                $oBestellung->fGesamtsumme,
+                round($oBestellung->fGesamtsumme, 2),
                 (string)$resXMLObject->Result->Transaction->Payment->Presentation->Currency,
                 $oBestellung->cSession
             );

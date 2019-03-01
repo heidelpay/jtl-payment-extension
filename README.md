@@ -43,7 +43,7 @@ Wir empfehlen, sofern möglich, die aktuellste PHP Version zu verwenden.
 
 ## Lizenz
 
-Ein Kopie der Lizenz ist hier zu finden [LICENSE.md](LICENSE.md).
+Ein Kopie der Lizenz ist hier zu finden [LICENSE.md](../includes/plugins/heidelpay_standard/LICENSE.md).
 
 ==== ENGLISH VERSION ====
 

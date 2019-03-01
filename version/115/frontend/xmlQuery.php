@@ -2,12 +2,12 @@
 
 namespace Heidelpay;
 
-require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
+require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis .'/vendor/autoload.php';
 require_once __DIR__.'/arrayFilter.php';
   
   use \SimpleXMLElement;
   use Zend\Http\Request;
-	use Zend\Http\Client;
+  use Zend\Http\Client;
   
 class XmlQuery{
 
@@ -84,7 +84,6 @@ class XmlQuery{
 	
 	public function doRequest($params = array(), $url)
 	{
-		
         try {
             $client = new Client('',
                 array(
