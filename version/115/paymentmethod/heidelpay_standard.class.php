@@ -620,6 +620,9 @@ class heidelpay_standard extends ServerPaymentMethod
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
 
+        /** Ensure that the mail language is not overwritten by the session language */
+        $this->unsetSessionLanguage();
+
         if ($heidelpayResponse->isSuccess()) {
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
@@ -710,12 +713,6 @@ class heidelpay_standard extends ServerPaymentMethod
     public function sendConfirmationMail($order)
     {
         try {
-            /** If value is set the function sendConfirmationMail will use the session language instead the order
-             * language. Therefore we unset the session language value.
-             */
-            if (isset($_SESSION['currentLanguage'])) {
-                unset($_SESSION['currentLanguage']);
-            }
             parent::sendConfirmationMail($order);
         } catch (Exception $e) {
             $e = 'Update order status failed on order: ' . $order . ' in file: ' .
@@ -924,6 +921,16 @@ class heidelpay_standard extends ServerPaymentMethod
     public function setInfoContent($args)
     {
         return null;
+    }
+
+    /** If value is set the function sendConfirmationMail will use the session language instead the order
+     * language. Therefore we unset the session language value.
+     */
+    protected function unsetSessionLanguage()
+    {
+        if (isset($_SESSION['currentLanguage'])) {
+            unset($_SESSION['currentLanguage']);
+        }
     }
 
 
