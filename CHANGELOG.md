@@ -7,7 +7,7 @@
 - Email templates editable in shop backend.
 - css file can be used to adjust style of iFrame.
 - Licence file is saved in file format md will be shown before installation.
-- It will be checked beforehand whether customer is 18 years old allready.
+- Secured Invoice/DirectDebit: It will be checked beforehand whether customer is 18 years old already.
 
 
 ##114
