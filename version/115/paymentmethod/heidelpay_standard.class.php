@@ -138,10 +138,10 @@ class heidelpay_standard extends ServerPaymentMethod
         $notifyURL = $this->getNotificationURL($hash);
 
         $this->paymentObject->getRequest()->authentification(
-            $oPlugin->oPluginEinstellungAssoc_arr ['sender'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['user'],
-            $oPlugin->oPluginEinstellungAssoc_arr ['pass'],
-            $oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel'],
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['sender']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['user']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr ['pass']),
+            trim($oPlugin->oPluginEinstellungAssoc_arr [$currentPaymentMethod . '_channel']),
             $this->isSandboxMode($oPlugin, $currentPaymentMethod)
         );
 
@@ -153,7 +153,7 @@ class heidelpay_standard extends ServerPaymentMethod
         $this->paymentObject->getRequest()->getCriterion()->set('PAYMETHOD', $currentPaymentMethod);
         $this->paymentObject->getRequest()->getCriterion()->set('PUSH_URL', Shop::getURL().'/'.urlencode('push-gw'));
         $this->paymentObject->getRequest()->getCriterion()->set('SHOP.TYPE', 'JTL '.Shop::getVersion());
-        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->getCurrentVersion());
+        $this->paymentObject->getRequest()->getCriterion()->set('SHOPMODULE.VERSION', 'heidelpay gateway '.$oPlugin->nVersion);
     }
 
     /**
@@ -366,7 +366,7 @@ class heidelpay_standard extends ServerPaymentMethod
      */
     public function getLanguageCode()
     {
-        $language = $_SESSION ['cISOSprache'] == 'ger' ? 'DE' : 'EN';
+        $language = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
         return $language;
     }
 
@@ -620,6 +620,9 @@ class heidelpay_standard extends ServerPaymentMethod
         $heidelpayResponse = new  Heidelpay\PhpPaymentApi\Response($args);
         $this->checkHash($args, $heidelpayResponse);
 
+        /** Ensure that the mail language is not overwritten by the session language */
+        $this->unsetSessionLanguage();
+
         if ($heidelpayResponse->isSuccess()) {
             /* save order and transaction result to your database */
             if ($this->verifyNotification($order, $args)) {
@@ -823,7 +826,7 @@ class heidelpay_standard extends ServerPaymentMethod
     public function disableInvoiceSecured($response)
     {
         $payCode = explode('.', $response ['PAYMENT_CODE']);
-        if($payCode === 'IV') {
+        if($payCode[0] === 'IV') {
             if (array_key_exists('CRITERION_INSURANCE-RESERVATION', $response) &&
                 $response['CRITERION_INSURANCE-RESERVATION'] === 'DENIED') {
                 return '&disableInvoice=true';
@@ -918,6 +921,16 @@ class heidelpay_standard extends ServerPaymentMethod
     public function setInfoContent($args)
     {
         return null;
+    }
+
+    /** If value is set the function sendConfirmationMail will use the session language instead the order
+     * language. Therefore we unset the session language value.
+     */
+    protected function unsetSessionLanguage()
+    {
+        if (isset($_SESSION['currentLanguage'])) {
+            unset($_SESSION['currentLanguage']);
+        }
     }
 
 

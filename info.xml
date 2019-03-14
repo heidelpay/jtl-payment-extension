@@ -2,10 +2,9 @@
 <jtlshop3plugin>
     <Name>heidelpay Standard</Name>
     <Description>heidelpay Standard Modul.</Description>
-    <Author>Ronja Wann/Jens Richter/David Owusu</Author>
+    <Author>Janosch Wann/Jens Richter/David Owusu</Author>
     <URL>http://www.heidelpay.de</URL>
     <XMLVersion>101</XMLVersion>
-    <ShopVersion>300</ShopVersion>
     <Shop4Version>400</Shop4Version>
     <PluginID>heidelpay_standard</PluginID>
     <Install>
@@ -55,10 +54,13 @@
             <CreateDate>2018-06-26</CreateDate>
             <SQL>install.sql</SQL>
         </Version>
+        <Version nr="115">
+            <CreateDate>2018-10-23</CreateDate>
+            <SQL>install.sql</SQL>
+        </Version>
         <Hooks>
             <Hook id="008">heidelpay.hook008.php</Hook>
             <Hook id="140">heidelpay.hook140.php</Hook>
-            <Hook id="153">heidelpay.hook153.php</Hook>
             <Hook id="181">heidelpay.hook181.php</Hook>
             <Hook id="207">heidelpay.hook207.php</Hook>
         </Hooks>
@@ -202,6 +204,16 @@
                     <Description>Transaction Channel ID:</Description>
                     <ValueName>channel</ValueName>
                 </Setting>
+                <Setting type="selectbox" initialValue="DB" sort="2" conf="Y">
+                    <Name>Buchungsmodus</Name>
+                    <Description>Wählen Sie hier den Buchungsmodus zwischen Sofortbuchung und Reservierung.
+                    </Description>
+                    <ValueName>bookingmode</ValueName>
+                    <SelectboxOptions>
+                        <Option value="DB" sort="1">Sofortbuchung</Option>
+                        <Option value="PA" sort="2">Reservierung</Option>
+                    </SelectboxOptions>
+                </Setting>
                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
                     <Name>Transaktionsmodus</Name>
                     <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
@@ -231,7 +243,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_su.class.php</ClassFile>
                 <ClassName>heidelpay_su</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Sofort</Name>
                     <ChargeName>Sofort</ChargeName>
@@ -276,7 +287,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_gp.class.php</ClassFile>
                 <ClassName>heidelpay_gp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Giropay</Name>
                     <ChargeName>Giropay</ChargeName>
@@ -366,7 +376,7 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_eps.class.php</ClassFile>
                 <ClassName>heidelpay_eps</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
+                <TemplateFile>template/heidelpay_iDealEPS_Bank.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>EPS</Name>
                     <ChargeName>EPS</ChargeName>
@@ -411,7 +421,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_p24.class.php</ClassFile>
                 <ClassName>heidelpay_p24</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Przelewy24</Name>
                     <ChargeName>Przelewy24</ChargeName>
@@ -456,7 +465,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfc.class.php</ClassFile>
                 <ClassName>heidelpay_pfc</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceCard</Name>
                     <ChargeName>PostFinanceCard</ChargeName>
@@ -501,7 +509,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pfe.class.php</ClassFile>
                 <ClassName>heidelpay_pfe</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PostFinanceEFinance</Name>
                     <ChargeName>PostFinanceEFinance</ChargeName>
@@ -546,7 +553,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_va.class.php</ClassFile>
                 <ClassName>heidelpay_va</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>PayPal</Name>
                     <ChargeName>PayPal</ChargeName>
@@ -601,7 +607,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_iv.class.php</ClassFile>
                 <ClassName>heidelpay_iv</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Rechnungskauf</Name>
                     <ChargeName>Rechnung</ChargeName>
@@ -646,7 +651,6 @@
                 <Sockets>0</Sockets>
                 <ClassFile>heidelpay_pp.class.php</ClassFile>
                 <ClassName>heidelpay_pp</ClassName>
-                <TemplateFile>template/new_bestellabschluss.tpl</TemplateFile>
                 <MethodLanguage iso="GER">
                     <Name>Vorkasse</Name>
                     <ChargeName>Vorkasse</ChargeName>
@@ -678,51 +682,6 @@
                 </Setting>
             </Method>
 
-            <!--   <Method>
-                 <Name>heidelpay Santander Plugin</Name>
-                 <PictureURL>template/heidelpay.png</PictureURL>
-                 <Sort>3</Sort>
-                 <SendMail>1</SendMail>
-                 <Provider>heidelpay</Provider>
-                 <TSCode>INVOICE</TSCode>
-                 <PreOrder>1</PreOrder>
-                 <Soap>0</Soap>
-                 <Curl>1</Curl>
-                 <Sockets>0</Sockets>
-                 <ClassFile>heidelpay_sa.class.php</ClassFile>
-                 <ClassName>heidelpay_sa</ClassName>
-                 <TemplateFile>template/heidelpay_Santander.tpl</TemplateFile>
-                 <MethodLanguage iso="GER">
-                   <Name>Santander</Name>
-                   <ChargeName>Santander</ChargeName>
-                   <InfoText>Sicher zahlen per Santander Rechnungskauf</InfoText>
-                 </MethodLanguage>
-                 <MethodLanguage iso="ENG">
-                   <Name>Santander</Name>
-                   <ChargeName>Santander</ChargeName>
-                   <InfoText>pay safely with Santander Invoice</InfoText>
-                 </MethodLanguage>
-                 <Setting type="text" initialValue="31HA07BC81856CAD6D8E07858ACD6CFB" sort="3" conf="Y">
-                   <Name>Channel</Name>
-                   <Description>Transaction Channel ID:</Description>
-                   <ValueName>channel</ValueName>
-                 </Setting>
-                 <Setting type="selectbox" initialValue="CONNECTOR_TEST" sort="2" conf="Y">
-                   <Name>Transaktionsmodus</Name>
-                   <Description>Wählen Sie hier den Transaktionsmodus zwischen LIVE und TEST</Description>
-                   <ValueName>transmode</ValueName>
-                   <SelectboxOptions>
-                     <Option value="LIVE" sort="1">LIVE</Option>
-                     <Option value="CONNECTOR_TEST" sort="2">TEST</Option>
-                   </SelectboxOptions>
-                 </Setting>
-                 <Setting type="text" initialValue="SA" sort="3" conf="Y">
-                   <Name>Payment Code</Name>
-                   <Description>Code ID der Paymentmethode</Description>
-                   <ValueName>paycode</ValueName>
-                 </Setting>
-               </Method>
-          -->
             <Method>
                 <Name>heidelpay Gesicherte Rechnung Plugin</Name>
                 <PictureURL>template/heidelpay.png</PictureURL>
@@ -896,6 +855,20 @@
 
         <Locales>
             <Variable>
+                <Name>hp_bankname_label</Name>
+                <Description>Label Bankname</Description>
+                <VariableLocalized iso="GER">Bankname</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank name</VariableLocalized>
+            </Variable>
+
+            <Variable>
+                <Name>hp_bank_country_label</Name>
+                <Description>Label Bankland</Description>
+                <VariableLocalized iso="GER">Bankland</VariableLocalized>
+                <VariableLocalized iso="ENG">Bank country</VariableLocalized>
+            </Variable>
+
+            <Variable>
                 <Name>hp_paybutton</Name>
                 <Description>Beschriftung des heidelpay Zahlungsbuttons</Description>
                 <VariableLocalized iso="GER">Jetzt zahlen</VariableLocalized>
@@ -968,6 +941,184 @@
                     Billing- and shipping address have to be equal
                 </VariableLocalized>
             </Variable>
+            <Variable>
+                <Name>hp_minimum_age</Name>
+                <Description>Meldung wenn ein Mindestalter von 18 Jahren vorausgestzt wird</Description>
+                <VariableLocalized iso="GER">
+                    Das Mindestalter für diese Zahlart ist 18 Jahre.
+                </VariableLocalized>
+                <VariableLocalized iso="ENG">
+                    The minimum age is 18 years for this payment method.
+                </VariableLocalized>
+            </Variable>
         </Locales>
+
+        <Emailtemplate>
+            <Template>
+                <Name>heidelpay Lastschrift mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>hp-dd-reminder</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
+                    <ContentHtml><![CDATA[
+{includeMailTemplate template=header type=html}
+Der Betrag von {$oPluginMail->amount} {$oPluginMail->currency} wird in den nächsten Tagen von Ihrem Konto abgebucht.<br/>
+<br/>
+Die Abbuchung enthält die Mandatsreferenz-ID: {$oPluginMail->accIdent}<br/>
+und die Gläubiger ID: {$oPluginMail->identCreditor}<br/>
+Bitte sorgen Sie für ausreichende Deckung auf dem entsprechenden Konto.<br/>
+<br/>
+Mit freundlichem Gruß<br/>
+Ihr Team von {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText>
+                    </ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment information for your order</Subject>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
+The amount of <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> will be debited from your account within the next days.<br/><br/>
+The booking contains the mandate reference ID: {$oPluginMail->accIdent}<br/>
+and the creditor identifier: {$oPluginMail->identCreditor}<br/>
+<br/>Please ensure that there will be sufficient funds on the corresponding account.<br/>
+<br/>
+Kind regards,<br />
+your team from {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText></ContentText>
+                </TemplateLanguage>
+            </Template>
+            <Template>
+                <Name>heidelpay Vorkasse mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>hp-pp-reminder</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
+Bitte überweisen Sie uns den Betrag von <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> auf folgendes Konto:<br/>
+<br/>
+Kontoinhaber: 	{$oPluginMail->accHolder}<br/>
+IBAN: 			{$oPluginMail->accIban}<br/>
+BIC: 				{$oPluginMail->accBic}<br/><br/>
+<i>Geben Sie als Verwendungszweck bitte ausschließlich diese Identifikationsnummer an:</i><br/>
+<strong>{$oPluginMail->usage}</strong><br/><br/>
+<br/><br/>
+Mit freundlichen Grüßen,<br />
+Ihr Team von {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText>Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} auf folgendes Konto:
+
+Kontoinhaber: 	{$oPluginMail->accHolder}
+IBAN: 			{$oPluginMail->accIban}
+BIC: 				{$oPluginMail->accBic}
+
+Geben Sie als Verwendungszweck bitte ausschließlich diese Identifikationsnummer an:
+{$oPluginMail->usage}
+                    </ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment information for your order</Subject>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
+Please transfer the amount of <strong>{$oPluginMail->amount} {$oPluginMail->currency}</strong> to the following account:<br/>
+<br/>
+Holder: 	{$oPluginMail->accHolder}<br/>
+IBAN: 			{$oPluginMail->accIban}<br/>
+BIC: 				{$oPluginMail->accBic}<br/><br/>
+<i>Please use only the following identification number as descriptor:</i><br/>
+<strong>{$oPluginMail->usage}</strong><br/><br/>
+<br/><br/>
+With kind regards,<br />
+your team from {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText>Please transfer the amount of {$oPluginMail->amount} {$oPluginMail->currency} to the following account:
+
+Holder: 	{$oPluginMail->accHolder}
+IBAN: 			{$oPluginMail->accIban}
+BIC: 				{$oPluginMail->accBic}
+
+Please use only the following identification number as descriptor:
+{$oPluginMail->usage}
+                    </ContentText>
+                </TemplateLanguage>
+            </Template>
+            <Template>
+                <Name>heidelpay Rechnungskauf mail</Name>
+                <Description></Description>
+                <Type>text/html</Type>
+                <ModulId>hp-iv-reminder</ModulId>
+                <Active>N</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlungsinformation zu Ihrer Bestellung</Subject>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
+Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} nach Erhalt der Ware auf folgendes Konto:<br/>
+<br/>
+Kontoinhaber: {$oPluginMail->accHolder}<br/>
+IBAN: {$oPluginMail->accIban}<br/>
+BIC: {$oPluginMail->accBic}<br/>
+<br/>
+Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:<br/>
+{$oPluginMail->usage}
+<br/><br/>
+Mit freundlichen Grüßen,<br />
+Ihr Team von {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText>Bitte überweisen Sie uns den Betrag von {$oPluginMail->amount} {$oPluginMail->currency} nach Erhalt der Ware auf folgendes Konto:
+
+Kontoinhaber: {$oPluginMail->accHolder}
+IBAN: {$oPluginMail->accIban}
+BIC: {$oPluginMail->accBic}
+
+Geben Sie als Verwendungszweck bitte ausschließlich folgende Identifikationsnummer an:
+{$oPluginMail->usage}
+                    </ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment information for your order</Subject>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
+Please transfere the ammount of {$oPluginMail->amount}
+{$oPluginMail->currency} after receive of the goods:<br/>
+<br/>
+Account holder: {$oPluginMail->accountHolder}<br/>
+IBAN: {$oPluginMail->accIban}<br/>
+BIC: {$oPluginMail->accBic}<br/>
+<br/>
+Only use the following identification number as reference please:<br/>
+{$oPluginMail->usage}<br/>
+<br/><br/>
+With kind regards,<br />
+your team from {$Firma->cName}
+{includeMailTemplate template=footer type=html}]]>
+                    </ContentHtml>
+                    <ContentText>Please transfere the ammount of {$oPluginMail->amount}
+{$oPluginMail->currency} after receive of the goods:
+
+Account holder: {$oPluginMail->accHolder}
+IBAN: {$oPluginMail->accIban}
+BIC: {$oPluginMail->accBic}
+
+Only use the following identification number as reference please:
+{$oPluginMail->usage}
+                    </ContentText>
+                </TemplateLanguage>
+            </Template>
+        </Emailtemplate>
     </Install>
 </jtlshop3plugin>

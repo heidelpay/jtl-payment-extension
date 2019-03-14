@@ -13,12 +13,12 @@
 <form method="post" class="formular" action="{$action_url}" id="paymentFrameForm">
 	{$hp_bank_country_label}: <select name="ACCOUNT.COUNTRY">
 		{foreach from=$account_country key=iso item=land }
-		<option value="{$iso}">{$land}</option>
+		<option value="{$iso}">{$land|utf8_decode}</option>
 		{/foreach}
 	</select><br/>
 	{$hp_bankname_label}; <select name="ACCOUNT.BANKNAME">
 		{foreach from=$account_bankname key=short item=brand}
-			<option value="{$short}">{$brand}</option>
+			<option value="{$short}">{$brand|utf8_decode}</option>
         {/foreach}
 	</select><br/>
 

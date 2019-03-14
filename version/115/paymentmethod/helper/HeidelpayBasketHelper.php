@@ -36,9 +36,9 @@ class HeidelpayBasketHelper
     public static function sendBasketFromOrder( Bestellung $order, $oPluginSettings , $isSandbox)
     {
         $authentication = new Authentication(
-            $oPluginSettings ['user'],
-            $oPluginSettings ['pass'],
-            $oPluginSettings ['sender']
+            trim($oPluginSettings ['user']),
+            trim($oPluginSettings ['pass']),
+            trim($oPluginSettings ['sender'])
         );
 
         $basket = new Basket();
