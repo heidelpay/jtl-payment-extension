@@ -9,8 +9,6 @@
  * @category JTL
  */
 require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/vendor/autoload.php';
-/*require_once PFAD_ROOT . PFAD_PLUGIN . 'heidelpay_standard/version/'
-    . $oPlugin->nVersion . '/paymentmethod/heidelpay_standard.class.php';*/
 
 use Heidelpay\PhpPaymentApi\Push;
 
@@ -242,7 +240,7 @@ class PushNotificationHandler
      */
     public function saveResponse()
     {
-        if(!$this->response->isPending()){
+        if(!$this->response->isPending() && $this->response->isSuccess()){
             $referenceId = $this->referenceExists() ? $this->response->getIdentification()->getReferenceId() : NULL;
 
             $dbResponse = new stdClass();
