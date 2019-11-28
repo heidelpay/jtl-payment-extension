@@ -797,6 +797,7 @@ class heidelpay_standard extends ServerPaymentMethod
 
         $updateOrder = new stdClass();
         $updateOrder->cKommentar = $infoText;
+        $updateOrder->cPUIZahlungsdaten = $infoText;
 
         Shop::DB()->update('tbestellung', 'cBestellNr', htmlspecialchars($order->cBestellNr), $updateOrder);
         Jtllog::writeLog('updated payinfo: ' . print_r(shop::DB()->select(
